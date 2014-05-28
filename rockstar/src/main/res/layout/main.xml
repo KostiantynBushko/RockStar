@@ -1,16 +1,121 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.onquantum.rockstar.MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="MergeRootFrame"
+    android:background="@drawable/background_portrain">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start play"
+        android:id="@+id/retro"
+        android:background="@drawable/button_action"
+        android:textColor="@color/dark_gray"
+        android:alpha="0.9"
+        android:textStyle="normal|bold|italic|"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:height="40dp"
+        android:textSize="18sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
-        android:text="@string/hello_world"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Use headphones for the best experiences . . ."
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textColor="@color/gray"
+        android:textSize="16sp"/>
+
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:id="@+id/relativeLayout">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:minWidth="95dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/settingButton"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_action"
+            android:drawableTop="@drawable/action_settings"
+            android:text="@string/settings_label"
+            android:textColor="@color/dark_gray"
+            android:layout_marginRight="10dp"
+            android:alpha="0.9"
+            android:textStyle="bold"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:minWidth="95dp"
+            android:layout_height="wrap_content"
+            android:text="@string/help_label"
+            android:id="@+id/button1"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/settingButton"
+            android:background="@drawable/button_action"
+            android:drawableTop="@drawable/action_help"
+            android:textColor="@color/dark_gray"
+            android:alpha="0.9"
+            android:textStyle="bold"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:minWidth="95dp"
+            android:layout_height="wrap_content"
+            android:text="@string/about_label"
+            android:id="@+id/button2"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/button1"
+            android:background="@drawable/button_action"
+            android:drawableTop="@drawable/action_about"
+            android:textColor="@color/dark_gray"
+            android:alpha="0.9"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu"
+        android:id="@+id/menuButton"
+        android:layout_above="@+id/retro"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button_menu"
+        android:height="40dp"
+        android:textSize="18sp"
+        android:textStyle="normal|bold|italic|"
+        android:textColor="@color/dark_gray"
+        android:alpha="0.9"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

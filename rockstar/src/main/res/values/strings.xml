@@ -2,7 +2,21 @@
 <resources>
 
     <string name="app_name">RockStar</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_label">Rock Star</string>
+
+    <string name="settings_label">Settings</string>
+    <string name="about_label">About</string>
+    <string name="start_play">Start play</string>
+    <string name="help_label">Help</string>
+    <string name="menu">Menu</string>
+    <string name="about_text">Application "Rockstar" is committed to providing users a sense of the game on a real e-guitar. RokStar  feigns the neck of the guitar with a recorded sound from real electric guitar, the idea is of using the smartphone as a real guitars neck.</string>
+    <string name="number_of_bar">Number of bar:</string>
+    <string name="sound_channels">Sound channels:</string>
+    <string name="number_of_bar_help">Changing this value allow you to configure number of bar\'s what you can see on your display.</string>
+    <string name="sound_channels_help">This setting allow you to configure how many sound channels can play in one time.</string>
+    <string name="help_title_settings">RockStar application settings</string>
+
+    <color name="gray">#ffcfcfcf</color>
+    <color name="dark_gray">#444444</color>
 
 </resources>
