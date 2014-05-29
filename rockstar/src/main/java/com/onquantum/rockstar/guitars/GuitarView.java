@@ -16,8 +16,6 @@ import com.onquantum.rockstar.Settings;
  * Created by saiber on 01.03.14.
  */
 public class GuitarView extends GLSurfaceView{
-    private static final String LOG = "log";
-    private static final String LOG_TUCH = "log_touch";
 
     private Context context;
     private SoundPool soundPool;
@@ -47,7 +45,6 @@ public class GuitarView extends GLSurfaceView{
                 String file = "f_" + Integer.toString(i) + "_" + Integer.toString(j);
                 int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
                 soundPool.load(context,id,1);
-                ///Log.i("info"," load = " + file);
             }
         }
 
@@ -76,7 +73,6 @@ public class GuitarView extends GLSurfaceView{
                 int actionMask = event.getActionMasked();
                 int pointerCount = event.getPointerCount();
                 int pointIndex = event.getActionIndex();
-                //Log.i("info"," index = " + Integer.toString(pointerCount));
 
                 float fy;
                 fy = ((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
@@ -85,7 +81,6 @@ public class GuitarView extends GLSurfaceView{
                 x = (int)((width - event.getX(pointIndex)) / ((width / glRenderer.getAbscissa())));
                 y = (int)((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
                 int playId = (y + 1) + (6 * x);
-                ///Log.i("info"," playId = " + Integer.toString(playId));
 
                 if(0.15f > (Math.abs(y - fy))) { return; }
 
@@ -99,8 +94,6 @@ public class GuitarView extends GLSurfaceView{
                             int id = fretMask[x][y];
                             soundPool.stop(id);
                         }
-                        ///Log.i("info"," X = " + Integer.toString(x));
-                        ///Log.i("info"," Y = " + Integer.toString(y));
                         pID = soundPool.play(playId, 1, 1, 1, 0, 1.0f);
                         fretMask[x][y]=pID;
                         break; }
@@ -113,8 +106,6 @@ public class GuitarView extends GLSurfaceView{
                             int id = fretMask[x][y];
                             soundPool.stop(id);
                         }
-                        ///Log.i("info"," X = " + Integer.toString(x));
-                        ///Log.i("info"," Y = " + Integer.toString(y));
                         pID = soundPool.play(playId, 1, 1, 1, 0, 1.0f);
                         fretMask[x][y]=pID;
                         break;}
@@ -131,7 +122,6 @@ public class GuitarView extends GLSurfaceView{
                                 float volume = 0.8f;
                                 while (volume > 0.1f){
                                     soundPool.setVolume(_id,volume, volume);
-                                    //Log.i(LOG, ":" + Float.toString(volume));
                                     SystemClock.sleep(150);
                                     volume-=0.1f;
                                 }
@@ -154,7 +144,6 @@ public class GuitarView extends GLSurfaceView{
                                 float volume = 0.8f;
                                 while (volume > 0.1f){
                                     soundPool.setVolume(_id,volume,volume);
-                                    //Log.i(LOG, ": " + Float.toString(volume));
                                     SystemClock.sleep(150);
                                     volume-=0.1f;
                                 }
@@ -165,8 +154,6 @@ public class GuitarView extends GLSurfaceView{
                         break; }
 
                     case MotionEvent.ACTION_MOVE: {
-                        //Log.i("info","id = " + Integer.toString(event.getPointerId(pointIndex)));
-                        //Log.i("info","x = " + Float.toString(event.getX()) + " y = " + Float.toString(event.getY()));
                         glRenderer.onTouchMove(x,y);
                     }
                     default:break;

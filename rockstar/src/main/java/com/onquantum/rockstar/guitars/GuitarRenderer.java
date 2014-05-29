@@ -27,7 +27,6 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     float ordinate = 1;
     float abscissa = 1;
     float ratio = 0;
-    private static final String LOG = "log";
 
     GLDTexture strig6;
     GLDTexture strig5;
@@ -66,12 +65,9 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
         this.width = width;
         this.height = height;
         ratio = (float)width / (float)height;
-        //Log.i(LOG, " Ratio = " + Float.toString(ratio));
         ordinate = 15;
         float h = this.height / ordinate;
         abscissa = fretCount;
-        //Log.i(LOG," abscissa = " + Float.toString(abscissa));
-        //Log.i(LOG,"renderer width:" + Integer.toString(this.width) + "; height:" + Integer.toString(this.height));
 
         if(this.height == 0)
             this.height = 1;
@@ -337,7 +333,6 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     public void onTouchMove(int x, int y) {
         for(int i = 0; i<6; i++ ) {
             if (touchMask[i] == 1) {
-                //Log.i("info"," move : run");
                 touchMask[i] = 0;
                 ((GLDTexture)stringTexture.get(i)).setTranslate(((GLDTexture)stringTexture.get(1)).x,
                         ((GLDTexture)stringTexture.get(i)).y + stringDownUp,
