@@ -1,6 +1,9 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,6 +30,14 @@ public class AboutActivity extends Activity {
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView)).setTypeface(typeface);
+
+        try {
+            String versionName = getApplicationContext().getPackageManager()
+                    .getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
+            ((TextView)findViewById(R.id.textView3)).setText("Version " + versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Bitmap getRoundedBitmap(Bitmap bitmap) {

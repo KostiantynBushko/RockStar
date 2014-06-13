@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -26,6 +27,7 @@ public class GuitarView extends GLSurfaceView{
     private int[][] fretMask = new int[20][20];
     private int[][] touchMask = new int[20][20];
     private int[] fingersTouchID = new int[10];
+    private int[][] coordinateID = new int[10][10];
 
     int x,y;
     int width,height;
@@ -71,21 +73,21 @@ public class GuitarView extends GLSurfaceView{
             @Override
             public void run() {
                 int actionMask = event.getActionMasked();
-                int pointerCount = event.getPointerCount();
                 int pointIndex = event.getActionIndex();
+                int pointID = event.getPointerId(pointIndex);
+                //Log.i("info", " Pointer ID = " + Integer.toString(pointID));
 
                 float fy;
                 fy = ((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
 
-                //Get x,y coordinates in opengl perspective
+                //Get x,y coordinates in open gl perspective
                 x = (int)((width - event.getX(pointIndex)) / ((width / glRenderer.getAbscissa())));
                 y = (int)((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
                 int playId = (y + 1) + (6 * x);
 
-                if(0.15f > (Math.abs(y - fy))) { return; }
+                if(0.05f > (Math.abs(y - fy))) { return; }
 
                 switch(actionMask) {
-
                     case MotionEvent.ACTION_POINTER_DOWN:{
                         if(touchMask[x][y] == 1)
                             break;
@@ -96,8 +98,8 @@ public class GuitarView extends GLSurfaceView{
                         }
                         pID = soundPool.play(playId, 1, 1, 1, 0, 1.0f);
                         fretMask[x][y]=pID;
-                        break; }
-
+                        break;
+                    }
                     case MotionEvent.ACTION_DOWN: {
                         if(touchMask[x][y] == 1)
                             break;
@@ -108,8 +110,8 @@ public class GuitarView extends GLSurfaceView{
                         }
                         pID = soundPool.play(playId, 1, 1, 1, 0, 1.0f);
                         fretMask[x][y]=pID;
-                        break;}
-
+                        break;
+                    }
                     case MotionEvent.ACTION_POINTER_UP:  {
                         touchMask[x][y] = 0;
                         glRenderer.onTouchUp(x,y);
@@ -120,19 +122,19 @@ public class GuitarView extends GLSurfaceView{
                             @Override
                             public void run() {
                                 float volume = 0.8f;
-                                while (volume > 0.1f){
+                                while (volume > 0.01f){
                                     soundPool.setVolume(_id,volume, volume);
-                                    SystemClock.sleep(150);
-                                    volume-=0.1f;
+                                    SystemClock.sleep(15);
+                                    volume-=0.01f;
                                 }
                                 soundPool.stop(_id);
                                 fretMask[_x][_y] = -1;
                             }
                         }).start();
-                        break; }
-
+                        break;
+                    }
                     case MotionEvent.ACTION_UP: {
-                        fingersTouchID[event.getPointerId(pointIndex)] = 0;
+                        //fingersTouchID[event.getPointerId(pointIndex)] = 0;
                         touchMask[x][y] = 0;
                         glRenderer.onTouchUp(x,y);
                         new Thread(new Runnable() {
@@ -142,17 +144,17 @@ public class GuitarView extends GLSurfaceView{
                             @Override
                             public void run() {
                                 float volume = 0.8f;
-                                while (volume > 0.1f){
+                                while (volume > 0.01f){
                                     soundPool.setVolume(_id,volume,volume);
-                                    SystemClock.sleep(150);
-                                    volume-=0.1f;
+                                    SystemClock.sleep(15);
+                                    volume-=0.01f;
                                 }
                                 soundPool.stop(_id);
                                 fretMask[_x][_y] = -1;
                             }
                         }).start();
-                        break; }
-
+                        break;
+                    }
                     case MotionEvent.ACTION_MOVE: {
                         glRenderer.onTouchMove(x,y);
                     }

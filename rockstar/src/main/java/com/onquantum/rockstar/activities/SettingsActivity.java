@@ -18,7 +18,7 @@ import com.onquantum.rockstar.Settings;
  */
 public class SettingsActivity extends Activity {
 
-    public static final int FRET_COUNT = 13;
+    public static final int FRET_COUNT = 9;
     private TextView count = null;
     private TextView channelsSound = null;
     private Settings settings;

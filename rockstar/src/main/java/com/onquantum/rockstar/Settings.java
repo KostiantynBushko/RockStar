@@ -29,6 +29,6 @@ public class Settings {
         editor.commit();
     }
     public int getSoundChannels() {
-        return settings.getInt(SOUND_CHANNELS,1);
+        return settings.getInt(SOUND_CHANNELS,2);
     }
 }
