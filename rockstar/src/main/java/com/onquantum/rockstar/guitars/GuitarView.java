@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
@@ -83,6 +82,7 @@ public class GuitarView extends GLSurfaceView{
                 //Get x,y coordinates in open gl perspective
                 x = (int)((width - event.getX(pointIndex)) / ((width / glRenderer.getAbscissa())));
                 y = (int)((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
+
                 int playId = (y + 1) + (6 * x);
 
                 if(0.05f > (Math.abs(y - fy))) { return; }

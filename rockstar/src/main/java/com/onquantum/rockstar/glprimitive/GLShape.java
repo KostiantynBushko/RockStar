@@ -1,5 +1,8 @@
 package com.onquantum.rockstar.glprimitive;
 
+import android.os.SystemClock;
+import android.util.Log;
+
 import javax.microedition.khronos.opengles.GL10;
 
 /**
@@ -7,6 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 abstract public class GLShape {
 
+    public boolean remove = false;
     public int row = -1;
     public int column = -1;
 
@@ -18,6 +22,18 @@ abstract public class GLShape {
     abstract public void setColor(float r, float g, float b, float a);
 
     abstract public void setAlpha(float alpha);
+
+    public void Remove(final int delay) {
+        Log.i("info","Remove object");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SystemClock.sleep(delay);
+                remove = true;
+                Log.i("info", " Removed");
+            }
+        }).start();
+    }
 
     public int layer;
 }

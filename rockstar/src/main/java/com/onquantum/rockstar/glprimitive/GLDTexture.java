@@ -49,6 +49,41 @@ public class GLDTexture extends GLShape {
         bitmap.recycle();
     }
 
+    public GLDTexture(float bottomLeftX, float bottomLeftY, float width, float height, boolean object) {
+        this.x = bottomLeftX;
+        this.y = bottomLeftY;
+        this.width = width;
+        this.height = height;
+
+        // V1 - bottom left
+        vertices[0] = bottomLeftX - width / 2;
+        vertices[1] = bottomLeftY - height / 2;
+        vertices[2] = 0;
+        // V2 - top left
+        vertices[3] = bottomLeftX - width / 2;
+        vertices[4] = bottomLeftY + height / 2;
+        vertices[5] = 0;
+        // V3 - bottom right
+        vertices[6] = bottomLeftX + width / 2;
+        vertices[7] = bottomLeftY - height / 2;
+        vertices[8] = 0;
+        // V4 - top right
+        vertices[9] = bottomLeftX + width / 2;
+        vertices[10] = bottomLeftY + height / 2;
+        vertices[11] = 0;
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        vertexBuffer = byteBuffer.asFloatBuffer();
+        vertexBuffer.put(vertices);
+        vertexBuffer.position(0);
+        byteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        textureBuffer = byteBuffer.asFloatBuffer();
+        textureBuffer.put(texture);
+        textureBuffer.position(0);
+    }
+
     public GLDTexture(float bottomLeftX, float bottomLeftY, float width, float height) {
         this.x = bottomLeftX;
         this.y = bottomLeftY;

@@ -3,13 +3,20 @@ package com.onquantum.rockstar.guitars;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
+import android.util.Log;
 
-import com.onquantum.rockstar.*;
+import com.onquantum.rockstar.R;
+import com.onquantum.rockstar.glprimitive.GLDCircle;
 import com.onquantum.rockstar.glprimitive.GLDTexture;
 import com.onquantum.rockstar.glprimitive.GLShape;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -23,6 +30,8 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     private int fretCount = 0;
 
     /**********************************************************************************************/
+    GL10 gl10;
+
     int width, height;
     float ordinate = 1;
     float abscissa = 1;
@@ -45,6 +54,10 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     List<GLShape>shadowTextureStringSix = Collections.synchronizedList(new ArrayList<GLShape>());
 
     List<GLShape>drawObjectList;
+    List<GLShape>touchesObjectsList = Collections.synchronizedList(new ArrayList<GLShape>());
+
+    GLDCircle circle;
+    GLDTexture textureCircle;
 
     /**********************************************************************************************/
     public GuitarRenderer(Context context, int fretCount) {
@@ -62,12 +75,17 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        PlayPentatonic();
+        gl10 = gl;
         this.width = width;
         this.height = height;
         ratio = (float)width / (float)height;
         ordinate = 15;
         float h = this.height / ordinate;
         abscissa = fretCount;
+
+        Log.i("info","abscissa = " + Float.toString(abscissa));
+        Log.i("info","ordinate = " + Float.toString(ordinate));
 
         if(this.height == 0)
             this.height = 1;
@@ -82,6 +100,9 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
         gl.glViewport(0, 0, this.width, this.height);
         gl.glLoadIdentity();
         gl.glOrthof(0.0f, abscissa, 0.0f, ordinate, -1.0f, 1.0f);
+
+        // Test
+        circle = new GLDCircle(2,2,0,0.5f);
 
         /******************************************************************************************/
         /* Create game object */
@@ -234,11 +255,22 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     @Override
     public void onDrawFrame(GL10 gl) {
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        int i = 0;
+        int count = 0;
         synchronized (drawObjectList) {
             for(GLShape object : drawObjectList) {
                 object.draw(gl);
-                i++;
+                if(object.remove == true)
+                    drawObjectList.remove(count);
+                else
+                    count++;
+            }
+
+            Iterator<GLShape> iterator = touchesObjectsList.iterator();
+            while (iterator.hasNext()) {
+                GLShape object = iterator.next();
+                object.draw(gl);
+                if (object.remove)
+                    iterator.remove();
             }
         }
     }
@@ -248,125 +280,96 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     private int[] touchMask = new int[10];
     private float stringDownUp = 0.2f;
     private float shadowUp = 0.2f;
-    private float scale = 0.02f;
+    private float scale = 0.005f; //0.02f;
     // Touch Down
-    public void onTouchDown(int x, int y) {
+    public void onTouchDown(final int x, final int y) {
+        //Log.i("info"," Touch Began: X = " + Integer.toString(x) + "  Y = " + Integer.toString(y));
+        //Log.i("info"," Convert X = " + Integer.toString((int)abscissa - x));
         if (y >= 6)
             return;
-        if (touchMask[y] != 1) {
+        /*if (touchMask[y] != 1) {
             touchMask[y] = 1;
             ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
                     ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
                     ((GLDTexture)stringTexture.get(y)).width,
                     ((GLDTexture)stringTexture.get(y)).height - scale);
-            /*List<GLShape>shadow = null;
-            switch (y) {
-                case 0:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringOne));
-                    break;
-                case 1:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringTwo));
-                    break;
-                case 2:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringThree));
-                    break;
-                case 3:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFor));
-                    break;
-                case 4:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFive));
-                    break;
-                case 5:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringSix));
-                    break;
-                default:break;
+        }*/
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i< 10; i++) {
+                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
+                            ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
+                            ((GLDTexture)stringTexture.get(y)).width,
+                            ((GLDTexture)stringTexture.get(y)).height - scale);
+                    SystemClock.sleep(5);
+                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
+                            ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
+                            ((GLDTexture)stringTexture.get(y)).width,
+                            ((GLDTexture)stringTexture.get(y)).height + scale);
+                    SystemClock.sleep(5);
+                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
+                            ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
+                            ((GLDTexture)stringTexture.get(y)).width,
+                            ((GLDTexture)stringTexture.get(y)).height + scale);
+                    SystemClock.sleep(5);
+                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
+                            ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
+                            ((GLDTexture)stringTexture.get(y)).width,
+                            ((GLDTexture)stringTexture.get(y)).height - scale);
+                    SystemClock.sleep(5);
+                }
             }
-            for(int i = 0; i<shadow.size(); i++) {
-                ((GLDTexture)shadow.get(i)).setTranslate(((GLDTexture)shadow.get(i)).x,
-                        ((GLDTexture)shadow.get(i)).y + shadowUp,
-                        ((GLDTexture)shadow.get(i)).width,
-                        ((GLDTexture)shadow.get(i)).height - scale);
-            }*/
-        }
+        }).start();
+
+        float _y = y == 0 ? 1 : 2.5f * y + 1;
+        GLDTexture touch = new GLDTexture(abscissa - 1 - x + 0.5f, _y, 0.5f, ordinate/abscissa,false);
+        touch.loadGLTexture(gl10,context,BitmapFactory.decodeResource(context.getResources(),R.drawable.circle));
+        touch.setAlpha(0.5f);
+        touch.Remove(250);
+        touchesObjectsList.add(touch);
+
     }
     // Touch Up
     public void onTouchUp(int x, int y) {
         if (y >= 6)
             return;
-        if (touchMask[y] == 1){
+        /*if (touchMask[y] == 1){
             touchMask[y] = 0;
             ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
                     ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
                     ((GLDTexture)stringTexture.get(y)).width,
                     ((GLDTexture)stringTexture.get(y)).height + scale);
-            /*List<GLShape>shadow = null;
-            switch (y) {
-                case 0:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringOne));
-                    break;
-                case 1:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringTwo));
-                    break;
-                case 2:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringThree));
-                    break;
-                case 3:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFor));
-                    break;
-                case 4:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFive));
-                    break;
-                case 5:
-                    shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringSix));
-                    break;
-                default:break;
-            }
-            for(int i = 0; i<shadow.size(); i++) {
-                ((GLDTexture)shadow.get(i)).setTranslate(((GLDTexture)shadow.get(i)).x,
-                        ((GLDTexture)shadow.get(i)).y - shadowUp,
-                        ((GLDTexture)shadow.get(i)).width,
-                        ((GLDTexture)shadow.get(i)).height + scale);
-            }*/
-        }
+        }*/
     }
     // Touch Move
     public void onTouchMove(int x, int y) {
-        for(int i = 0; i<6; i++ ) {
+        /*for(int i = 0; i<6; i++ ) {
             if (touchMask[i] == 1) {
                 touchMask[i] = 0;
                 ((GLDTexture)stringTexture.get(i)).setTranslate(((GLDTexture)stringTexture.get(1)).x,
                         ((GLDTexture)stringTexture.get(i)).y + stringDownUp,
                         ((GLDTexture)stringTexture.get(i)).width,
                         ((GLDTexture)stringTexture.get(i)).height + scale);
-                /*List<GLShape>shadow = null;
-                switch (y) {
-                    case 0:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringOne));
-                        break;
-                    case 1:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringTwo));
-                        break;
-                    case 2:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringThree));
-                        break;
-                    case 3:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFor));
-                        break;
-                    case 4:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringFive));
-                        break;
-                    case 5:
-                        shadow = Collections.synchronizedList(new ArrayList<GLShape>(shadowTextureStringSix));
-                        break;
-                    default:break;
-                }
-                for(int j = 0; j<shadow.size(); j++) {
-                    ((GLDTexture)shadow.get(j)).setTranslate(((GLDTexture)shadow.get(j)).x,
-                            ((GLDTexture)shadow.get(j)).y - shadowUp,
-                            ((GLDTexture)shadow.get(j)).width,
-                            ((GLDTexture)shadow.get(j)).height + scale);
-                }*/
             }
+        }*/
+    }
+
+    /**********************************************************************************************/
+    /**/
+    /**********************************************************************************************/
+    public void PlayPentatonic() {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(context.getAssets().open("traning")));
+            String line = reader.readLine();
+            while (line != null) {
+                Log.i("info"," line = " + line);
+                line = reader.readLine();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 }
