@@ -1,19 +1,18 @@
 package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.opengl.GLSurfaceView;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.glprimitive.GLDCircle;
+import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.glprimitive.GLDGuitarString;
 import com.onquantum.rockstar.glprimitive.GLDTexture;
 import com.onquantum.rockstar.glprimitive.GLShape;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,37 +29,46 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     private int fretCount = 0;
 
     /**********************************************************************************************/
-    GL10 gl10;
+    private GL10 gl10;
 
     int width, height;
     float ordinate = 1;
     float abscissa = 1;
     float ratio = 0;
 
-    GLDTexture strig6;
-    GLDTexture strig5;
-    GLDTexture strig4;
+    GLDGuitarString strig6;
+    GLDGuitarString strig5;
+    GLDGuitarString strig4;
 
     List<GLShape>guitarFretboard = Collections.synchronizedList(new ArrayList<GLShape>());
     List<GLShape>Board = Collections.synchronizedList(new ArrayList<GLShape>());
     List<GLShape>stringTexture = Collections.synchronizedList(new ArrayList<GLShape>());
     List<GLShape>shadowTexture = Collections.synchronizedList(new ArrayList<GLShape>());
 
-    List<GLShape>shadowTextureStringOne = Collections.synchronizedList(new ArrayList<GLShape>());
-    List<GLShape>shadowTextureStringTwo = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>shadowTextureStringOne   = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>shadowTextureStringTwo   = Collections.synchronizedList(new ArrayList<GLShape>());
     List<GLShape>shadowTextureStringThree = Collections.synchronizedList(new ArrayList<GLShape>());
-    List<GLShape>shadowTextureStringFor = Collections.synchronizedList(new ArrayList<GLShape>());
-    List<GLShape>shadowTextureStringFive = Collections.synchronizedList(new ArrayList<GLShape>());
-    List<GLShape>shadowTextureStringSix = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>shadowTextureStringFor   = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>shadowTextureStringFive  = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>shadowTextureStringSix   = Collections.synchronizedList(new ArrayList<GLShape>());
 
     List<GLShape>drawObjectList;
-    List<GLShape>touchesObjectsList = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>touchesObjectsList    = Collections.synchronizedList(new ArrayList<GLShape>());
+    List<GLShape>pentatonicObjectsList = Collections.synchronizedList(new ArrayList<GLShape>());
 
-    GLDCircle circle;
-    GLDTexture textureCircle;
+
+    private List<Pentatonic>pentatonicList = null;
+    private Pentatonic currentPentatonic = null;
+    private boolean isPentatonicLoaded = false;
+    private int currentPentatonicStep = 0;
+    GLDTexture current = null;
+
+    private int touchX = 0;
+    private int touchY = 0;
 
     /**********************************************************************************************/
     public GuitarRenderer(Context context, int fretCount) {
+        Log.i("info","GuitarRender : GuitarRender");
         this.context = context;
         this.fretCount = fretCount;
     }
@@ -71,11 +79,13 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig eglConfig) {
         gl.glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+        Log.i("info","GuitarRender : onSurfaceCreated");
+        gl10 = gl;
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        PlayPentatonic();
+        Log.i("info","GuitarRender : onSurfaceChanged");
         gl10 = gl;
         this.width = width;
         this.height = height;
@@ -100,9 +110,6 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
         gl.glViewport(0, 0, this.width, this.height);
         gl.glLoadIdentity();
         gl.glOrthof(0.0f, abscissa, 0.0f, ordinate, -1.0f, 1.0f);
-
-        // Test
-        circle = new GLDCircle(2,2,0,0.5f);
 
         /******************************************************************************************/
         /* Create game object */
@@ -129,9 +136,11 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
 
         guitarFretboard.clear();
         float w = 0.17f;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
         for(int i = 0; i < fretCount+1; i++) {
             GLDTexture fretTexture = new GLDTexture(i - w / 2, 0, w,ordinate);
-            fretTexture.loadGLTexture(gl,context,BitmapFactory.decodeResource(context.getResources(), R.drawable.lad));
+            fretTexture.loadGLTexture(gl,context,BitmapFactory.decodeResource(context.getResources(), R.drawable.lad,options));
             fretTexture.layer = 1;
             guitarFretboard.add(fretTexture);
         }
@@ -149,7 +158,7 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
 
         float shadowStep = 1;
         float shadowHeight = 0.15f;
-        float shadowAlpha = 0.18f;
+        float shadowAlpha = 0.23f;
         for (int i = 0; i < 6; i++) {
             for(int j = 0; j<fretCount+1; j++) {
                 GLDTexture shadow_1 = new GLDTexture(j+w/2,shadowStep-0.4f,1.0f - w,shadowHeight);
@@ -212,19 +221,20 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
         //String 1,3
         stringTexture.clear();
         float inc = 1;
-        GLDTexture string_1 = new GLDTexture(0,inc, abscissa, 0.12f);
+        GLDGuitarString string_1 = new GLDGuitarString(0,inc, abscissa, 0.12f);
         string_1.loadGLTexture(gl, context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_3));
         string_1.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         string_1.layer = 3;
         stringTexture.add(string_1);
+
         inc+=constant;
-        GLDTexture string_2 = new GLDTexture(0,inc, abscissa, 0.12f);
+        GLDGuitarString string_2 = new GLDGuitarString(0,inc, abscissa, 0.12f);
         string_2.loadGLTexture(gl, context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_3));
         string_2.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         string_2.layer = 3;
         stringTexture.add(string_2);
         inc+=constant;
-        GLDTexture string_3 = new GLDTexture(0,inc, abscissa, 0.14f);
+        GLDGuitarString string_3 = new GLDGuitarString(0,inc, abscissa, 0.14f);
         string_3.loadGLTexture(gl, context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_3));
         string_3.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         string_3.layer = 3;
@@ -232,28 +242,28 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
         inc+=constant;
 
         //String 4,6
-        strig4 = new GLDTexture(0,inc, abscissa, 0.25f);
+        strig4 = new GLDGuitarString(0,inc, abscissa, 0.25f);
         strig4.loadGLTexture(gl,context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_5));
         strig4.layer = 3;
         stringTexture.add(strig4);
         inc+=constant;
-        strig5 = new GLDTexture(0,inc, abscissa, 0.3f);
+        strig5 = new GLDGuitarString(0,inc, abscissa, 0.3f);
         strig5.loadGLTexture(gl,context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_5));
         strig5.layer = 3;
         stringTexture.add(strig5);
         inc+=constant;
-        strig6 = new GLDTexture(0,inc, abscissa, 0.35f);
+        strig6 = new GLDGuitarString(0,inc, abscissa, 0.35f);
         strig6.loadGLTexture(gl,context, BitmapFactory.decodeResource(context.getResources(), R.drawable.string_6));
         strig6.layer = 3;
         stringTexture.add(strig6);
         drawObjectList.addAll(stringTexture);
-
     }
     /**********************************************************************************************/
     /* Draw frame */
     /**********************************************************************************************/
     @Override
     public void onDrawFrame(GL10 gl) {
+        // Draw
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         int count = 0;
         synchronized (drawObjectList) {
@@ -264,7 +274,6 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
                 else
                     count++;
             }
-
             Iterator<GLShape> iterator = touchesObjectsList.iterator();
             while (iterator.hasNext()) {
                 GLShape object = iterator.next();
@@ -272,104 +281,78 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
                 if (object.remove)
                     iterator.remove();
             }
+            Iterator<GLShape> iteratorPentatonic = pentatonicObjectsList.iterator();
+            while (iteratorPentatonic.hasNext()) {
+                GLShape object = iteratorPentatonic.next();
+                object.draw(gl);
+                if (object.remove)
+                    iteratorPentatonic.remove();
+            }
+
+            // Update Logic
+            if (isPentatonicLoaded && currentPentatonic == null) {
+                if(currentPentatonicStep == pentatonicList.size())
+                    currentPentatonicStep = 0;
+                int x = pentatonicList.get(currentPentatonicStep).bar;
+                int y = pentatonicList.get(currentPentatonicStep).line;
+                currentPentatonic = pentatonicList.get(currentPentatonicStep);
+                float _y = y == 0 ? 1 : 2.5f * y + 1;
+                current = new GLDTexture(abscissa - 1 - x + 0.5f, _y, 0.5f, ordinate/abscissa,false);
+                current.loadGLTexture(gl10, context, BitmapFactory.decodeResource(context.getResources(), R.drawable.circle));
+                current.setAlpha(0.5f);
+                pentatonicObjectsList.add(current);
+                currentPentatonicStep++;
+            }
         }
     }
     /**********************************************************************************************/
     /* Touch event handler */
     /**********************************************************************************************/
-    private int[] touchMask = new int[10];
-    private float stringDownUp = 0.2f;
-    private float shadowUp = 0.2f;
-    private float scale = 0.005f; //0.02f;
     // Touch Down
     public void onTouchDown(final int x, final int y) {
+        touchY = y;
+        touchX = x;
         //Log.i("info"," Touch Began: X = " + Integer.toString(x) + "  Y = " + Integer.toString(y));
         //Log.i("info"," Convert X = " + Integer.toString((int)abscissa - x));
         if (y >= 6)
             return;
-        /*if (touchMask[y] != 1) {
-            touchMask[y] = 1;
-            ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                    ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
-                    ((GLDTexture)stringTexture.get(y)).width,
-                    ((GLDTexture)stringTexture.get(y)).height - scale);
-        }*/
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i< 10; i++) {
-                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                            ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
-                            ((GLDTexture)stringTexture.get(y)).width,
-                            ((GLDTexture)stringTexture.get(y)).height - scale);
-                    SystemClock.sleep(5);
-                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                            ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
-                            ((GLDTexture)stringTexture.get(y)).width,
-                            ((GLDTexture)stringTexture.get(y)).height + scale);
-                    SystemClock.sleep(5);
-                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                            ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
-                            ((GLDTexture)stringTexture.get(y)).width,
-                            ((GLDTexture)stringTexture.get(y)).height + scale);
-                    SystemClock.sleep(5);
-                    ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                            ((GLDTexture)stringTexture.get(y)).y - stringDownUp,
-                            ((GLDTexture)stringTexture.get(y)).width,
-                            ((GLDTexture)stringTexture.get(y)).height - scale);
-                    SystemClock.sleep(5);
-                }
+        if(isPentatonicLoaded) {
+            if(x == currentPentatonic.bar && y == currentPentatonic.line) {
+                currentPentatonic = null;
+                current.Remove(0);
             }
-        }).start();
-
-        float _y = y == 0 ? 1 : 2.5f * y + 1;
-        GLDTexture touch = new GLDTexture(abscissa - 1 - x + 0.5f, _y, 0.5f, ordinate/abscissa,false);
-        touch.loadGLTexture(gl10,context,BitmapFactory.decodeResource(context.getResources(),R.drawable.circle));
-        touch.setAlpha(0.5f);
-        touch.Remove(250);
-        touchesObjectsList.add(touch);
-
+        }
+        //Animate guitar string
+        GLDGuitarString guitarString = (GLDGuitarString)stringTexture.get(y);
+        guitarString.setAnimate();
     }
+
     // Touch Up
     public void onTouchUp(int x, int y) {
         if (y >= 6)
             return;
-        /*if (touchMask[y] == 1){
-            touchMask[y] = 0;
-            ((GLDTexture)stringTexture.get(y)).setTranslate(((GLDTexture)stringTexture.get(y)).x,
-                    ((GLDTexture)stringTexture.get(y)).y + stringDownUp,
-                    ((GLDTexture)stringTexture.get(y)).width,
-                    ((GLDTexture)stringTexture.get(y)).height + scale);
-        }*/
     }
     // Touch Move
     public void onTouchMove(int x, int y) {
-        /*for(int i = 0; i<6; i++ ) {
-            if (touchMask[i] == 1) {
-                touchMask[i] = 0;
-                ((GLDTexture)stringTexture.get(i)).setTranslate(((GLDTexture)stringTexture.get(1)).x,
-                        ((GLDTexture)stringTexture.get(i)).y + stringDownUp,
-                        ((GLDTexture)stringTexture.get(i)).width,
-                        ((GLDTexture)stringTexture.get(i)).height + scale);
-            }
-        }*/
     }
 
     /**********************************************************************************************/
-    /**/
+    /* Load selected pentatonic */
     /**********************************************************************************************/
-    public void PlayPentatonic() {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(context.getAssets().open("traning")));
-            String line = reader.readLine();
-            while (line != null) {
-                Log.i("info"," line = " + line);
-                line = reader.readLine();
-            }
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+    public boolean LoadPentatonic(List<Pentatonic>pentatonics) {
+        pentatonicList = pentatonics;
+        isPentatonicLoaded = true;
+        currentPentatonic = null;
+        pentatonicObjectsList.clear();
+        currentPentatonicStep = 0;
+        return true;
+    }
+    public void ClosePlayPentatonic() {
+        pentatonicList = null;
+        isPentatonicLoaded = false;
+        currentPentatonic = null;
+        pentatonicObjectsList.clear();
+        currentPentatonicStep = 0;
     }
 
 }

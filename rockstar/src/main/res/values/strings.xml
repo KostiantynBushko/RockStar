@@ -16,7 +16,9 @@
     <string name="sound_channels_help">This setting allow you to configure how many sound channels can play in one time.</string>
     <string name="help_title_settings">RockStar application settings</string>
 
-    <color name="gray">#ffcfcfcf</color>
+    <color name="gray">#ffa6a4a5</color>
     <color name="dark_gray">#444444</color>
+
+    <color name="green">#ff9ad39a</color>
 
 </resources>

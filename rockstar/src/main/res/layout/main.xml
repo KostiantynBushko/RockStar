@@ -5,34 +5,32 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="MergeRootFrame"
-    android:background="@drawable/background_portrain">
+    android:background="@drawable/background_3">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start play"
-        android:id="@+id/retro"
+        android:text="Play"
+        android:id="@+id/play"
         android:background="@drawable/button_action"
         android:textColor="@color/dark_gray"
         android:alpha="0.9"
         android:textStyle="normal|bold|italic|"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="24dp"
         android:height="40dp"
         android:textSize="18sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/relativeLayout"
+        android:layout_alignStart="@+id/relativeLayout"
+        android:layout_alignRight="@+id/relativeLayout"
+        android:layout_alignEnd="@+id/relativeLayout" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Use headphones for the best experiences . . ."
-        android:id="@+id/textView"
+        android:id="@+id/textView0"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -46,7 +44,7 @@
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
@@ -95,27 +93,23 @@
             android:textColor="@color/dark_gray"
             android:alpha="0.9"
             android:textStyle="bold"/>
+
     </RelativeLayout>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/menu"
-        android:id="@+id/menuButton"
-        android:layout_above="@+id/retro"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_height="40dp"
+        android:text="Play Test"
+        android:id="@+id/button"
+        android:background="@drawable/button_action"
+        android:layout_above="@+id/play"
+        android:layout_alignLeft="@+id/play"
+        android:layout_alignStart="@+id/play"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/button_menu"
-        android:height="40dp"
-        android:textSize="18sp"
-        android:textStyle="normal|bold|italic|"
-        android:textColor="@color/dark_gray"
+        android:layout_alignRight="@+id/play"
+        android:layout_alignEnd="@+id/play"
+        android:textColor="#FF0000"
         android:alpha="0.9"
+        android:textSize="18sp"
         android:visibility="invisible"/>
-
 </RelativeLayout>

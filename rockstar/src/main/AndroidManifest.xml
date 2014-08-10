@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.onquantum.rockstar" >
+    package="com.onquantum.rockstar">
 
     <application
         android:allowBackup="true"
@@ -19,7 +19,7 @@
         </activity>
 
         <activity
-            android:name=".activities.TappingGuitarActivity"
+            android:name=".activities.GuitarSimulatorActivity"
             android:label="Tapping Guitar"
             android:screenOrientation="reverseLandscape">
         </activity>
@@ -38,6 +38,15 @@
         <activity android:name=".activities.MenuActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <activity
+            android:name=".tools.Editor"
+            android:screenOrientation="landscape">
+        </activity>
+
+        <activity
+            android:name=".activities.SGuitarSimulatorActivity"
+            android:screenOrientation="reverseLandscape"/>
 
 
     </application>
