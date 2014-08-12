@@ -31,7 +31,6 @@ public class SwitchButton extends View {
     private final float round = 0.025f;
 
     private float textHeightCenter;
-    private Canvas canvas;
 
     private int touchX = 0;
     private boolean touched = false;
@@ -59,11 +58,9 @@ public class SwitchButton extends View {
 
     @Override
     public void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-        Log.i("info"," SwitchView Size change = " + Integer.toString(width) + " " + Integer.toString(height));
         this.width = width;
         this.height = height;
         this.padding = (int)(height * paddingDegree);
-        Log.i("info"," Padding = " + Integer.toString(padding));
         this.roundBackground = (int)(height/2 - height*round);
         this.roundSlider = (int)((height-padding)/2 - (height-padding)*round);
 

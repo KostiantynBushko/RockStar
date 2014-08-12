@@ -44,7 +44,7 @@
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
@@ -96,20 +96,51 @@
 
     </RelativeLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="40dp"
-        android:text="Play Test"
-        android:id="@+id/button"
-        android:background="@drawable/button_action"
-        android:layout_above="@+id/play"
-        android:layout_alignLeft="@+id/play"
-        android:layout_alignStart="@+id/play"
-        android:layout_marginBottom="20dp"
-        android:layout_alignRight="@+id/play"
-        android:layout_alignEnd="@+id/play"
-        android:textColor="#FF0000"
-        android:alpha="0.9"
-        android:textSize="18sp"
-        android:visibility="invisible"/>
+        android:layout_below="@+id/relativeLayout"
+        android:layout_marginTop="60dp"
+        android:layout_alignRight="@+id/relativeLayout"
+        android:layout_alignEnd="@+id/relativeLayout"
+        android:layout_alignLeft="@+id/relativeLayout"
+        android:layout_alignStart="@+id/relativeLayout">
+
+        <com.onquantum.rockstar.common.SwitchButton
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/switchButton"
+            android:layout_alignLeft="@+id/textView"
+            android:layout_alignStart="@+id/textView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="."
+            android:id="@+id/textView"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="distortion"
+            android:gravity="right"
+            android:alpha="0.6"
+            android:textStyle="bold|italic"
+            android:id="@+id/textView2"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/textView"
+            android:layout_toStartOf="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="10dp" />
+
+    </RelativeLayout>
+
 </RelativeLayout>

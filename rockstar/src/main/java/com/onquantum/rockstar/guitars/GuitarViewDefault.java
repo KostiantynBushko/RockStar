@@ -2,14 +2,9 @@ package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Display;
@@ -29,7 +24,7 @@ import java.util.List;
 /**
  * Created by Admin on 8/6/14.
  */
-public class GuitarViewDefault extends GLSurfaceView implements SensorEventListener{
+public class GuitarViewDefault extends GuitarAbstract {
 
     private Context context;
     private SoundPool soundPool;
@@ -38,27 +33,26 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
 
     private int[][] fretMaskStreamID = new int[13][6];
     private int[][] touchMask = new int[13][6];
-    List<GuitarString> simpleTouchList = new ArrayList<GuitarString>(11);
+    List<GuitarString> simpleTouchList = new ArrayList<GuitarString>(10);
 
     int x,y;
     int width,height;
 
-    private SensorManager sensorManager;
+    private boolean isSoundLoaded = false;
 
     public GuitarViewDefault(final Context context) {
         super(context);
 
-        sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_NORMAL);
-
-        Log.i("info"," GuitarSurfaceView NO SLIDE" );
-        for(int i = 0; i<10; i++) {
-            simpleTouchList.add(new GuitarString(-1,-1,-1,context));
-        }
-
-        Log.i("info"," simpleTouchList = " + simpleTouchList.size());
         soundPool = new SoundPool(new Settings(context).getSoundChannels(), AudioManager.STREAM_MUSIC,0);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                Log.i("info"," Complete listener : sampleId = " + sampleId + " status = " + status);
+                if (sampleId == new Settings(context).getFretNumbers() * 6) {
+                    Log.i("info","  ** Complete loaded sounds ***");
+                }
+            }
+        });
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -76,9 +70,16 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
                         soundPool.load(context,id,1);
                     }
                 }
+                if (onSoundLoadedCompleteListener != null) {
+                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
+                }
+                isSoundLoaded = true;
             }
         }).start();
-
+        for(int i = 0; i<10; i++) {
+            simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
+        }
+        Log.i("info"," GuitarViewTest DEFAULT" );
         glRenderer = new GuitarRenderer(context, new Settings(context).getFretNumbers());
         this.setRenderer(glRenderer);
         this.context = context;
@@ -97,6 +98,8 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
     /**********************************************************************************************/
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+        if (!isSoundLoaded)
+            return false;
         this.width = glRenderer.width;
         this.height = glRenderer.height;
         queueEvent(new Runnable() {
@@ -116,7 +119,6 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
                 if(0.05f > (Math.abs(y - fy))) { return; }
 
                 switch(actionMask) {
-
                     case MotionEvent.ACTION_POINTER_DOWN:{
                         if(touchMask[x][y] == 1)
                             break;
@@ -126,7 +128,7 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
                             soundPool.stop(id);
                         }
                         fretMaskStreamID[x][y] = soundPool.play(playId, 1, 1, 1, 0, 1.0f);
-                        simpleTouchList.get(pointID).set(fretMaskStreamID[x][y],x,y,soundPool);
+                        simpleTouchList.get(pointID).set(fretMaskStreamID[x][y],x,y);
                         break;
                     }
                     case MotionEvent.ACTION_DOWN: {
@@ -137,12 +139,11 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
                             int id = fretMaskStreamID[x][y];
                             soundPool.stop(id);
                         }
+                        Log.i("info"," Play");
                         fretMaskStreamID[x][y]= soundPool.play(playId, 1, 1, 1, 0, 1.0f);
-                        simpleTouchList.get(pointID).set(fretMaskStreamID[x][y],x,y,soundPool);
+                        simpleTouchList.get(pointID).set(fretMaskStreamID[x][y],x,y);
                         break;
                     }
-
-                    /******************************************************************************/
                     case MotionEvent.ACTION_POINTER_UP:  {
                         touchMask[x][y] = 0;
                         glRenderer.onTouchUp(x,y);
@@ -187,7 +188,6 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
                         }).start();
                         break;
                     }
-                    /******************************************************************************/
                     case MotionEvent.ACTION_MOVE: {
                         glRenderer.onTouchMove(x,y);
                     }
@@ -197,9 +197,8 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
         });
         return true;
     }
-    /**********************************************************************************************/
-    /* Play pentatonic */
-    /**********************************************************************************************/
+
+    @Override
     public void LoadPentatonicFile(String fileName) {
         List<Pentatonic> pentatonics = new ArrayList<Pentatonic>();
         BufferedReader reader = null;
@@ -208,7 +207,6 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
             String str = reader.readLine();
             while (str != null) {
                 Pentatonic pentatonic = new Pentatonic();
-                Log.i("info", " line = " + str);
                 String[] parce = str.split("\\s+");
                 if (parce.length == 4){
                     pentatonic.bar = Integer.parseInt(parce[0]);
@@ -228,20 +226,8 @@ public class GuitarViewDefault extends GLSurfaceView implements SensorEventListe
             e.printStackTrace();
         }
     }
+    @Override
     public void ClosePlayPentatonic() {
         glRenderer.ClosePlayPentatonic();
-    }
-
-    /**********************************************************************************************/
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            Log.i("info","Z = " + event.values[2]);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 }

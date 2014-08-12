@@ -16,53 +16,63 @@ public class GuitarString {
     public int streamId;
     public volatile float volume = 1.0f;
     SoundPool soundPool = null;
-    public float currRate = 1.0f;
     private int soundID[] = new int[24];
     private Context context = null;
 
-    public GuitarString(int streamId, int x, int y, Context context) {
+    public GuitarString(int streamId, int x, int y, Context context,SoundPool soundPool) {
         this.x = x;
         this.y = y;
         this.streamId = streamId;
         this.context = context;
+        this.soundPool = soundPool;
     }
 
-    public void set(int streamId, int x, int y, SoundPool soundPool) {
+    public void set(int streamId, int x, int y) {
         this.x = x;
         this.y = y;
         this.streamId = streamId;
-        this.soundPool = soundPool;
-
     }
 
-    public void set(int x, int y, SoundPool soundPool) {
+    public void set(int x, int y) {
         Log.i("info", " X = " + Integer.toString(x));
         this.x = x;
         this.y = y;
-        this.soundPool = soundPool;
         for(int xx = 0; xx< new Settings(context).getFretNumbers(); xx++) {
             int playId = (y + 1) + (6 * xx);
-            Log.i("info", " ::: playId = " + Integer.toString(playId));
             soundID[xx] = soundPool.play(playId,0,0,1,0,1.0f);
         }
         soundPool.setVolume(soundID[x],volume,volume);
         soundPool.setPriority(soundID[x],1);
     }
 
-    public void move(int x, int y) {
+    public void move(final int x, final int y) {
         try{
             soundPool.setVolume(soundID[this.x],0,0);
             soundPool.setVolume(soundID[x],volume,volume);
             this.x = x;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    float vol = 0.8f;
+                    while (vol > 0.01f){
+                        Log.i("info"," ... ");
+                        soundPool.setVolume(soundID[x],vol,vol);
+                        SystemClock.sleep(10);
+                        vol-=0.1f;
+                    }
+                }
+            });
         }catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
     }
 
     public void stop() {
-        for (int i = 0; i<24; i++) {
-            if(i != this.x)
+        Log.i("info"," GuitarString STOP");
+        for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+            if(i != this.x) {
                 soundPool.stop(soundID[i]);
+            }
         }
         new Thread(new Runnable() {
             int _x = x;

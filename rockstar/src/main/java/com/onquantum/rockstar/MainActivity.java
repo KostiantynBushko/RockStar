@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.activities.*;
+import com.onquantum.rockstar.common.SwitchButton;
 
 public class MainActivity extends Activity {
     private Context context;
@@ -27,13 +28,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent;
-                if(new Settings(context).getSlide()) {
-                    intent = new Intent(context, SGuitarSimulatorActivity.class);
-                    startActivity(intent);
-                }else{
-                    intent = new Intent(context , GuitarSimulatorActivity.class);
-                    startActivity(intent);
-                }
+                intent = new Intent(context , GuitarSimulatorActivity.class);
+                startActivity(intent);
             }
         });
         ((Button)findViewById(R.id.settingButton)).setOnClickListener(new View.OnClickListener() {
@@ -58,11 +54,12 @@ public class MainActivity extends Activity {
             }
         });
 
-        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
+        SwitchButton distortionSwitcher = (SwitchButton)findViewById(R.id.switchButton);
+        distortionSwitcher.Set(new Settings(context).getDistortion());
+        distortionSwitcher.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context , SGuitarSimulatorActivity.class);
-                startActivity(intent);
+            public void onSwitchChange(boolean isOn) {
+                new Settings(context).setDistortion(isOn);
             }
         });
 

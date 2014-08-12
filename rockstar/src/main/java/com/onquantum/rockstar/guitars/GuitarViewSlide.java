@@ -1,10 +1,10 @@
 package com.onquantum.rockstar.guitars;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -23,43 +23,58 @@ import java.util.List;
 /**
  * Created by Admin on 8/5/14.
  */
-public class GuitarViewSlide extends GLSurfaceView {
+public class GuitarViewSlide extends GuitarAbstract {
 
     private Context context;
     private SoundPool soundPool;
     private GuitarRenderer glRenderer;
     private int titleBarH = 0;
-    private int[][] touchMask = new int[13][6];
-    List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(11);
-
-    private final float rateCof = 2.0f / 24;
+    private int[][] touchMask = new int[24][7];
+    List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
     int x,y;
     int width,height;
 
-    public GuitarViewSlide(Context context) {
-        super(context);
-        Log.i("info"," GuitarViewTest SLIDE" );
-        Log.i("info"," rateCof = " + Float.toString(rateCof));
-        for(int i = 0; i<10; i++) {
-            simpleTouchList.add(new GuitarString(-1,-1,-1,context));
-        }
+    private boolean isSoundLoaded = false;
 
-        Log.i("info"," simpleTouchList = " + simpleTouchList.size());
-        // Loading resources
-        soundPool = new SoundPool(60, AudioManager.STREAM_MUSIC,0);
-        String prefix;
+    public GuitarViewSlide(final Context context) {
+        super(context);
+        soundPool = new SoundPool(new Settings(context).getFretNumbers() * 3, AudioManager.STREAM_MUSIC,0);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                Log.i("info"," Complete listener : sampleId = " + sampleId + " status = " + status);
+                if (sampleId == new Settings(context).getFretNumbers() * 6) {
+                    Log.i("info","  ** Complete loaded sounds ***");
+                }
+            }
+        });
+        final String prefix;
         if(new Settings(context).getDistortion()) {
             prefix = "distortion";
         }else {
             prefix = "clean";
         }
-
-        for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
-            for (int j = 0; j < 6; j++){
-                String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
-                int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
-                soundPool.load(context,id,1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+                    for (int j = 0; j < 6; j++){
+                        String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
+                        Log.i("info"," sound = " + file);
+                        int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
+                        soundPool.load(context,id,1);
+                    }
+                }
+                if (onSoundLoadedCompleteListener != null) {
+                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
+                }
+                isSoundLoaded = true;
             }
+        }).start();
+
+        Log.i("info"," GuitarViewTest SLIDE" );
+        for(int i = 0; i<10; i++) {
+            simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
 
         glRenderer = new GuitarRenderer(context, new Settings(context).getFretNumbers());
@@ -79,6 +94,8 @@ public class GuitarViewSlide extends GLSurfaceView {
     /* Touches event */
     /**********************************************************************************************/
     public boolean onTouchEvent(final MotionEvent event) {
+        if (!isSoundLoaded)
+            return false;
         this.width = glRenderer.width;
         this.height = glRenderer.height;
         queueEvent(new Runnable() {
@@ -91,10 +108,8 @@ public class GuitarViewSlide extends GLSurfaceView {
                 float fy;
                 fy = ((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
 
-                //Get x,y coordinates in open gl perspective
                 x = (int)((width - event.getX(pointIndex)) / ((width / glRenderer.getAbscissa())));
                 y = (int)((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
-                //Log.i("info","x = " + Integer.toString(x) + "  y = " + Integer.toString(y));
 
                 if(0.05f > (Math.abs(y - fy))) { return; }
 
@@ -103,17 +118,16 @@ public class GuitarViewSlide extends GLSurfaceView {
                         if(touchMask[x][y] == 1)
                             break;
                         glRenderer.onTouchDown(x,y);
-                        simpleTouchList.get(pointID).set(x,y,soundPool);
+                        simpleTouchList.get(pointID).set(x,y);
                         break;
                     }
                     case MotionEvent.ACTION_DOWN: {
                         if(touchMask[x][y] == 1)
                             break;
                         glRenderer.onTouchDown(x,y);
-                        simpleTouchList.get(pointID).set(x,y,soundPool);
+                        simpleTouchList.get(pointID).set(x,y);
                         break;
                     }
-                    /******************************************************************************/
                     case MotionEvent.ACTION_POINTER_UP:  {
                         touchMask[x][y] = 0;
                         glRenderer.onTouchUp(x,y);
@@ -124,10 +138,8 @@ public class GuitarViewSlide extends GLSurfaceView {
                         touchMask[x][y] = 0;
                         glRenderer.onTouchUp(x,y);
                         simpleTouchList.get(pointID).stop();
-                        //Log.i("info","pID = " + Integer.toString(fretMaskStreamID[x][y]) + "  playId = " + Integer.toString(playId));
                         break;
                     }
-                    /******************************************************************************/
                     case MotionEvent.ACTION_MOVE: {
                         glRenderer.onTouchMove(x,y);
                         int _x = simpleTouchList.get(pointID).x;
@@ -142,9 +154,7 @@ public class GuitarViewSlide extends GLSurfaceView {
         return true;
     }
 
-    /**********************************************************************************************/
-    /* Play pentatonic */
-    /**********************************************************************************************/
+    @Override
     public void LoadPentatonicFile(String fileName) {
         List<Pentatonic> pentatonics = new ArrayList<Pentatonic>();
         BufferedReader reader = null;
@@ -153,7 +163,6 @@ public class GuitarViewSlide extends GLSurfaceView {
             String str = reader.readLine();
             while (str != null) {
                 Pentatonic pentatonic = new Pentatonic();
-                Log.i("info", " line = " + str);
                 String[] parce = str.split("\\s+");
                 if (parce.length == 4){
                     pentatonic.bar = Integer.parseInt(parce[0]);
@@ -173,6 +182,7 @@ public class GuitarViewSlide extends GLSurfaceView {
             e.printStackTrace();
         }
     }
+    @Override
     public void ClosePlayPentatonic() {
         glRenderer.ClosePlayPentatonic();
     }

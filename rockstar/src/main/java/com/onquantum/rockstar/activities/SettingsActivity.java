@@ -104,13 +104,8 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent;
-                if(new Settings(context).getSlide()) {
-                    intent = new Intent(context, SGuitarSimulatorActivity.class);
-                    startActivity(intent);
-                }else{
-                    intent = new Intent(context , GuitarSimulatorActivity.class);
-                    startActivity(intent);
-                }
+                intent = new Intent(context , GuitarSimulatorActivity.class);
+                startActivity(intent);
                 finish();
             }
         });

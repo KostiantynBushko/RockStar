@@ -7,20 +7,23 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
+import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
+import com.onquantum.rockstar.guitars.GuitarAbstract;
 import com.onquantum.rockstar.guitars.GuitarInterface;
 import com.onquantum.rockstar.guitars.GuitarViewDefault;
+import com.onquantum.rockstar.guitars.GuitarViewSlide;
 
 
 /**
@@ -30,12 +33,13 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
         GuitarInterface {
 
     private Context context;
-    GuitarViewDefault guitarView;
+    GuitarAbstract guitarView;
     Handler handler;
     RelativeLayout relativeLayout;
     private View decorView;
 
     RelativeLayout controlPanel;
+    ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,21 +50,44 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
         decorView = getWindow().getDecorView();
 
         setContentView(R.layout.guitar_layout);
+        progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         relativeLayout = (RelativeLayout)findViewById(R.id.container);
-        handler = new Handler() {
+        if(new Settings(context).getSlide()) {
+            guitarView = new GuitarViewSlide(context);
+        }else{
+            guitarView = new GuitarViewDefault(context);
+        }
+        guitarView.setOnSoundLoadedCompleteListener(new GuitarAbstract.OnSoundLoadedCompleteListener() {
+            @Override
+            public void onSoundLoadedComplete() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
+        relativeLayout.addView(guitarView);
+
+        /*handler = new Handler() {
             public void handleMessage(android.os.Message msg){
-                guitarView = new GuitarViewDefault(context);
+                if(new Settings(context).getSlide()) {
+                    guitarView = new GuitarViewSlide(context);
+                }else{
+                    guitarView = new GuitarViewDefault(context);
+                }
                 relativeLayout.addView(guitarView);
             };
-        };
+        };*/
 
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 SystemClock.sleep(2000);
                 handler.sendEmptyMessage(0);
             }
-        }).start();
+        }).start();*/
 
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
@@ -73,6 +100,7 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
             public void onClick(View view) {
                 Intent intent = new Intent(context, SettingsActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         ((ImageButton)this.findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
@@ -95,13 +123,11 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
 
     @Override
     public void onPentatonicSelect(String fileName) {
-        Log.i("info"," On pentatonic select listener = " + fileName);
         guitarView.LoadPentatonicFile(fileName);
     }
 
     @Override
     public void onPentatonicSuccessLoaded(String name) {
-        Log.i("info"," onPentatonicSuccessLoaded ");
         controlPanel.setVisibility(View.VISIBLE);
         ((TextView)findViewById(R.id.textView2)).setText(name);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha_up);
