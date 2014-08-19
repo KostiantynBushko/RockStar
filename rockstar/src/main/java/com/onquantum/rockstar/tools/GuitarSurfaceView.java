@@ -1,44 +1,61 @@
-package com.onquantum.rockstar.guitars;
+package com.onquantum.rockstar.tools;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.guitars.GuitarInterface;
+import com.onquantum.rockstar.svprimitive.SBitmap;
+import com.onquantum.rockstar.svprimitive.SShape;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
- * Created by Admin on 8/5/14.
+ * Created by Admin on 8/16/14.
  */
-public class GuitarViewSlide extends GuitarAbstract {
+public class GuitarSurfaceView extends GuitarSurfaceAbstract {
 
     private Context context;
     private SoundPool soundPool;
-    private GuitarRenderer glRenderer;
+    private GuitarSurfaceRenderer guitarSurfaceRenderer;
+
+    private final int frets;
+    private int width, height;
     private int titleBarH = 0;
-    private int[][] touchMask = new int[24][7];
-    List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
-    int x,y;
-    int width,height;
 
     private boolean isSoundLoaded = false;
 
-    public GuitarViewSlide(final Context context) {
-        super(context);
-        soundPool = new SoundPool(1000/*new Settings(context).getFretNumbers() * 4*/, AudioManager.STREAM_MUSIC,100);
+    private int[][] touchMask = new int[24][7];
+    List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
+
+    public GuitarSurfaceView(final Context context,AttributeSet attributeSet) {
+        super(context,attributeSet);
+        getHolder().addCallback(guitarSurfaceRenderer = new GuitarSurfaceRenderer(context));
+        this.context = context;
+        frets = new Settings(context).getFretNumbers();
+
+        soundPool = new SoundPool(1000, AudioManager.STREAM_MUSIC,100);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -76,72 +93,66 @@ public class GuitarViewSlide extends GuitarAbstract {
         for(int i = 0; i<10; i++) {
             simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
-
-        glRenderer = new GuitarRenderer(context, new Settings(context).getFretNumbers());
-        this.setRenderer(glRenderer);
-        this.context = context;
     }
+
 
     @Override
     public void onSizeChanged(int width, int height, int oldw, int oldh) {
-        super.onSizeChanged(width, height, oldw, oldh);
+        Log.i("info"," SurfaceView width = " + width + " height = " + height);
+        this.width = width;
+        this.height = height;
         Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        titleBarH = size.y - height;
+        titleBarH = size.y - this.height;
+        super.onSizeChanged(width,height,oldw,oldh);
     }
-    /**********************************************************************************************/
-    /* Touches event */
-    /**********************************************************************************************/
+
+    @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        if (!isSoundLoaded)
-            return false;
-        this.width = glRenderer.width;
-        this.height = glRenderer.height;
-        queueEvent(new Runnable() {
+
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 int actionMask = event.getActionMasked();
                 int pointIndex = event.getActionIndex();
                 final int pointID = event.getPointerId(pointIndex);
 
-                float fy;
-                fy = ((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
-
-                x = (int)((width - event.getX(pointIndex)) / ((width / glRenderer.getAbscissa())));
-                y = (int)((height - (event.getY(pointIndex) - titleBarH)) / (height / 6));
-
-                if(0.05f > (Math.abs(y - fy))) { return; }
+                int x,y;
+                y = (int)(height - (event.getY(pointIndex) - titleBarH)) / (height / 6);
+                x = (int)(width - event.getX(pointIndex)) / (width / frets);
 
                 switch(actionMask) {
                     case MotionEvent.ACTION_POINTER_DOWN:{
                         if(touchMask[x][y] == 1)
                             break;
-                        glRenderer.onTouchDown(x,y);
+                        guitarSurfaceRenderer.onTouchDown(x,y);
                         simpleTouchList.get(pointID).set(x,y);
                         break;
                     }
                     case MotionEvent.ACTION_DOWN: {
+                        Log.i("info","Y = " + y);
+                        Log.i("info","X = " + x);
                         if(touchMask[x][y] == 1)
                             break;
-                        glRenderer.onTouchDown(x,y);
+                        guitarSurfaceRenderer.onTouchDown(x,y);
                         simpleTouchList.get(pointID).set(x,y);
                         break;
                     }
                     case MotionEvent.ACTION_POINTER_UP:  {
                         touchMask[x][y] = 0;
-                        glRenderer.onTouchUp(x,y);
+                        guitarSurfaceRenderer.onTouchUp(x,y);
                         simpleTouchList.get(pointID).stop();
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
                         touchMask[x][y] = 0;
-                        glRenderer.onTouchUp(x,y);
+                        guitarSurfaceRenderer.onTouchUp(x,y);
                         simpleTouchList.get(pointID).stop();
                         break;
                     }
                     case MotionEvent.ACTION_MOVE: {
-                        glRenderer.onTouchMove(x,y);
+                        guitarSurfaceRenderer.onTouchMove(x,y);
                         int _x = simpleTouchList.get(pointID).x;
                         if(_x != x) {
                             simpleTouchList.get(pointID).move(x,y);
@@ -150,9 +161,12 @@ public class GuitarViewSlide extends GuitarAbstract {
                     default:break;
                 }
             }
-        });
+        }).start();
+
+
         return true;
     }
+
 
     @Override
     public void LoadPentatonicFile(String fileName) {
@@ -173,7 +187,7 @@ public class GuitarViewSlide extends GuitarAbstract {
                 }
                 str = reader.readLine();
             }
-            if(glRenderer.LoadPentatonic(pentatonics)) {
+            if(guitarSurfaceRenderer.LoadPentatonic(pentatonics)) {
                 if (context instanceof GuitarInterface) {
                     ((GuitarInterface)context).onPentatonicSuccessLoaded(fileName);
                 }
@@ -184,6 +198,6 @@ public class GuitarViewSlide extends GuitarAbstract {
     }
     @Override
     public void ClosePlayPentatonic() {
-        glRenderer.ClosePlayPentatonic();
+        guitarSurfaceRenderer.ClosePlayPentatonic();
     }
 }

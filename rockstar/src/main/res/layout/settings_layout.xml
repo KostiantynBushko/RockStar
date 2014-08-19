@@ -65,7 +65,7 @@
 
         <com.onquantum.rockstar.common.SwitchButton
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:id="@+id/slideSwitcher"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
@@ -107,15 +107,15 @@
             android:layout_width="wrap_content"
             android:layout_height="70dp"
             android:id="@+id/relativeLayout2"
-            android:layout_toRightOf="@+id/textView3"
-            android:layout_toEndOf="@+id/textView3">
+            android:layout_toRightOf="@+id/textView2"
+            android:layout_toEndOf="@+id/textView2">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3"
                 android:textSize="30sp"
-                android:id="@+id/textView2"
+                android:id="@+id/textView1"
                 android:textColor="#93c9f6"
                 android:gravity="center"
                 android:textStyle="bold"
@@ -161,7 +161,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="."
-            android:id="@+id/textView3"
+            android:id="@+id/textView2"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:visibility="invisible"/>
@@ -176,8 +176,8 @@
             android:alpha="0.6"
             android:textStyle="bold|italic"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/textView3"
-            android:layout_toStartOf="@+id/textView3"
+            android:layout_toLeftOf="@+id/textView2"
+            android:layout_toStartOf="@+id/textView2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginRight="30dp"
@@ -371,7 +371,7 @@
 
         <com.onquantum.rockstar.common.SwitchButton
             android:layout_width="50dp"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:id="@+id/slideSwitcher1"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"

@@ -34,12 +34,12 @@ public class GuitarString {
     }
 
     public void set(int x, int y) {
-        Log.i("info", " X = " + Integer.toString(x));
+        //Log.i("info", " X = " + Integer.toString(x));
         this.x = x;
         this.y = y;
         for(int xx = 0; xx< new Settings(context).getFretNumbers(); xx++) {
             int playId = (y + 1) + (6 * xx);
-            soundID[xx] = soundPool.play(playId,0,0,1,0,1.0f);
+            soundID[xx] = soundPool.play(playId,0,0,0,0,1);
         }
         soundPool.setVolume(soundID[x],volume,volume);
         soundPool.setPriority(soundID[x],1);
@@ -48,27 +48,30 @@ public class GuitarString {
     public void move(final int x, final int y) {
         try{
             soundPool.setVolume(soundID[this.x],0,0);
+            soundPool.setPriority(soundID[this.x],0);
             soundPool.setVolume(soundID[x],volume,volume);
+            soundPool.setPriority(soundID[x],1);
+            final int _x_ = this.x;
             this.x = x;
-            new Thread(new Runnable() {
+            /*new Thread(new Runnable() {
                 @Override
                 public void run() {
                     float vol = 0.8f;
                     while (vol > 0.01f){
                         Log.i("info"," ... ");
-                        soundPool.setVolume(soundID[x],vol,vol);
+                        soundPool.setVolume(soundID[_x_],vol,vol);
                         SystemClock.sleep(10);
                         vol-=0.1f;
                     }
                 }
-            });
+            });*/
         }catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
     }
 
     public void stop() {
-        Log.i("info"," GuitarString STOP");
+        //Log.i("info"," GuitarString STOP");
         for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
             if(i != this.x) {
                 soundPool.stop(soundID[i]);

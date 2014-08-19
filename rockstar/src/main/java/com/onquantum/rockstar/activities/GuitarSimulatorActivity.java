@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -129,7 +128,7 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
     @Override
     public void onPentatonicSuccessLoaded(String name) {
         controlPanel.setVisibility(View.VISIBLE);
-        ((TextView)findViewById(R.id.textView2)).setText(name);
+        ((TextView)findViewById(R.id.textView1)).setText(name);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha_up);
         controlPanel.startAnimation(animation);
     }

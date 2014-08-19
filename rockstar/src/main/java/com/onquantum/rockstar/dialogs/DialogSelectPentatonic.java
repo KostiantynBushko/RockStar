@@ -70,14 +70,14 @@ public class DialogSelectPentatonic extends DialogFragment{
             }
             SimpleAdapter adapter = new SimpleAdapter(getActivity(),listObjects, R.layout.item_pentatonic,
                     new String[]{FILE_NAME},
-                    new int[]{R.id.textView2}
+                    new int[]{R.id.textView1}
             );
             listView.setAdapter(adapter);
             listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String name = ((TextView)view.findViewById(R.id.textView2)).getText().toString();
+                    String name = ((TextView)view.findViewById(R.id.textView1)).getText().toString();
                     if(getActivity() instanceof OnPentatonicSelectListener) {
                         ((OnPentatonicSelectListener)getActivity()).onPentatonicSelect(name);
                         dismiss();

@@ -50,30 +50,6 @@ public class GLDTexture extends GLShape {
         bitmap.recycle();
     }
 
-    /*public void loadGLTexture(GL10 gl, Context context, Bitmap bitmap) {
-        gl.glGenTextures(1, textures, 0);
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_NEAREST);
-        ByteBuffer imageBuffer = ByteBuffer.allocateDirect(bitmap.getHeight() * bitmap.getWidth() * 4);
-        imageBuffer.order(ByteOrder.nativeOrder());
-        byte buffer[] = new byte[4];
-        for(int i = 0; i < bitmap.getHeight(); i++)
-        {
-            for(int j = 0; j < bitmap.getWidth(); j++)
-            {
-                int color = bitmap.getPixel(j, i);
-                buffer[0] = (byte) Color.red(color);
-                buffer[1] = (byte)Color.green(color);
-                buffer[2] = (byte)Color.blue(color);
-                buffer[3] = (byte)Color.alpha(color);
-                imageBuffer.put(buffer);
-            }
-        }
-        imageBuffer.position(0);
-        gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA, bitmap.getWidth(), bitmap.getHeight(), 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, imageBuffer);
-        //return textures[0];
-    }*/
 
     public GLDTexture(float bottomLeftX, float bottomLeftY, float width, float height, boolean object) {
         this.x = bottomLeftX;
@@ -179,6 +155,7 @@ public class GLDTexture extends GLShape {
     public void setAlpha(float alpha) {
         Alpha =alpha;
     }
+
     public void setTranslate(float bottomLeftX, float bottomLeftY,float width, float height) {
         this.x = bottomLeftX;
         this.y = bottomLeftY;

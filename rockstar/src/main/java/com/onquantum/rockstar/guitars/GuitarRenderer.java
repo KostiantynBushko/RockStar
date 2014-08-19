@@ -1,9 +1,7 @@
 package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
@@ -65,6 +63,9 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
 
     private int touchX = 0;
     private int touchY = 0;
+
+    private long lastTime = 0;
+    private long totalElapsed = 0;
 
     /**********************************************************************************************/
     public GuitarRenderer(Context context, int fretCount) {
@@ -164,13 +165,11 @@ public class GuitarRenderer implements GLSurfaceView.Renderer{
                 GLDTexture shadow_1 = new GLDTexture(j+w/2,shadowStep-0.4f,1.0f - w,shadowHeight);
                 shadow_1.loadGLTexture(gl,context,BitmapFactory.decodeResource(context.getResources(), R.drawable.shadow_p1));
                 shadow_1.layer = 2;
-                //shadowTexture.add(shadow_1);
                 shadow_1.setColor(1.0f, 1.0f, 1.0f,shadowAlpha);
 
                 GLDTexture shadow_2= new GLDTexture(j-w/2,shadowStep-0.4f,w,shadowHeight);
                 shadow_2.loadGLTexture(gl,context,BitmapFactory.decodeResource(context.getResources(), R.drawable.shadow_p2));
                 shadow_2.layer = 2;
-                //shadowTexture.add(shadow_2);
                 shadow_2.setColor(1.0f, 1.0f, 1.0f,shadowAlpha);
                 switch (i) {
                     case 0:{

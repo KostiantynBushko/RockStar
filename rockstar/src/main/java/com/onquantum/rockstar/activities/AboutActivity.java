@@ -32,7 +32,7 @@ public class AboutActivity extends Activity {
         try {
             String versionName = getApplicationContext().getPackageManager()
                     .getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
-            ((TextView)findViewById(R.id.textView3)).setText("Version " + versionName);
+            ((TextView)findViewById(R.id.textView2)).setText("Version " + versionName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

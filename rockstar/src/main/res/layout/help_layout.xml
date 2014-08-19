@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/relativeLayout2"
         android:background="@drawable/decorate_rect"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/number_of_bar"
-        android:id="@+id/textView2"
+        android:id="@+id/textView1"
         android:textStyle="italic|bold"
         android:layout_below="@+id/textView0"
         android:layout_alignParentLeft="true"
@@ -98,7 +98,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/sound_channels"
         android:textStyle="italic|bold"
-        android:id="@+id/textView3"
+        android:id="@+id/textView2"
         android:layout_below="@+id/relativeLayout2"
         android:layout_alignLeft="@+id/relativeLayout2"
         android:layout_alignStart="@+id/relativeLayout2"
@@ -109,11 +109,11 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/textView2"
         android:layout_marginRight="10dp"
         android:background="@drawable/decorate_rect"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_alignStart="@+id/textView3">
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignStart="@+id/textView2">
 
         <ImageView
             android:layout_width="60dp"

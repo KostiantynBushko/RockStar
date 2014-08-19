@@ -44,7 +44,7 @@ public class SettingsActivity extends Activity {
         //((TextView)this.findViewById(R.id.textView2)).setTypeface(typeFace);
 
         count = (TextView)this.findViewById(R.id.textView5);
-        channelsSound = (TextView)this.findViewById(R.id.textView2);
+        channelsSound = (TextView)this.findViewById(R.id.textView1);
 
         settings = new Settings(context);
         numberOfCount = settings.getFretNumbers();
@@ -56,7 +56,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 int number = Integer.parseInt(count.getText().toString());
-                if (number > 3) {
+                if (number > 5) {
                     number--;
                     count.setText(Integer.toString(number).toString());
                     new Settings(context).setFretNumbers(number);

@@ -132,7 +132,7 @@
             android:gravity="right"
             android:alpha="0.6"
             android:textStyle="bold|italic"
-            android:id="@+id/textView2"
+            android:id="@+id/textView1"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/textView"
             android:layout_toStartOf="@+id/textView"
@@ -142,5 +142,27 @@
             android:layout_marginLeft="10dp" />
 
     </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Editor"
+        android:id="@+id/button"
+        android:layout_marginTop="52dp"
+        android:layout_below="@+id/textView0"
+        android:layout_alignRight="@+id/relativeLayout"
+        android:layout_alignEnd="@+id/relativeLayout"
+        android:background="@drawable/button_action"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="SGuitar"
+        android:id="@+id/button3"
+        android:layout_alignTop="@+id/button"
+        android:layout_toLeftOf="@+id/button"
+        android:layout_toStartOf="@+id/button"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/button_action"/>
 
 </RelativeLayout>

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.onquantum.rockstar.activities.*;
 import com.onquantum.rockstar.common.SwitchButton;
+import com.onquantum.rockstar.tools.Editor;
+import com.onquantum.rockstar.tools.SVGuitarActivity;
 
 public class MainActivity extends Activity {
     private Context context;
@@ -67,6 +69,21 @@ public class MainActivity extends Activity {
         Typeface titleFont = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(titleFont);
 
+
+        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Editor.class);
+                startActivity(intent);
+            }
+        });
+        ((Button)findViewById(R.id.button3)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), SVGuitarActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 }
