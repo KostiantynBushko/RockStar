@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.SurfaceView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
+import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.activities.SettingsActivity;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
 import com.onquantum.rockstar.guitars.GuitarInterface;
@@ -24,9 +25,9 @@ import com.onquantum.rockstar.guitars.GuitarInterface;
 /**
  * Created by Admin on 8/16/14.
  */
-public class SVGuitarActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
+public class GuitarSimulatorSurfaceActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
 
-    private GuitarSurfaceView guitarSurfaceView;
+    private GuitarSurfaceAbstract guitarSurfaceView;
     private ProgressBar progressBar;
     private RelativeLayout controlPanel;
     private Context context;
@@ -36,8 +37,31 @@ public class SVGuitarActivity extends Activity implements GuitarInterface, Dialo
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.guitar_surface_view);
+
         context = getApplicationContext();
+        if(new Settings(context).getSlide()) {
+            if (getIntent().getBooleanExtra("TEST",false)) {
+                setContentView(R.layout.guitar_surface_slide_test);
+                guitarSurfaceView = (GuitarSurfaceViewSlideTest)findViewById(R.id.guitarSurfaceView);
+            }else {
+                setContentView(R.layout.guitar_surface_slide);
+                guitarSurfaceView = (GuitarSurfaceViewSlide)findViewById(R.id.guitarSurfaceView);
+            }
+        }else{
+            setContentView(R.layout.guitar_surface_deffault);
+            guitarSurfaceView = (GuitarSurfaceViewDefault)findViewById(R.id.guitarSurfaceView);
+        }
+        guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarSurfaceViewSlide.OnSoundLoadedCompleteListener() {
+            @Override
+            public void onSoundLoadedComplete() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
@@ -69,19 +93,6 @@ public class SVGuitarActivity extends Activity implements GuitarInterface, Dialo
                 guitarSurfaceView.ClosePlayPentatonic();
             }
         });
-
-        guitarSurfaceView = (GuitarSurfaceView)findViewById(R.id.guitarSurfaceView);
-        guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarSurfaceView.OnSoundLoadedCompleteListener() {
-            @Override
-            public void onSoundLoadedComplete() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
-            }
-        });
     }
 
     @Override
@@ -95,5 +106,24 @@ public class SVGuitarActivity extends Activity implements GuitarInterface, Dialo
         ((TextView)findViewById(R.id.textView1)).setText(name);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha_up);
         controlPanel.startAnimation(animation);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("info"," PAUSE ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("info"," STOP ");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i("info"," DESTROY");
+        super.onDestroy();
+        guitarSurfaceView.Stop();
     }
 }

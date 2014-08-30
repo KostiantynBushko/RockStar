@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.onquantum.rockstar.activities.*;
 import com.onquantum.rockstar.common.SwitchButton;
 import com.onquantum.rockstar.tools.Editor;
-import com.onquantum.rockstar.tools.SVGuitarActivity;
+import com.onquantum.rockstar.tools.GuitarSimulatorSurfaceActivity;
 
 public class MainActivity extends Activity {
     private Context context;
@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent;
-                intent = new Intent(context , GuitarSimulatorActivity.class);
+                intent = new Intent(context , GuitarSimulatorSurfaceActivity.class);
                 startActivity(intent);
             }
         });
@@ -80,7 +80,8 @@ public class MainActivity extends Activity {
         ((Button)findViewById(R.id.button3)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SVGuitarActivity.class);
+                Intent intent = new Intent(getApplicationContext(), GuitarSimulatorSurfaceActivity.class);
+                intent.putExtra("TEST",true);
                 startActivity(intent);
             }
         });

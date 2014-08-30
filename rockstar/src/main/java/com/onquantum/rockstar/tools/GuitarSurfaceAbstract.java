@@ -25,4 +25,5 @@ public abstract class GuitarSurfaceAbstract extends SurfaceView {
 
     public abstract void LoadPentatonicFile(String fileName);
     public abstract void ClosePlayPentatonic();
+    public void Stop(){}
 }

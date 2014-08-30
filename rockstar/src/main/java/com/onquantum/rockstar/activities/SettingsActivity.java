@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.SwitchButton;
+import com.onquantum.rockstar.tools.GuitarSimulatorSurfaceActivity;
 
 /**
  * Created by onquantum on 03.03.14.
@@ -104,7 +105,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent;
-                intent = new Intent(context , GuitarSimulatorActivity.class);
+                intent = new Intent(context , GuitarSimulatorSurfaceActivity.class);
                 startActivity(intent);
                 finish();
             }

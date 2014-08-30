@@ -16,15 +16,18 @@ public class GuitarString {
     public int streamId;
     public volatile float volume = 1.0f;
     SoundPool soundPool = null;
-    private int soundID[] = new int[24];
+    private int playID[];
     private Context context = null;
+    private int fretsCount;
 
     public GuitarString(int streamId, int x, int y, Context context,SoundPool soundPool) {
+        playID = new int[new Settings(context).getFretNumbers()];
         this.x = x;
         this.y = y;
         this.streamId = streamId;
         this.context = context;
         this.soundPool = soundPool;
+        fretsCount = new Settings(context).getFretNumbers();
     }
 
     public void set(int streamId, int x, int y) {
@@ -34,57 +37,56 @@ public class GuitarString {
     }
 
     public void set(int x, int y) {
-        //Log.i("info", " X = " + Integer.toString(x));
+        Log.i("info", " X = " + Integer.toString(x));
         this.x = x;
         this.y = y;
-        for(int xx = 0; xx< new Settings(context).getFretNumbers(); xx++) {
-            int playId = (y + 1) + (6 * xx);
-            soundID[xx] = soundPool.play(playId,0,0,0,0,1);
+
+        int playId1 = (y + 1) + (6 * x);
+        int playId2 = 0;
+        int playId3 = 0;
+        playID[x] = soundPool.play(playId1,1,1,1,0,1);
+
+        if (x+1 < fretsCount){
+            playId2 = (y + 1) + (6 * (x+1));
+            playID[x+1] = soundPool.play(playId2,0,0,0,0,1);
         }
-        soundPool.setVolume(soundID[x],volume,volume);
-        soundPool.setPriority(soundID[x],1);
+        if(x-1 >= 0) {
+            playId3 = (y + 1) + (6 * (this.x-1));
+            playID[this.x-1] = soundPool.play(playId3,0,0,0,0,1);
+        }
+
+        for(int xx = 1; xx< new Settings(context).getFretNumbers(); xx++) {
+            int pId = (y + 1) + (6 * xx);
+            if (pId != playId1 && pId != playId2 && pId != playId3)
+                playID[xx] = soundPool.play(pId,0,0,0,0,1);
+        }
     }
 
-    public void move(final int x, final int y) {
+    public void move(int x, int y) {
         try{
-            soundPool.setVolume(soundID[this.x],0,0);
-            soundPool.setPriority(soundID[this.x],0);
-            soundPool.setVolume(soundID[x],volume,volume);
-            soundPool.setPriority(soundID[x],1);
-            final int _x_ = this.x;
+            soundPool.setVolume(playID[this.x], 0, 0);
+            soundPool.setPriority(playID[this.x], 0);
+            soundPool.setVolume(playID[x], volume, volume);
+            soundPool.setPriority(playID[x], 1);
             this.x = x;
-            /*new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    float vol = 0.8f;
-                    while (vol > 0.01f){
-                        Log.i("info"," ... ");
-                        soundPool.setVolume(soundID[_x_],vol,vol);
-                        SystemClock.sleep(10);
-                        vol-=0.1f;
-                    }
-                }
-            });*/
-        }catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
+        }catch (ArrayIndexOutOfBoundsException e) {}
     }
 
     public void stop() {
-        //Log.i("info"," GuitarString STOP");
-        for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
-            if(i != this.x) {
-                soundPool.stop(soundID[i]);
-            }
-        }
+        Log.i("info"," GuitarString STOP");
         new Thread(new Runnable() {
             int _x = x;
-            int _id = soundID[_x];
+            int _id = playID[_x];
             @Override
             public void run() {
                 float volume = 0.8f;
+                for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+                    if(i != this._x) {
+                        soundPool.stop(playID[i]);
+                    }
+                }
                 while (volume > 0.01f){
-                    soundPool.setVolume(_id,volume,volume);
+                    soundPool.setVolume(_id, volume, volume);
                     SystemClock.sleep(15);
                     volume-=0.01f;
                 }
