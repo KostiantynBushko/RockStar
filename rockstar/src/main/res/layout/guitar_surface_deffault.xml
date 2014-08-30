@@ -93,7 +93,7 @@
 
     </RelativeLayout>
 
-    <com.onquantum.rockstar.tools.GuitarSurfaceView
+    <com.onquantum.rockstar.tools.GuitarSurfaceViewDefault
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/guitarSurfaceView"

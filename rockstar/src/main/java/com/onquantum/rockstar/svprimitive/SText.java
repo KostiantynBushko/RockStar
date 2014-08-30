@@ -9,7 +9,7 @@ import android.graphics.Paint;
  */
 public class SText extends SShape {
 
-    private int centerX, centerY;
+    private float centerX, centerY;
     private float size;
     private Paint paint;
     private String text = "0";

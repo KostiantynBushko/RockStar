@@ -1,11 +1,11 @@
-package com.onquantum.rockstar.activities;
+package com.onquantum.rockstar.tools;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,45 +18,40 @@ import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.activities.SettingsActivity;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
-import com.onquantum.rockstar.guitars.GuitarAbstract;
 import com.onquantum.rockstar.guitars.GuitarInterface;
-import com.onquantum.rockstar.guitars.GuitarViewDefault;
-import com.onquantum.rockstar.guitars.GuitarViewSlide;
-
 
 /**
- * Created by saiber on 22.02.14.
+ * Created by Admin on 8/16/14.
  */
-public class GuitarSimulatorActivity extends Activity implements DialogSelectPentatonic.OnPentatonicSelectListener,
-        GuitarInterface {
+public class GuitarSimulatorSurfaceActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
 
+    private GuitarSurfaceAbstract guitarSurfaceView;
+    private ProgressBar progressBar;
+    private RelativeLayout controlPanel;
     private Context context;
-    GuitarAbstract guitarView;
-    Handler handler;
-    RelativeLayout relativeLayout;
-    private View decorView;
-
-    RelativeLayout controlPanel;
-    ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        context = this;
-        decorView = getWindow().getDecorView();
 
-        setContentView(R.layout.guitar_layout);
-        progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
-        relativeLayout = (RelativeLayout)findViewById(R.id.container);
+        context = getApplicationContext();
         if(new Settings(context).getSlide()) {
-            guitarView = new GuitarViewSlide(context);
+            if (getIntent().getBooleanExtra("TEST",false)) {
+                setContentView(R.layout.guitar_surface_slide_test);
+                guitarSurfaceView = (GuitarSurfaceViewSlideTest)findViewById(R.id.guitarSurfaceView);
+            }else {
+                setContentView(R.layout.guitar_surface_slide);
+                guitarSurfaceView = (GuitarSurfaceViewSlide)findViewById(R.id.guitarSurfaceView);
+            }
         }else{
-            guitarView = new GuitarViewDefault(context);
+            setContentView(R.layout.guitar_surface_deffault);
+            guitarSurfaceView = (GuitarSurfaceViewDefault)findViewById(R.id.guitarSurfaceView);
         }
-        guitarView.setOnSoundLoadedCompleteListener(new GuitarAbstract.OnSoundLoadedCompleteListener() {
+        guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarSurfaceViewSlide.OnSoundLoadedCompleteListener() {
             @Override
             public void onSoundLoadedComplete() {
                 runOnUiThread(new Runnable() {
@@ -67,31 +62,11 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
                 });
             }
         });
-        relativeLayout.addView(guitarView);
-
-        /*handler = new Handler() {
-            public void handleMessage(android.os.Message msg){
-                if(new Settings(context).getSlide()) {
-                    guitarView = new GuitarViewSlide(context);
-                }else{
-                    guitarView = new GuitarViewDefault(context);
-                }
-                relativeLayout.addView(guitarView);
-            };
-        };*/
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SystemClock.sleep(2000);
-                handler.sendEmptyMessage(0);
-            }
-        }).start();*/
-
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
 
+        progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         controlPanel = (RelativeLayout)findViewById(R.id.playPentatonicPanel);
 
         ((ImageButton) this.findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
@@ -115,14 +90,14 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
                 controlPanel.setVisibility(View.GONE);
                 Animation animation = AnimationUtils.loadAnimation(context,R.anim.alpha_down);
                 controlPanel.startAnimation(animation);
-                guitarView.ClosePlayPentatonic();
+                guitarSurfaceView.ClosePlayPentatonic();
             }
         });
     }
 
     @Override
     public void onPentatonicSelect(String fileName) {
-        guitarView.LoadPentatonicFile(fileName);
+        guitarSurfaceView.LoadPentatonicFile(fileName);
     }
 
     @Override
@@ -131,5 +106,24 @@ public class GuitarSimulatorActivity extends Activity implements DialogSelectPen
         ((TextView)findViewById(R.id.textView1)).setText(name);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha_up);
         controlPanel.startAnimation(animation);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("info"," PAUSE ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("info"," STOP ");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i("info"," DESTROY");
+        super.onDestroy();
+        guitarSurfaceView.Stop();
     }
 }

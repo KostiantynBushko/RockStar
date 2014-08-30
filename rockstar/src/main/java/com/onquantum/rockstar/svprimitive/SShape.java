@@ -53,4 +53,8 @@ public abstract class SShape {
     public void setKinematic(boolean kinematic) {
         isKinematic = kinematic;
     }
+
+    private int layer;
+    public int getLayer(){ return layer; }
+    public void setLayer(int layer) { this.layer = layer; }
 }
