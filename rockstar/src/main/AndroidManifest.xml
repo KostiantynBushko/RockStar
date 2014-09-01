@@ -49,11 +49,6 @@
             android:screenOrientation="landscape">
         </activity>
 
-        <activity
-            android:name=".tools.GuitarSimulatorSurfaceActivity"
-            android:screenOrientation="reverseLandscape"/>
-
-
     </application>
 
 </manifest>

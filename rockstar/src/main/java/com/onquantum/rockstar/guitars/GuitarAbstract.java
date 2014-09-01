@@ -1,12 +1,18 @@
 package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
+import android.view.SurfaceView;
 
 /**
- * Created by Admin on 8/12/14.
+ * Created by Admin on 8/18/14.
  */
-public abstract class GuitarAbstract extends GLSurfaceView {
+public abstract class GuitarAbstract extends SurfaceView {
+    protected boolean isTouchEnable = false;
+
+    public GuitarAbstract(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+    }
 
     protected OnSoundLoadedCompleteListener onSoundLoadedCompleteListener;
 
@@ -18,11 +24,12 @@ public abstract class GuitarAbstract extends GLSurfaceView {
         this.onSoundLoadedCompleteListener = onSoundLoadedCompleteListener;
     }
 
-    public GuitarAbstract(Context context) {
-        super(context);
-    }
 
     public abstract void LoadPentatonicFile(String fileName);
     public abstract void ClosePlayPentatonic();
+    public void Stop(){}
 
+
+    public boolean isTouchEnable() { return isTouchEnable; }
+    public void setTouchEnable(boolean touchEnable) { isTouchEnable = true; }
 }

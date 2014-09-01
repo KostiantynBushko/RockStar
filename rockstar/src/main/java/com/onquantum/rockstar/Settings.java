@@ -18,6 +18,9 @@ public class Settings {
     public static final String STYLE_DISTORTION = "style_distortion";
     public static final int MAX_FRET = 13;
 
+    // Guitar view options
+    private static final String SHOW_FRETS_NUMBER = "show_frets_number";
+    private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
 
     private final SharedPreferences settings;
 
@@ -70,4 +73,20 @@ public class Settings {
         editor.commit();
     }
 
+    // View options
+    public boolean isFretsNumberVisible() {
+        return settings.getBoolean(SHOW_FRETS_NUMBER, false);
+    }
+    public void setFretNumberVisibility(boolean visibility) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(SHOW_FRETS_NUMBER, visibility);
+        editor.commit();
+    }
+    public boolean isFretsSliderVisible() {
+        return settings.getBoolean(SHOW_FRETS_SLIDER, false);
+    }
+    public void setFretsSliderVisibility(boolean visibility) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(SHOW_FRETS_SLIDER, visibility);
+    }
 }

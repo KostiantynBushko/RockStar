@@ -1,8 +1,6 @@
-package com.onquantum.rockstar.tools;
+package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -10,48 +8,37 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
-import com.onquantum.rockstar.guitars.GuitarInterface;
-import com.onquantum.rockstar.svprimitive.SBitmap;
-import com.onquantum.rockstar.svprimitive.SShape;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created by Admin on 8/16/14.
  */
-public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
+public class GuitarViewSlide extends GuitarAbstract {
 
     private Context context;
     private SoundPool soundPool;
-    private GuitarSurfaceRenderer guitarSurfaceRenderer;
+    private GuitarRenderer guitarRenderer;
 
     private final int frets;
     private int width, height;
     private int titleBarH = 0;
 
-    private boolean isSoundLoaded = false;
-
     private int[][] touchMask = new int[24][7];
     List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
 
-    public GuitarSurfaceViewSlide(final Context context, AttributeSet attributeSet) {
+    public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
-        getHolder().addCallback(guitarSurfaceRenderer = new GuitarSurfaceRenderer(context));
+        getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));
         this.context = context;
         frets = new Settings(context).getFretNumbers();
 
@@ -59,12 +46,12 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                Log.i("info"," Complete listener : sampleId = " + sampleId + " status = " + status);
+                //Log.i("info"," Complete listener : sampleId = " + sampleId + " status = " + status);
                 if (sampleId == new Settings(context).getFretNumbers() * 6) {
                     Log.i("info","  ** Complete loaded sounds ***");
-                    isSoundLoaded = true;
-                    if (guitarSurfaceRenderer != null)
-                        guitarSurfaceRenderer.enableRendering(true);
+                    isTouchEnable = true;
+                    if (guitarRenderer != null)
+                        guitarRenderer.enableRendering(true);
                 }
             }
         });
@@ -80,22 +67,21 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
                 for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
                     for (int j = 0; j < 6; j++){
                         String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
-                       // Log.i("info"," sound = " + file);
                         int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
                         soundPool.load(context,id,1);
                     }
                 }
+
+                for(int i = 0; i<10; i++) {
+                    simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
+                }
+
                 if (onSoundLoadedCompleteListener != null) {
                     onSoundLoadedCompleteListener.onSoundLoadedComplete();
                 }
-                isSoundLoaded = true;
             }
         }).start();
-
         Log.i("info"," GuitarSurfaceView SLIDE" );
-        for(int i = 0; i<10; i++) {
-            simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
-        }
     }
 
 
@@ -107,11 +93,16 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
         Point size = new Point();
         display.getSize(size);
         titleBarH = size.y - this.height;
-        super.onSizeChanged(width,height,oldw,oldh);
+        Log.i("info"," GetX = " + this.getX());
+        Log.i("info", " GetY = " + this.getY());
+        super.onSizeChanged(width, height, oldw, oldh);
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+        if (!isTouchEnable)
+            return false;
+
         int actionMask = event.getActionMasked();
         int pointIndex = event.getActionIndex();
         final int pointID = event.getPointerId(pointIndex);
@@ -119,36 +110,39 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
         int x,y;
         y = (int)((height - (event.getY(pointIndex))) / (height / 6));
         x = (int)(width - event.getX(pointIndex)) / (width / frets);
+        Log.i("info"," Touch x = " + x + " y = " + y);
+        if (y > 5)
+            return false;
 
         switch(actionMask) {
             case MotionEvent.ACTION_POINTER_DOWN:{
                 if(touchMask[x][y] == 1)
                     break;
-                guitarSurfaceRenderer.onTouchDown((int)x,(int)y);
+                guitarRenderer.onTouchDown((int)x,(int)y);
                 simpleTouchList.get(pointID).set((int)x,(int)y);
                 break;
             }
             case MotionEvent.ACTION_DOWN: {
                 if(touchMask[x][y] == 1)
                     break;
-                guitarSurfaceRenderer.onTouchDown((int)x,(int)y);
+                guitarRenderer.onTouchDown((int)x,(int)y);
                 simpleTouchList.get(pointID).set((int)x,(int)y);
                 break;
             }
             case MotionEvent.ACTION_POINTER_UP:  {
                 touchMask[x][y] = 0;
-                guitarSurfaceRenderer.onTouchUp((int)x,(int)y);
+                guitarRenderer.onTouchUp((int)x,(int)y);
                 simpleTouchList.get(pointID).stop();
                 break;
             }
             case MotionEvent.ACTION_UP: {
                 touchMask[x][y] = 0;
-                guitarSurfaceRenderer.onTouchUp((int)x,(int)y);
+                guitarRenderer.onTouchUp((int)x,(int)y);
                 simpleTouchList.get(pointID).stop();
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                guitarSurfaceRenderer.onTouchMove(x,y);
+                guitarRenderer.onTouchMove(x,y);
                 int _x = simpleTouchList.get(pointID).x;
                 if(_x != x) {
                     simpleTouchList.get(pointID).move(x,y);
@@ -159,7 +153,6 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
 
         return true;
     }
-
 
     @Override
     public void LoadPentatonicFile(String fileName) {
@@ -180,7 +173,7 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
                 }
                 str = reader.readLine();
             }
-            if(guitarSurfaceRenderer.LoadPentatonic(pentatonics)) {
+            if(guitarRenderer.LoadPentatonic(pentatonics)) {
                 if (context instanceof GuitarInterface) {
                     ((GuitarInterface)context).onPentatonicSuccessLoaded(fileName);
                 }
@@ -191,12 +184,17 @@ public class GuitarSurfaceViewSlide extends GuitarSurfaceAbstract {
     }
     @Override
     public void ClosePlayPentatonic() {
-        guitarSurfaceRenderer.ClosePlayPentatonic();
+        guitarRenderer.ClosePlayPentatonic();
     }
 
     @Override
     public void Stop() {
         Log.i("info"," GUITAR SurfaceView slide STOP");
         soundPool.release();
+    }
+
+    @Override
+    public boolean isInEditMode() {
+        return true;
     }
 }

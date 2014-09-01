@@ -1,4 +1,4 @@
-package com.onquantum.rockstar.tools;
+package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -11,8 +11,6 @@ import android.view.SurfaceHolder;
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.Pentatonic;
-import com.onquantum.rockstar.glprimitive.GLDGuitarString;
-import com.onquantum.rockstar.glprimitive.GLDTexture;
 import com.onquantum.rockstar.svprimitive.SBitmap;
 import com.onquantum.rockstar.svprimitive.SCircle;
 import com.onquantum.rockstar.svprimitive.SGuitarString;
@@ -29,7 +27,7 @@ import java.util.logging.SocketHandler;
 /**
  * Created by Admin on 8/16/14.
  */
-public class GuitarSurfaceRenderer implements SurfaceHolder.Callback {
+public class GuitarRenderer implements SurfaceHolder.Callback {
 
     private final int BACKGROUND_LAYER = 1000;
     private final int STRING_SHADOW_LAYER =2000;
@@ -61,7 +59,7 @@ public class GuitarSurfaceRenderer implements SurfaceHolder.Callback {
 
     private Paint circlePaint;
 
-    public GuitarSurfaceRenderer(Context context) {
+    public GuitarRenderer(Context context) {
         Log.i("info"," GuitarSurfaceRenderer Constructor");
         fretCount = new Settings(context).getFretNumbers();
         this.context = context;
@@ -302,7 +300,7 @@ public class GuitarSurfaceRenderer implements SurfaceHolder.Callback {
                         ifps = 0;
                     }*/
 
-                    //Frame limiting and skipping calcs
+                    //Frame limiting
                     long timeend = System.currentTimeMillis();
                     long frametime = timeend-timestart;
                     int sleepfor = (int) ((1000/30)-frametime);
@@ -349,6 +347,8 @@ public class GuitarSurfaceRenderer implements SurfaceHolder.Callback {
         currentPentatonic = null;
         pentatonicObjectsList.clear();
         currentPentatonicStep = 0;
+        if (current != null)
+            current.Remove(0);
         return true;
     }
     public void ClosePlayPentatonic() {
