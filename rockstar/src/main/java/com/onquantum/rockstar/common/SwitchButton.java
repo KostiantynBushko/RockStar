@@ -141,6 +141,7 @@ public class SwitchButton extends View {
             sliderPoint.right = width/2;
             isOn = false;
             paintSwitcher.setColor(context.getResources().getColor(R.color.gray));
+            invalidate();
             if (onSwitchListener != null)
                 onSwitchListener.onSwitchChange(false);
         }else {
@@ -148,10 +149,10 @@ public class SwitchButton extends View {
             sliderPoint.right = width - padding + paddingBg;
             isOn = true;
             paintSwitcher.setColor(context.getResources().getColor(R.color.green));
+            invalidate();
             if (onSwitchListener != null)
                 onSwitchListener.onSwitchChange(true);
         }
-        invalidate();
     }
 
     public void Set(boolean isOn) {

@@ -10,6 +10,7 @@ import android.view.SurfaceView;
 public abstract class GuitarAbstract extends SurfaceView {
     protected boolean isTouchEnable = false;
 
+
     public GuitarAbstract(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
     }
@@ -29,7 +30,10 @@ public abstract class GuitarAbstract extends SurfaceView {
     public abstract void ClosePlayPentatonic();
     public void Stop(){}
 
+    public void SetFretsNumberVisible(boolean visibility){}
+    public void SetShowTouchesVisible(boolean visibility){}
+    public void SetFretsSliderVisible(boolean visibility){}
 
     public boolean isTouchEnable() { return isTouchEnable; }
-    public void setTouchEnable(boolean touchEnable) { isTouchEnable = true; }
+    public void setTouchEnable(boolean touchEnable) { isTouchEnable = touchEnable; }
 }

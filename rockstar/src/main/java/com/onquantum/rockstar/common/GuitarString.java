@@ -37,7 +37,7 @@ public class GuitarString {
     }
 
     public void set(int x, int y) {
-        Log.i("info", " X = " + Integer.toString(x));
+        //Log.i("info", " X = " + Integer.toString(x));
         this.x = x;
         this.y = y;
 
@@ -73,7 +73,7 @@ public class GuitarString {
     }
 
     public void stop() {
-        Log.i("info"," GuitarString STOP");
+        //Log.i("info"," GuitarString STOP");
         new Thread(new Runnable() {
             int _x = x;
             int _id = playID[_x];

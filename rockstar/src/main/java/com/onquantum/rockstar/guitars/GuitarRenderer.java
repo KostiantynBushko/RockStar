@@ -18,6 +18,7 @@ import com.onquantum.rockstar.svprimitive.SLine;
 import com.onquantum.rockstar.svprimitive.SShape;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +47,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private List<SShape> guitarString = Collections.synchronizedList(new ArrayList<SShape>());
     private List<SShape> pentatonicObjectsList = Collections.synchronizedList(new ArrayList<SShape>());
     private List<SShape> testLine = Collections.synchronizedList(new ArrayList<SShape>());
-    private List<SShape>drawObjects = Collections.synchronizedList(new ArrayList<SShape>());
+    private List<SShape> drawObjects = Collections.synchronizedList(new ArrayList<SShape>());
 
     private boolean loaded = false;
     private boolean enableRendering = false;
@@ -58,20 +59,49 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private SShape current;
 
     private Paint circlePaint;
+    private Paint touchPaint;
+
+    private BitSet fretsMark = new BitSet(24);
+
+    // Frets view
+    private boolean fretsNumberVisible = false;
+    private boolean touchVisible = false;
+    private boolean sliderFretsVisible = false;
 
     public GuitarRenderer(Context context) {
-        Log.i("info"," GuitarSurfaceRenderer Constructor");
+        Log.i("info"," GuitarRenderer CONSTRUCTOR");
         fretCount = new Settings(context).getFretNumbers();
         this.context = context;
 
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setColor(Color.RED);
         circlePaint.setAlpha(128);
+
+        touchPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        touchPaint.setColor(Color.BLUE);
+        touchPaint.setAlpha(128);
+
+        fretsMark.set(0);
+        fretsMark.set(2);
+        fretsMark.set(4);
+        fretsMark.set(6);
+        fretsMark.set(8);
+        fretsMark.set(11);
+        fretsMark.set(14);
+        fretsMark.set(16);
+        fretsMark.set(18);
+        fretsMark.set(20);
+        fretsMark.set(23);
+
+        Settings settings = new Settings(context);
+        touchVisible = settings.isTouchesVisible();
+        fretsNumberVisible = settings.isFretsNumberVisible();
+        sliderFretsVisible = settings.isFretsSliderVisible();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        Log.i("info"," GuitarSurfaceRenderer surfaceCreated");
+        Log.i("info"," GuitarRenderer surfaceCreated");
         drawFrame = new DrawFrame(surfaceHolder);
         drawFrame.setRunning(true);
         drawFrame.start();
@@ -79,9 +109,17 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int var, int width, int height) {
-        Log.i("info"," GuitarSurfaceRenderer surfaceChanged with = " + width + " height = " + height);
+        Log.i("info"," GuitarRenderer surfaceChanged with = " + width + " height = " + height);
         if (loaded)
             return;
+
+        if (drawObjects != null){
+            backGroundLayer.clear();
+            guitarString.clear();
+            pentatonicObjectsList.clear();
+            testLine.clear();
+            drawObjects.clear();
+        }
 
         this.width = width;
         this.height = height;
@@ -98,13 +136,13 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             testLine.add(line);
         }
 
-
+        // Draw frets
         float fret = 1;
         for(int i = 0; i<fretCount; i++) {
             SBitmap bitmap;
-            if(((fret/2) % 1) > 0) { // Check if decimal value > 0
+            if(fretsMark.get(i)){
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b1);
-            }else {
+            }else{
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b0);
             }
             bitmap.setLayer(BACKGROUND_LAYER);
@@ -223,7 +261,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        Log.i("info","GuitarSurfaceRenderer surfaceDestroyed");
+        Log.i("info"," GuitarRenderer surfaceDestroyed");
         boolean retry = true;
         drawFrame.setRunning(false);
         while (retry) {
@@ -258,7 +296,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         canvas = surfaceHolder.lockCanvas(null);
                         if (canvas == null)
                             continue;
-                        canvas.drawColor(Color.WHITE);
+                        canvas.drawColor(Color.BLACK);
 
                         synchronized (drawObjects) {
                             ListIterator<SShape> iterator = drawObjects.listIterator();
@@ -332,7 +370,12 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 }
             }catch (NullPointerException e){}
         }
-
+        if (touchVisible){
+            int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+            SCircle circle = new SCircle(width - (fretWidth * (x + 1)) + (fretWidth / 2),  _y, height / 18, touchPaint);
+            circle.Remove(250);
+            drawObjects.add(circle);
+        }
         ((SGuitarString)guitarString.get(y)).setAnimate();
     }
     public void onTouchUp(int x, int y) {}
@@ -362,6 +405,14 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     public void enableRendering(boolean rendering) {
         enableRendering = rendering;
+    }
+    public void resetLoaded(){loaded = false;}
+    // Neck view
+    public void setFretNumberVisible(boolean visible){
+        fretsNumberVisible = visible;
+    }
+    public void setShowTouchEnable(boolean visible){
+        touchVisible = visible;
     }
 }
 

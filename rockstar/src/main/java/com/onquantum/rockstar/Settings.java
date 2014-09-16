@@ -3,6 +3,8 @@ package com.onquantum.rockstar;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.onquantum.rockstar.common.FretsSlider;
+
 /**
  * Created by saiber on 01.03.14.
  */
@@ -18,11 +20,36 @@ public class Settings {
     public static final String STYLE_DISTORTION = "style_distortion";
     public static final int MAX_FRET = 13;
 
-    // Guitar view options
+    // Guitar neck view options
     private static final String SHOW_FRETS_NUMBER = "show_frets_number";
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
+    private static final String SHOW_TOUCHES = "show_touches";
 
     private final SharedPreferences settings;
+
+    public interface FretsNumberVisible{
+        public void isFretsNumberVisible(boolean visibility);
+    }
+    private FretsNumberVisible fretsNumberVisible;
+    public void setOnFretsNumberVisibleListener(FretsNumberVisible fretsNumberVisible){
+        this.fretsNumberVisible = fretsNumberVisible;
+    }
+    public interface ShowTouchesListener{
+        public void showTouches(boolean visibility);
+    }
+    private ShowTouchesListener showTouchesListener;
+    public void setShowTouchesListener(ShowTouchesListener showTouchesListener){
+        this.showTouchesListener = showTouchesListener;
+    }
+    public interface FretsSliderListener {
+        public void showFretsSlider(boolean visibility);
+    }
+    public FretsSliderListener fretsSliderListener;
+    public void setOnFretsSliderListener(FretsSliderListener fretsSliderListener){
+        this.fretsSliderListener = fretsSliderListener;
+    }
+
+
 
     public Settings(Context context) {
         settings = context.getSharedPreferences(context.getResources().getString(R.string.app_name),Context.MODE_PRIVATE);
@@ -81,6 +108,8 @@ public class Settings {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(SHOW_FRETS_NUMBER, visibility);
         editor.commit();
+        if (fretsNumberVisible != null)
+            fretsNumberVisible.isFretsNumberVisible(visibility);
     }
     public boolean isFretsSliderVisible() {
         return settings.getBoolean(SHOW_FRETS_SLIDER, false);
@@ -88,5 +117,18 @@ public class Settings {
     public void setFretsSliderVisibility(boolean visibility) {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(SHOW_FRETS_SLIDER, visibility);
+        editor.commit();
+        if (fretsSliderListener != null)
+            fretsSliderListener.showFretsSlider(visibility);
+    }
+    public boolean isTouchesVisible(){
+        return settings.getBoolean(SHOW_TOUCHES,false);
+    }
+    public void setTouchesVisibility(boolean visibility){
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(SHOW_TOUCHES,visibility);
+        editor.commit();
+        if (showTouchesListener != null)
+            showTouchesListener.showTouches(visibility);
     }
 }

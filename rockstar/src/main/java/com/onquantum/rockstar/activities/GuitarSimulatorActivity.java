@@ -1,18 +1,14 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -24,24 +20,26 @@ import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.common.FretsSlider;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
 import com.onquantum.rockstar.guitars.GuitarInterface;
 import com.onquantum.rockstar.guitars.GuitarAbstract;
 import com.onquantum.rockstar.guitars.GuitarViewDefault;
 import com.onquantum.rockstar.guitars.GuitarViewSlide;
-import com.onquantum.rockstar.tools.GuitarViewSlideTest;
 
+import fragments.FragmentListener;
 import fragments.SettingsFragment;
 
 /**
  * Created by Admin on 8/16/14.
  */
-public class GuitarSimulatorActivity extends FragmentActivity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
+public class GuitarSimulatorActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
 
     private GuitarAbstract guitarSurfaceView;
     private ProgressBar progressBar;
     private RelativeLayout controlPanel;
     private Context context;
+    private FretsSlider fretsSlider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +66,10 @@ public class GuitarSimulatorActivity extends FragmentActivity implements GuitarI
                 });
             }
         });
+        fretsSlider = (FretsSlider)findViewById(R.id.fretsSlide);
+        if (new Settings(context).isFretsSliderVisible())
+            fretsSlider.setVisibility(View.VISIBLE);
+
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
@@ -104,7 +106,40 @@ public class GuitarSimulatorActivity extends FragmentActivity implements GuitarI
             public void onClick(View view) {
                 SettingsFragment settingsFragment = new SettingsFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.add(settingsFragment,SettingsFragment.SETTINGS_FRAGMENT).commit();
+                transaction.add(R.id.frameLayout,settingsFragment).commit();
+                if (settingsFragment != null){
+                    Settings settings = new Settings(context);
+                    settingsFragment.setSettingsInstance(settings);
+                    guitarSurfaceView.setTouchEnable(false);
+                    settingsFragment.setFragmentListener(new FragmentListener() {
+                        @Override
+                        public void close() {
+                            guitarSurfaceView.setTouchEnable(true);
+                        }
+                    });
+                    settings.setOnFretsNumberVisibleListener(new Settings.FretsNumberVisible() {
+                        @Override
+                        public void isFretsNumberVisible(boolean visibility) {
+                            guitarSurfaceView.SetFretsNumberVisible(visibility);
+                        }
+                    });
+                    settings.setShowTouchesListener(new Settings.ShowTouchesListener() {
+                        @Override
+                        public void showTouches(boolean visibility) {
+                            guitarSurfaceView.SetShowTouchesVisible(visibility);
+                        }
+                    });
+                    settings.setOnFretsSliderListener(new Settings.FretsSliderListener() {
+                        @Override
+                        public void showFretsSlider(boolean visibility) {
+                            guitarSurfaceView.SetFretsSliderVisible(visibility);
+                            if (visibility)
+                                fretsSlider.setVisibility(View.VISIBLE);
+                            else
+                                fretsSlider.setVisibility(View.GONE);
+                        }
+                    });
+                }
             }
         });
     }
@@ -125,18 +160,15 @@ public class GuitarSimulatorActivity extends FragmentActivity implements GuitarI
     @Override
     public void onPause() {
         super.onPause();
-        Log.i("info"," FRAGMENT PAUSE ");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.i("info"," FRAGMENT STOP ");
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info"," FRAGMENT DESTROY");
         super.onDestroy();
         guitarSurfaceView.Stop();
     }
@@ -145,10 +177,8 @@ public class GuitarSimulatorActivity extends FragmentActivity implements GuitarI
     public void onBackPressed(){
         FragmentManager fm = getFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
-            Log.i("MainActivity", "popping backstack");
             fm.popBackStack();
         } else {
-            Log.i("MainActivity", "nothing on backstack, calling super");
             super.onBackPressed();
         }
     }

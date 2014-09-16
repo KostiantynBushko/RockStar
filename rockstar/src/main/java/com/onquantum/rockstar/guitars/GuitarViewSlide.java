@@ -1,6 +1,7 @@
 package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -38,6 +39,7 @@ public class GuitarViewSlide extends GuitarAbstract {
 
     public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
+        Log.i("info"," GuitarSurfaceView SLIDE CONSTRUCTOR" );
         getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));
         this.context = context;
         frets = new Settings(context).getFretNumbers();
@@ -46,15 +48,20 @@ public class GuitarViewSlide extends GuitarAbstract {
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                //Log.i("info"," Complete listener : sampleId = " + sampleId + " status = " + status);
                 if (sampleId == new Settings(context).getFretNumbers() * 6) {
-                    Log.i("info","  ** Complete loaded sounds ***");
                     isTouchEnable = true;
                     if (guitarRenderer != null)
                         guitarRenderer.enableRendering(true);
+                    if (onSoundLoadedCompleteListener != null) {
+                        onSoundLoadedCompleteListener.onSoundLoadedComplete();
+                    }
                 }
             }
         });
+        for(int i = 0; i<10; i++) {
+            simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
+        }
+
         final String prefix;
         if(new Settings(context).getDistortion()) {
             prefix = "distortion";
@@ -68,25 +75,27 @@ public class GuitarViewSlide extends GuitarAbstract {
                     for (int j = 0; j < 6; j++){
                         String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                         int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
-                        soundPool.load(context,id,1);
+                        try {
+                            soundPool.load(context,id,1);
+                        }catch (Resources.NotFoundException e){
+                            e.printStackTrace();
+                        }
                     }
-                }
-
-                for(int i = 0; i<10; i++) {
-                    simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
-                }
-
-                if (onSoundLoadedCompleteListener != null) {
-                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
                 }
             }
         }).start();
-        Log.i("info"," GuitarSurfaceView SLIDE" );
     }
 
 
     @Override
     public void onSizeChanged(int width, int height, int oldw, int oldh) {
+        Log.i("info"," GuitarSurfaceView SIZECHANGE" );
+        /*if (guitarRenderer != null) {
+            getHolder().removeCallback(guitarRenderer);
+            guitarRenderer = null;
+        }
+        getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));*/
+
         this.width = width;
         this.height = height;
         Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -110,7 +119,6 @@ public class GuitarViewSlide extends GuitarAbstract {
         int x,y;
         y = (int)((height - (event.getY(pointIndex))) / (height / 6));
         x = (int)(width - event.getX(pointIndex)) / (width / frets);
-        Log.i("info"," Touch x = " + x + " y = " + y);
         if (y > 5)
             return false;
 
@@ -196,5 +204,19 @@ public class GuitarViewSlide extends GuitarAbstract {
     @Override
     public boolean isInEditMode() {
         return true;
+    }
+
+    // Neck view
+    @Override
+    public void SetFretsNumberVisible(boolean visibility){
+        guitarRenderer.setFretNumberVisible(visibility);
+    }
+    @Override
+    public void SetShowTouchesVisible(boolean visibility){
+        guitarRenderer.setShowTouchEnable(visibility);
+    }
+    @Override
+    public void SetFretsSliderVisible(boolean visibility){
+        guitarRenderer.resetLoaded();
     }
 }

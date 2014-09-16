@@ -247,4 +247,19 @@ public class GuitarViewDefault extends GuitarAbstract {
     public boolean isInEditMode() {
         return true;
     }
+
+
+    // Neck view
+    @Override
+    public void SetFretsNumberVisible(boolean visibility){
+        guitarRenderer.setFretNumberVisible(visibility);
+    }
+    @Override
+    public void SetShowTouchesVisible(boolean visibility){
+        guitarRenderer.setShowTouchEnable(visibility);
+    }
+    @Override
+    public void SetFretsSliderVisible(boolean visibility){
+        guitarRenderer.resetLoaded();
+    }
 }
