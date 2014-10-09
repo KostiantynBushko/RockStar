@@ -107,8 +107,8 @@
 
     <com.onquantum.rockstar.common.FretsSlider
         android:id="@+id/fretsSlide"
-        android:layout_width="fill_parent"
-        android:layout_height="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
         android:layout_below="@+id/relativeLayout"
         android:visibility="gone"/>
 

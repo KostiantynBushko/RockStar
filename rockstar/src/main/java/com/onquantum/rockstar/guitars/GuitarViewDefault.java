@@ -262,4 +262,9 @@ public class GuitarViewDefault extends GuitarAbstract {
     public void SetFretsSliderVisible(boolean visibility){
         guitarRenderer.resetLoaded();
     }
+
+    @Override
+    public void slideChange(int slide) {
+
+    }
 }

@@ -68,6 +68,9 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private boolean touchVisible = false;
     private boolean sliderFretsVisible = false;
 
+    //Slide
+    private int Slide = 0;
+
     public GuitarRenderer(Context context) {
         Log.i("info"," GuitarRenderer CONSTRUCTOR");
         fretCount = new Settings(context).getFretNumbers();
@@ -113,13 +116,10 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         if (loaded)
             return;
 
-        if (drawObjects != null){
-            backGroundLayer.clear();
-            guitarString.clear();
-            pentatonicObjectsList.clear();
-            testLine.clear();
-            drawObjects.clear();
-        }
+        backGroundLayer.clear();
+        guitarString.clear();
+        testLine.clear();
+        drawObjects.clear();
 
         this.width = width;
         this.height = height;
@@ -138,7 +138,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
         // Draw frets
         float fret = 1;
-        for(int i = 0; i<fretCount; i++) {
+        for(int i = 0; i<24 /*fretCount*/; i++) {
             SBitmap bitmap;
             if(fretsMark.get(i)){
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b1);
@@ -146,6 +146,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b0);
             }
             bitmap.setLayer(BACKGROUND_LAYER);
+            bitmap.setKinematic(true);
             backGroundLayer.add(bitmap);
             step += fretWidth;
             fret++;
@@ -154,9 +155,10 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         float stepLad = 0;
         float ladWidth = fretWidth * 0.16f;
         float ld = ladWidth / 2.0f;
-        for (int i = 0; i<fretCount+1; i++) {
+        for (int i = 0; i < 24/*fretCount+1*/; i++) {
             SBitmap bitmap = new SBitmap(this.width - stepLad - ld,0,ladWidth,this.height,context, R.drawable.lad);
             bitmap.setLayer(BACKGROUND_LAYER);
+            bitmap.setKinematic(true);
             backGroundLayer.add(bitmap);
             stepLad += fretWidth;
         }
@@ -319,6 +321,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                             int sh = (int)guitarString.get(y).getHeight();
                             current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
                             pentatonicObjectsList.add(current);
+                            current.setKinematic(true);
                             current.setLayer(PENTATONIC_LAYER);
                             drawObjects.add(current);
                             currentPentatonicStep++;
@@ -360,6 +363,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     /* Touches */
     /**********************************************************************************************/
     public void onTouchDown(final int x, final int y) {
+        Log.i("info"," Renderer touch = " + x);
         if (y >= 6)
             return;
         if(isPentatonicLoaded) {
@@ -372,7 +376,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         }
         if (touchVisible){
             int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
-            SCircle circle = new SCircle(width - (fretWidth * (x + 1)) + (fretWidth / 2),  _y, height / 18, touchPaint);
+            SCircle circle = new SCircle(width - (fretWidth * (x - Slide + 1)) + (fretWidth / 2),  _y, height / 18, touchPaint);
             circle.Remove(250);
             drawObjects.add(circle);
         }
@@ -407,12 +411,28 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         enableRendering = rendering;
     }
     public void resetLoaded(){loaded = false;}
-    // Neck view
+
+    /**********************************************************************************************/
+    /* Neck view */
+    /**********************************************************************************************/
     public void setFretNumberVisible(boolean visible){
         fretsNumberVisible = visible;
     }
     public void setShowTouchEnable(boolean visible){
         touchVisible = visible;
+    }
+
+    public void slide(int slide) {
+        Slide += slide;
+        synchronized (drawObjects) {
+            ListIterator<SShape> iterator = drawObjects.listIterator();
+            while (iterator.hasNext()) {
+                SShape object = (SShape)iterator.next();
+                if (object.isKinematic()) {
+                    object.move((int)(fretWidth * slide), 0);
+                }
+            }
+        }
     }
 }
 

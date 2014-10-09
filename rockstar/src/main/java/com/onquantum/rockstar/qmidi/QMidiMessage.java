@@ -1,6 +1,6 @@
 package com.onquantum.rockstar.qmidi;
 
-public abstract class QMidiMessage {
+public abstract class QMidiMessage implements Cloneable{
 	
 	protected byte[] data;
 	protected int length;

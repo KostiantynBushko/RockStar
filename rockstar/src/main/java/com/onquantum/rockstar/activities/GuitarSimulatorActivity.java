@@ -40,6 +40,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
     private RelativeLayout controlPanel;
     private Context context;
     private FretsSlider fretsSlider;
+    private boolean isFragmentLoaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        context = getApplicationContext();
+        context = this;
         if(new Settings(context).getSlide()) {
             setContentView(R.layout.guitar_surface_slide);
             guitarSurfaceView = (GuitarViewSlide)findViewById(R.id.guitarSurfaceView);
@@ -62,13 +63,23 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                     @Override
                     public void run() {
                         progressBar.setVisibility(View.GONE);
+                        if (new Settings(context).isFretsSliderVisible())
+                            fretsSlider.setVisibility(View.VISIBLE);
                     }
                 });
             }
         });
+
         fretsSlider = (FretsSlider)findViewById(R.id.fretsSlide);
+        fretsSlider.setSliderWidth(new Settings(context).getFretNumbers());
         if (new Settings(context).isFretsSliderVisible())
-            fretsSlider.setVisibility(View.VISIBLE);
+            fretsSlider.setVisibility(View.INVISIBLE);
+        fretsSlider.setOnSliderChangeListener(new FretsSlider.SliderChangeListener() {
+            @Override
+            public void onSlideButtonListener(int slide) {
+                guitarSurfaceView.slideChange(slide);
+            }
+        });
 
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
@@ -104,17 +115,23 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         ((ImageButton)this.findViewById(R.id.button0)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isFragmentLoaded)
+                    return;
                 SettingsFragment settingsFragment = new SettingsFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.add(R.id.frameLayout,settingsFragment).commit();
+                transaction.add(R.id.frameLayout,settingsFragment, SettingsFragment.SETTINGS_FRAGMENT);
+                transaction.commit();
+
                 if (settingsFragment != null){
                     Settings settings = new Settings(context);
                     settingsFragment.setSettingsInstance(settings);
                     guitarSurfaceView.setTouchEnable(false);
+                    isFragmentLoaded = true;
                     settingsFragment.setFragmentListener(new FragmentListener() {
                         @Override
                         public void close() {
                             guitarSurfaceView.setTouchEnable(true);
+                            isFragmentLoaded = false;
                         }
                     });
                     settings.setOnFretsNumberVisibleListener(new Settings.FretsNumberVisible() {
@@ -132,11 +149,12 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                     settings.setOnFretsSliderListener(new Settings.FretsSliderListener() {
                         @Override
                         public void showFretsSlider(boolean visibility) {
-                            guitarSurfaceView.SetFretsSliderVisible(visibility);
                             if (visibility)
                                 fretsSlider.setVisibility(View.VISIBLE);
                             else
                                 fretsSlider.setVisibility(View.GONE);
+                            fretsSlider.invalidate();
+                            guitarSurfaceView.SetFretsSliderVisible(visibility);
                         }
                     });
                 }

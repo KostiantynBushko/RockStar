@@ -33,8 +33,9 @@ public class GuitarViewSlide extends GuitarAbstract {
     private final int frets;
     private int width, height;
     private int titleBarH = 0;
+    private int Slide = 0;
 
-    private int[][] touchMask = new int[24][7];
+    private int[][] touchMask = new int[25][7];
     List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
 
     public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
@@ -48,7 +49,8 @@ public class GuitarViewSlide extends GuitarAbstract {
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                if (sampleId == new Settings(context).getFretNumbers() * 6) {
+                Log.i("info","Simple id = " + sampleId);
+                if (sampleId == 24/*new Settings(context).getFretNumbers()*/ * 6) {
                     isTouchEnable = true;
                     if (guitarRenderer != null)
                         guitarRenderer.enableRendering(true);
@@ -71,7 +73,7 @@ public class GuitarViewSlide extends GuitarAbstract {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+                for (int i = 0; i < 25;/*new Settings(context).getFretNumbers();*/ i++) {
                     for (int j = 0; j < 6; j++){
                         String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                         int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
@@ -89,13 +91,6 @@ public class GuitarViewSlide extends GuitarAbstract {
 
     @Override
     public void onSizeChanged(int width, int height, int oldw, int oldh) {
-        Log.i("info"," GuitarSurfaceView SIZECHANGE" );
-        /*if (guitarRenderer != null) {
-            getHolder().removeCallback(guitarRenderer);
-            guitarRenderer = null;
-        }
-        getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));*/
-
         this.width = width;
         this.height = height;
         Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -119,6 +114,7 @@ public class GuitarViewSlide extends GuitarAbstract {
         int x,y;
         y = (int)((height - (event.getY(pointIndex))) / (height / 6));
         x = (int)(width - event.getX(pointIndex)) / (width / frets);
+        x+= Slide;
         if (y > 5)
             return false;
 
@@ -218,5 +214,12 @@ public class GuitarViewSlide extends GuitarAbstract {
     @Override
     public void SetFretsSliderVisible(boolean visibility){
         guitarRenderer.resetLoaded();
+    }
+
+    @Override
+    public void slideChange(int slide) {
+        Slide += slide;
+        guitarRenderer.slide(slide);
+        GuitarString.setSlide(slide);
     }
 }

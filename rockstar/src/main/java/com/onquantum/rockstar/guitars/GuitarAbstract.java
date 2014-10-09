@@ -36,4 +36,6 @@ public abstract class GuitarAbstract extends SurfaceView {
 
     public boolean isTouchEnable() { return isTouchEnable; }
     public void setTouchEnable(boolean touchEnable) { isTouchEnable = touchEnable; }
+
+    public abstract void slideChange(int slide);
 }

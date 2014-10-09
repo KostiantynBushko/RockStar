@@ -20,6 +20,7 @@ import com.onquantum.rockstar.common.SwitchButton;
  * Created by Admin on 8/31/14.
  */
 public class SettingsFragment extends Fragment {
+    public static final String SETTINGS_FRAGMENT = "settings_fragment";
     private View root;
     Fragment currentFragment;
     ViewGroup viewGroup;

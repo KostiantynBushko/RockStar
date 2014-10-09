@@ -20,7 +20,7 @@ public abstract class SShape {
     protected Paint paint = null;
 
     private int type = 0;
-    private boolean isKinematic = true;
+    private boolean isKinematic = false;
 
     public int getType() {
         return type;

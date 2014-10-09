@@ -9,7 +9,7 @@
     <string name="start_play">Start play</string>
     <string name="help_label">Help</string>
     <string name="menu">Menu</string>
-    <string name="about_text">RockStar will give You more experience to play hard Power-chords , fast arpegio and taping for two hands, like a real rock guitarist .Use a program like trainer and practice your individual technics. RockStar designed to simulate real electric-guitar. All sound loops were recorded from real Ibanez RG,with Elixir strings 10-52.RockStar-Be a Star!</string>
+    <string name="about_text">RockStar will give You more experience to play hard Power-chords , fast arpeggio and taping for two hands, like a real rock guitarist .Use a program like trainer and practice your individual technic. RockStar designed to simulate real electric-guitar. All sound loops was recorded from real "Ibanez RG",with strings 10-52. RockStar-Be a Star!</string>
     <string name="number_of_bar">Number of frets:</string>
     <string name="sound_channels">Sound channels:</string>
     <string name="glissando">Glissando</string>
@@ -21,5 +21,6 @@
     <color name="gray">#ffa6a4a5</color>
     <color name="dark_gray">#444444</color>
     <color name="green">#ff9ad39a</color>
+    <color name="blue">#ff516fb9</color>
 
 </resources>

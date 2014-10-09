@@ -19,9 +19,10 @@ public class GuitarString {
     private int playID[];
     private Context context = null;
     private int fretsCount;
+    private static int Slide = 0;
 
     public GuitarString(int streamId, int x, int y, Context context,SoundPool soundPool) {
-        playID = new int[new Settings(context).getFretNumbers()];
+        playID = new int[25];
         this.x = x;
         this.y = y;
         this.streamId = streamId;
@@ -37,7 +38,6 @@ public class GuitarString {
     }
 
     public void set(int x, int y) {
-        //Log.i("info", " X = " + Integer.toString(x));
         this.x = x;
         this.y = y;
 
@@ -46,19 +46,20 @@ public class GuitarString {
         int playId3 = 0;
         playID[x] = soundPool.play(playId1,1,1,1,0,1);
 
-        if (x+1 < fretsCount){
+        if ((x + 1) < (fretsCount + Slide)){
             playId2 = (y + 1) + (6 * (x+1));
             playID[x+1] = soundPool.play(playId2,0,0,0,0,1);
         }
-        if(x-1 >= 0) {
+        if((x - (Slide + 1)) >= 0) {
             playId3 = (y + 1) + (6 * (this.x-1));
             playID[this.x-1] = soundPool.play(playId3,0,0,0,0,1);
         }
 
-        for(int xx = 1; xx< new Settings(context).getFretNumbers(); xx++) {
+        for(int xx = Slide; xx < (fretsCount + Slide); xx++) {
             int pId = (y + 1) + (6 * xx);
-            if (pId != playId1 && pId != playId2 && pId != playId3)
+            if (pId != playId1 && pId != playId2 && pId != playId3) {
                 playID[xx] = soundPool.play(pId,0,0,0,0,1);
+            }
         }
     }
 
@@ -73,14 +74,13 @@ public class GuitarString {
     }
 
     public void stop() {
-        //Log.i("info"," GuitarString STOP");
         new Thread(new Runnable() {
             int _x = x;
             int _id = playID[_x];
             @Override
             public void run() {
                 float volume = 0.8f;
-                for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+                for (int i = Slide; i < (fretsCount + Slide); i++) {
                     if(i != this._x) {
                         soundPool.stop(playID[i]);
                     }
@@ -93,5 +93,9 @@ public class GuitarString {
                 soundPool.stop(_id);
             }
         }).start();
+    }
+
+    public static void setSlide(int slide) {
+        Slide += slide;
     }
 }
