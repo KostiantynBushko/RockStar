@@ -24,7 +24,7 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button1"
+            android:id="@+id/helpButton"
             android:layout_alignParentRight="true"
             android:src="@drawable/settings_button_bar"
             android:background="@android:color/transparent"
@@ -34,11 +34,11 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button2"
+            android:id="@+id/aboutButton"
             android:background="@android:color/transparent"
             android:src="@drawable/storage_button_bar"
             android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@+id/button1"
+            android:layout_toLeftOf="@+id/helpButton"
             android:layout_centerInParent="true"/>
 
         <RelativeLayout
@@ -54,7 +54,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:layout_toLeftOf="@+id/button2"
+            android:layout_toLeftOf="@+id/aboutButton"
             android:visibility="gone">
 
             <ImageView

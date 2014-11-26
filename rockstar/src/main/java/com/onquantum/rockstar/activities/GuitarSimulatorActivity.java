@@ -1,6 +1,7 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -120,6 +121,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                 SettingsFragment settingsFragment = new SettingsFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.add(R.id.frameLayout,settingsFragment, SettingsFragment.SETTINGS_FRAGMENT);
+                transaction.addToBackStack(SettingsFragment.SETTINGS_FRAGMENT);
                 transaction.commit();
 
                 if (settingsFragment != null){

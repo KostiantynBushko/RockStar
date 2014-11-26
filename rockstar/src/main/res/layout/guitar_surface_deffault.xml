@@ -25,22 +25,22 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button0"
+            android:id="@+id/button1"
             android:layout_centerInParent="true"
             android:layout_marginRight="8dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/neck_settings_button"
+            android:src="@drawable/settings_button_bar"
             android:layout_alignTop="@+id/button1"
             android:layout_alignParentRight="true"/>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button1"
-            android:src="@drawable/settings_button_bar"
+            android:id="@+id/button0"
+            android:src="@drawable/neck_settings_button"
             android:background="@android:color/transparent"
             android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@id/button0"
+            android:layout_toLeftOf="@id/button1"
             android:layout_centerInParent="true" />
 
         <ImageButton
@@ -50,7 +50,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/storage_button_bar"
             android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@+id/button1"
+            android:layout_toLeftOf="@+id/button0"
             android:layout_centerInParent="true"/>
 
         <RelativeLayout
@@ -59,15 +59,16 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
             android:layout_toRightOf="@+id/textView0"
             android:background="@drawable/control_panel"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/button2"
-            android:visibility="gone">
+            android:layout_toStartOf="@+id/button2">
 
             <ImageView
                 android:layout_width="20dp"
@@ -108,7 +109,7 @@
     <com.onquantum.rockstar.common.FretsSlider
         android:id="@+id/fretsSlide"
         android:layout_width="fill_parent"
-        android:layout_height="20dp"
+        android:layout_height="25dp"
         android:layout_below="@+id/relativeLayout"
         android:visibility="gone"/>
 

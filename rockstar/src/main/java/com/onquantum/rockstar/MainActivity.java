@@ -41,14 +41,15 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-        ((Button)findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
+
+        ((Button)findViewById(R.id.helpButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), HelpActivity.class);
                 startActivity(intent);
             }
         });
-        ((Button)findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
+        ((Button)findViewById(R.id.aboutButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), AboutActivity.class);

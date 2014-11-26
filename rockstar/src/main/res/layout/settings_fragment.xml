@@ -66,7 +66,7 @@
             <com.onquantum.rockstar.common.SwitchButton
                 android:layout_width="150dp"
                 android:layout_height="35dp"
-                android:id="@+id/button"
+                android:id="@+id/showFretNumber"
                 android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
@@ -123,7 +123,7 @@
             <com.onquantum.rockstar.common.SwitchButton
                 android:layout_width="150dp"
                 android:layout_height="35dp"
-                android:id="@+id/button2"
+                android:id="@+id/showNeckSlider"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
@@ -180,7 +180,7 @@
             <com.onquantum.rockstar.common.SwitchButton
                 android:layout_width="150dp"
                 android:layout_height="35dp"
-                android:id="@+id/button3"
+                android:id="@+id/showTouches"
                 android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 

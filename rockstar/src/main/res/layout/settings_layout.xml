@@ -296,7 +296,6 @@
         android:alpha="0.9"
         android:textStyle="normal|bold|italic|"
         android:layout_marginBottom="24dp"
-        android:height="40dp"
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/textViewCenter"
@@ -367,7 +366,8 @@
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="20dp"
-        android:id="@+id/relativeLayout6">
+        android:id="@+id/relativeLayout6"
+        android:visibility="gone">
 
         <com.onquantum.rockstar.common.SwitchButton
             android:layout_width="50dp"

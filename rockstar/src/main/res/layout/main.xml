@@ -37,7 +37,8 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:textColor="@color/gray"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:gravity="right"/>
 
 
     <RelativeLayout
@@ -69,7 +70,7 @@
             android:minWidth="95dp"
             android:layout_height="wrap_content"
             android:text="@string/help_label"
-            android:id="@+id/button1"
+            android:id="@+id/helpButton"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/settingButton"
             android:background="@drawable/button_action"
@@ -84,9 +85,9 @@
             android:minWidth="95dp"
             android:layout_height="wrap_content"
             android:text="@string/about_label"
-            android:id="@+id/button2"
+            android:id="@+id/aboutButton"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/button1"
+            android:layout_toRightOf="@+id/helpButton"
             android:background="@drawable/button_action"
             android:drawableTop="@drawable/action_about"
             android:textColor="@color/dark_gray"
@@ -103,7 +104,8 @@
         android:layout_alignRight="@+id/relativeLayout"
         android:layout_alignEnd="@+id/relativeLayout"
         android:layout_alignLeft="@+id/relativeLayout"
-        android:layout_alignStart="@+id/relativeLayout">
+        android:layout_alignStart="@+id/relativeLayout"
+        android:visibility="invisible">
 
         <com.onquantum.rockstar.common.SwitchButton
             android:layout_width="wrap_content"
@@ -111,7 +113,7 @@
             android:layout_alignParentBottom="true"
             android:id="@+id/switchButton"
             android:layout_alignLeft="@+id/textView"
-            android:layout_alignStart="@+id/textView" />
+            android:layout_alignStart="@+id/textView"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -152,7 +154,7 @@
         android:layout_alignRight="@+id/relativeLayout"
         android:layout_alignEnd="@+id/relativeLayout"
         android:background="@drawable/button_action"
-        android:visibility="visible"/>
+        android:visibility="invisible"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -164,6 +166,6 @@
         android:layout_toStartOf="@+id/button"
         android:layout_marginRight="10dp"
         android:background="@drawable/button_action"
-        android:visibility="visible"/>
+        android:visibility="invisible"/>
 
 </RelativeLayout>

@@ -26,6 +26,9 @@ public class FretsSlider extends View {
     private int sliderWidth;
     private int slide = 0;
     private float touchesX = 0;
+    private float textHeightCenter;
+    private Paint textPaint;
+    private Paint focusedTextPaint;
 
     public interface SliderChangeListener{
         public void onSlideButtonListener(int slide);
@@ -37,7 +40,7 @@ public class FretsSlider extends View {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.BLACK);
         line = new Paint(Paint.ANTI_ALIAS_FLAG);
-        line.setColor(Color.WHITE);
+        line.setColor(context.getResources().getColor(R.color.gray));
         line.setStrokeWidth(2.0f);
         borderLine = new Paint();
         borderLine.setColor(Color.DKGRAY);
@@ -45,6 +48,13 @@ public class FretsSlider extends View {
         sliderPaint = new Paint();
         sliderPaint.setColor(getResources().getColor(R.color.blue));
         sliderPaint.setAlpha(200);
+
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setColor(context.getResources().getColor(R.color.gray));
+        focusedTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        focusedTextPaint.setTextAlign(Paint.Align.CENTER);
+        focusedTextPaint.setColor(context.getResources().getColor(R.color.red));
     }
 
     @Override
@@ -52,6 +62,9 @@ public class FretsSlider extends View {
         this.width = width;
         this.height = height;
         fretWidth = width / 24.0f;
+        textPaint.setTextSize(height/3);
+        focusedTextPaint.setTextSize(height/3);
+        textHeightCenter = ((height / 2) - ((textPaint.descent() + textPaint.ascent()) / 2)) ;
 
     }
 
@@ -75,6 +88,7 @@ public class FretsSlider extends View {
                         slide += s;
                         if (sliderChangeListener != null) {
                             sliderChangeListener.onSlideButtonListener(s);
+                            Log.i("info"," slide = " + Integer.toString(slide) + " s = " + Integer.toString(s));
                         }
                         touchesX = x;
                         invalidate();
@@ -96,15 +110,26 @@ public class FretsSlider extends View {
         float step = fretWidth;
         canvas.drawRect(new Rect(0,0,width,height),paint);
         canvas.drawLine(0,height-2,width,height-2,borderLine);
-        for (int i = 0; i < 23; i++) {
-            canvas.drawLine(width - step,1, width -step, height-2,line);
-            step += (fretWidth);
-        }
 
         canvas.drawRect(
                 new RectF(width - (sliderWidth + slide) * fretWidth,
                         0,width - slide * fretWidth,height
                 ),sliderPaint);
+
+        for (int i = 1; i < 24; i++) {
+            canvas.drawLine(width - step,1, width -step, height-2,line);
+            if (i > slide && i < (sliderWidth + slide + 1)) {
+                canvas.drawText(Integer.toString(i),width - step + fretWidth / 2,textHeightCenter,focusedTextPaint);
+            }else {
+                canvas.drawText(Integer.toString(i),width - step + fretWidth / 2,textHeightCenter,textPaint);
+            }
+            step += (fretWidth);
+        }
+        if (24 > slide && 24 < (sliderWidth + slide + 1)) {
+            canvas.drawText(Integer.toString(24),width - step + fretWidth / 2,textHeightCenter,focusedTextPaint);
+        }else {
+            canvas.drawText(Integer.toString(24),width - step + fretWidth / 2,textHeightCenter,textPaint);
+        }
     }
 
     public void setSliderWidth(int sliderWidth) {

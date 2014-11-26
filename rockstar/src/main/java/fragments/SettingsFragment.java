@@ -42,13 +42,14 @@ public class SettingsFragment extends Fragment {
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.hide(currentFragment);
                 transaction.remove(currentFragment).commit();
+                getFragmentManager().popBackStack();
                 if (fragmentListener != null) {
                     fragmentListener.close();
                 }
             }
         });
 
-        SwitchButton button1 = (SwitchButton)root.findViewById(R.id.button);
+        SwitchButton button1 = (SwitchButton)root.findViewById(R.id.showFretNumber);
         button1.Set(new Settings(context).isFretsNumberVisible());
         button1.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
             @Override
@@ -57,7 +58,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        SwitchButton button2 = (SwitchButton)root.findViewById(R.id.button2);
+        SwitchButton button2 = (SwitchButton)root.findViewById(R.id.showNeckSlider);
         button2.Set(new Settings(context).isFretsSliderVisible());
         button2.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
             @Override
@@ -77,7 +78,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        SwitchButton button3 = (SwitchButton)root.findViewById(R.id.button3);
+        SwitchButton button3 = (SwitchButton)root.findViewById(R.id.showTouches);
         button3.Set(new Settings(context).isTouchesVisible());
         button3.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
             @Override
@@ -103,6 +104,9 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onDestroy() {
         Log.i("info"," SettingsFragment" + " onDestroy");
+        if (fragmentListener != null) {
+            fragmentListener.close();
+        }
         super.onDestroy();
     }
 

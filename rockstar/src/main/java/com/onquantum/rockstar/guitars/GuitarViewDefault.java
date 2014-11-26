@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by Admin on 8/20/14.
  */
@@ -32,8 +33,8 @@ public class GuitarViewDefault extends GuitarAbstract {
     private int titleBarH = 0;
     private final int frets;
 
-    private int[][] fretMaskStreamID = new int[13][6];
-    private int[][] touchMask = new int[13][6];
+    private int[][] fretMaskStreamID = new int[25][7];
+    private int[][] touchMask = new int[25][7];
     List<GuitarString> simpleTouchList = new ArrayList<GuitarString>(10);
     int width,height;
 
@@ -41,6 +42,7 @@ public class GuitarViewDefault extends GuitarAbstract {
 
     private int currentFret = 0;
     private int currentString = 0;
+    private int Slide = 0;
 
     public GuitarViewDefault(final Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -59,7 +61,7 @@ public class GuitarViewDefault extends GuitarAbstract {
                     if(currentString == 5)
                         currentString = 0;
                 }
-                if (sampleId == new Settings(context).getFretNumbers() * 6) {
+                if (sampleId == 24 /*new Settings(context).getFretNumbers()*/ * 6) {
                     Log.i("info","  ** Complete loaded sounds ***");
                     isTouchEnable = true;
                     if (guitarRenderer != null)
@@ -76,7 +78,7 @@ public class GuitarViewDefault extends GuitarAbstract {
                 }else {
                     prefix = "clean";
                 }
-                for (int i = 0; i < new Settings(context).getFretNumbers(); i++) {
+                for (int i = 0; i < 25/*new Settings(context).getFretNumbers()*/; i++) {
                     for (int j = 0; j < 6; j++){
                         String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                         //Log.i("info"," sound = " + file);
@@ -119,6 +121,7 @@ public class GuitarViewDefault extends GuitarAbstract {
         int x,y;
         y = (int)(height - (event.getY(pointIndex))) / (height / 6);
         x = (int)(width - event.getX(pointIndex)) / (width / frets);
+        x += Slide;
         if (y > 5)
             return false;
         int playId = (y + 1) + (6 * x);
@@ -198,7 +201,6 @@ public class GuitarViewDefault extends GuitarAbstract {
             }
             default:break;
         }
-
         return true;
     }
 
@@ -265,6 +267,7 @@ public class GuitarViewDefault extends GuitarAbstract {
 
     @Override
     public void slideChange(int slide) {
-
+        Slide += slide;
+        guitarRenderer.slide(slide);
     }
 }

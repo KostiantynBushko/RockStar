@@ -410,7 +410,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     public void enableRendering(boolean rendering) {
         enableRendering = rendering;
     }
-    public void resetLoaded(){loaded = false;}
+    public void resetLoaded(){
+        loaded = false;
+        Slide = 0;
+    }
+    public void resetFretSlider() { Slide = 0;}
 
     /**********************************************************************************************/
     /* Neck view */

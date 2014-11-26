@@ -16,7 +16,8 @@
     </item>
     <item>
         <shape>
-            <solid android:color="#ffb9b9b9"/>
+            <solid android:color="#ffffffff"/>
+            <stroke android:width="2dp" android:color="#ffb7b7b7"/>
             <padding android:left="10dip"
                 android:right="10dip"
                 android:top="5dip"
