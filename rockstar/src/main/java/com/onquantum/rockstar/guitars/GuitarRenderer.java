@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.SocketHandler;
 
 /**
@@ -47,7 +49,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private List<SShape> guitarString = Collections.synchronizedList(new ArrayList<SShape>());
     private List<SShape> pentatonicObjectsList = Collections.synchronizedList(new ArrayList<SShape>());
     private List<SShape> testLine = Collections.synchronizedList(new ArrayList<SShape>());
+    private List<SShape> barNumberObjects = Collections.synchronizedList(new ArrayList<SShape>());
+    private List<SShape> pentatonicMask = Collections.synchronizedList(new ArrayList<SShape>());
+
     private List<SShape> drawObjects = Collections.synchronizedList(new ArrayList<SShape>());
+
 
     private boolean loaded = false;
     private boolean enableRendering = false;
@@ -72,13 +78,12 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private int Slide = 0;
 
     public GuitarRenderer(Context context) {
-        Log.i("info"," GuitarRenderer CONSTRUCTOR");
         fretCount = new Settings(context).getFretNumbers();
         this.context = context;
 
         circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setColor(Color.RED);
-        circlePaint.setAlpha(128);
+        circlePaint.setAlpha(200);
 
         touchPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         touchPaint.setColor(Color.BLUE);
@@ -104,7 +109,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        Log.i("info"," GuitarRenderer surfaceCreated");
         drawFrame = new DrawFrame(surfaceHolder);
         drawFrame.setRunning(true);
         drawFrame.start();
@@ -112,10 +116,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int var, int width, int height) {
-        Log.i("info"," GuitarRenderer surfaceChanged with = " + width + " height = " + height);
+        Log.i("info"," GuitarRenderer surfaceChanged with = " + width + " height = " + height + "  loaded = " + loaded);
         if (loaded)
             return;
 
+        Slide = 0;
         backGroundLayer.clear();
         guitarString.clear();
         testLine.clear();
@@ -138,12 +143,13 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
         // Draw frets
         float fret = 1;
-        for(int i = 0; i<24 /*fretCount*/; i++) {
+        for(int i = 0; i<24; i++) {
             SBitmap bitmap;
             if(fretsMark.get(i)){
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b1);
             }else{
                 bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b0);
+                //SCircle circle = new SCircle(this.width - step,this.height / 2, this.height / 18);
             }
             bitmap.setLayer(BACKGROUND_LAYER);
             bitmap.setKinematic(true);
@@ -242,12 +248,34 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         string6.setLayer(STRING_LAYER);
         guitarString.add(string6);
 
-        /************************************************************************/
+        /*******************************************************************************************
+         *
+         *
+         *
+         ******************************************************************************************/
         //drawObjects.addAll(testLine);
         drawObjects.addAll(backGroundLayer);
         drawObjects.addAll(guitarString);
         drawObjects.addAll(pentatonicObjectsList);
 
+        /*for (int i = drawObjects.size() - 1; i >= 0; i--) {
+            for (int j = 0; j<i; j++) {
+                if(drawObjects.get(j).getLayer() > drawObjects.get(j+1).getLayer()){
+                    SShape temp = drawObjects.get(j);
+                    drawObjects.set(j,drawObjects.get(j+1));
+                    drawObjects.set(j+1,temp);
+                }
+            }
+        }*/
+        showFretsNumber(fretsNumberVisible);
+        sortLayer();
+        loaded = true;
+    }
+
+    /*
+     * Call this method every time when new objects added to drawable list
+     */
+    private void sortLayer() {
         for (int i = drawObjects.size() - 1; i >= 0; i--) {
             for (int j = 0; j<i; j++) {
                 if(drawObjects.get(j).getLayer() > drawObjects.get(j+1).getLayer()){
@@ -257,25 +285,24 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 }
             }
         }
-
-        loaded = true;
     }
-
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        Log.i("info"," GuitarRenderer surfaceDestroyed");
         boolean retry = true;
         drawFrame.setRunning(false);
         while (retry) {
             try {
                 drawFrame.join();
                 retry = false;
-            }catch (InterruptedException e){}
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
         }
     }
 
     /* Draw Frame */
     class DrawFrame extends Thread {
+
         private boolean isRunning = false;
         private SurfaceHolder surfaceHolder;
         public DrawFrame(SurfaceHolder surfaceHolder) {
@@ -303,15 +330,14 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         synchronized (drawObjects) {
                             ListIterator<SShape> iterator = drawObjects.listIterator();
                             while (iterator.hasNext()) {
-                                SShape object = (SShape)iterator.next();
+                                SShape object = iterator.next();
                                 object.draw(canvas);
                                 if (object.remove)
                                     iterator.remove();
                             }
                         }
-
                         // Update Logic
-                        if (isPentatonicLoaded && currentPentatonic == null) {
+                        /*if (isPentatonicLoaded && currentPentatonic == null) {
                             if(currentPentatonicStep == pentatonicList.size())
                                 currentPentatonicStep = 0;
                             int x = pentatonicList.get(currentPentatonicStep).bar + 1;
@@ -325,8 +351,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                             current.setLayer(PENTATONIC_LAYER);
                             drawObjects.add(current);
                             currentPentatonicStep++;
-                        }
-
+                        }*/
                     }finally {
                         if (canvas != null) {
                             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -334,18 +359,17 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     }
 
                     /*System.out.println("FPS:" + fps);
-                    ifps++;
+                    fps++;
                     if(now > (mLastTime + 1000)) {
                         mLastTime = now;
                         fps = ifps;
-                        ifps = 0;
+                        fps = 0;
                     }*/
 
                     //Frame limiting
                     long timeend = System.currentTimeMillis();
                     long frametime = timeend-timestart;
                     int sleepfor = (int) ((1000/30)-frametime);
-
                     if (sleepfor>0){
                         try {
                             this.sleep(sleepfor);
@@ -363,12 +387,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     /* Touches */
     /**********************************************************************************************/
     public void onTouchDown(final int x, final int y) {
-        Log.i("info"," Renderer touch = " + x);
         if (y >= 6)
             return;
-        if(isPentatonicLoaded) {
+        if(isPentatonicLoaded && !playWillStart) {
             try{
-                if(x == currentPentatonic.bar && y == currentPentatonic.line) {
+                if(x == currentPentatonic.bar + Slide  && y == currentPentatonic.line) {
                     currentPentatonic = null;
                     current.Remove(0);
                 }
@@ -376,7 +399,8 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         }
         if (touchVisible){
             int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
-            SCircle circle = new SCircle(width - (fretWidth * (x - Slide + 1)) + (fretWidth / 2),  _y, height / 18, touchPaint);
+            int sh = (int)guitarString.get(y).getHeight();
+            SCircle circle = new SCircle(width - (fretWidth * (x - Slide + 1)) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
             circle.Remove(250);
             drawObjects.add(circle);
         }
@@ -385,28 +409,132 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     public void onTouchUp(int x, int y) {}
     public void onTouchMove(int x, int y) {}
 
-    /**********************************************************************************************/
-    /* Load selected pentatonic */
-    /**********************************************************************************************/
+    /***********************************************************************************************
+     * Load selected pentatonic
+     **********************************************************************************************/
     public boolean LoadPentatonic(List<Pentatonic>pentatonics) {
+        ClosePlayPentatonic();
+        while (!pentatonicIsStoped);
+        pentatonicIsStoped = false;
+        stopPlay = false;
         pentatonicList = pentatonics;
         isPentatonicLoaded = true;
-        currentPentatonic = null;
-        pentatonicObjectsList.clear();
-        currentPentatonicStep = 0;
-        if (current != null)
-            current.Remove(0);
+        drawPentatonicMask();
+        drawSimplePentatonic();
+        startPlayPentatonic();
         return true;
     }
     public void ClosePlayPentatonic() {
+        Log.i("info","GuitarRenderer : ClosePlayPentatonic");
+        removePentatonicMask();
+        stopPlay = true;
+        playWillStart = false;
         pentatonicList = null;
         isPentatonicLoaded = false;
         currentPentatonic = null;
         pentatonicObjectsList.clear();
         currentPentatonicStep = 0;
-        current.Remove(0);
+        if(current != null)
+            current.Remove(0);
     }
+    private void drawSimplePentatonic() {
+        int x = pentatonicList.get(currentPentatonicStep).bar + 1;
+        int y = pentatonicList.get(currentPentatonicStep).line;
+        currentPentatonic = pentatonicList.get(currentPentatonicStep);
+        int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+        int sh = (int)guitarString.get(y).getHeight();
+        current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
+        pentatonicObjectsList.add(current);
+        current.setKinematic(true);
+        current.setLayer(PENTATONIC_LAYER);
+        drawObjects.add(current);
+        currentPentatonicStep++;
+    }
+    /***********************************************************************************************
+     *  Play pentatonic engine
+     **********************************************************************************************/
+    private boolean playWillStart = false;
+    boolean stopPlay = false;
+    boolean pentatonicIsStoped = true;
+    private void startPlayPentatonic() {
+        new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+                Log.i("info","RENDERER Play Pentatonic");
+                while (!stopPlay) {
+                    if (isPentatonicLoaded && currentPentatonic == null) {
+                        playWillStart = true;
+                        Log.i("info"," pentatonicList size = " + pentatonicList.size());
+                        if(currentPentatonicStep == pentatonicList.size())
+                            currentPentatonicStep = 0;
+                        int x = pentatonicList.get(currentPentatonicStep).bar + 1;
+                        int y = pentatonicList.get(currentPentatonicStep).line;
+                        currentPentatonic = pentatonicList.get(currentPentatonicStep);
+                        int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+                        int sh = (int)guitarString.get(y).getHeight();
+                        current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
+                        current.RemoveMilliseconds(currentPentatonic.playTime);
+                        pentatonicObjectsList.add(current);
+                        current.setKinematic(true);
+                        current.setLayer(PENTATONIC_LAYER);
+                        drawObjects.add(current);
+                        currentPentatonicStep++;
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(currentPentatonic.delay);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        currentPentatonic = null;
+                    }
+                }
+                pentatonicIsStoped = true;
+                Log.i("info"," RENDERER : STOP PLAY PENTATONIC ");
+            }
+        }).start();
+    }
+    private void drawPentatonicMask() {
+        if (pentatonicList != null && !pentatonicList.isEmpty()) {
+            List<Pentatonic>pList = new ArrayList<Pentatonic>();
+            for (Pentatonic item : pentatonicList) {
+                for (Pentatonic pItem : pList) {
+                    if(item.position.equals(pItem.position.x, pItem.position.y)) {
+                        item = null;
+                        break;
+                    }
+                }
+                if (item != null)
+                    pList.add(item);
+            }
+            Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            maskPaint.setColor(Color.YELLOW);
+            maskPaint.setAlpha(160);
+
+            for (Pentatonic p : pList) {
+                int x = p.bar + 1;
+                int y = p.line;
+                int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+                int sh = (int)guitarString.get(y).getHeight();
+                SCircle circle = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
+                circle.setKinematic(false);
+                circle.setLayer(PENTATONIC_LAYER);
+                pentatonicMask.add(circle);
+            }
+            drawObjects.addAll(pentatonicMask);
+            sortLayer();
+        }
+    }
+    private void removePentatonicMask() {
+        if (pentatonicList != null && !pentatonicList.isEmpty()) {
+            for (SShape shape : pentatonicMask) {
+                shape.remove = true;
+            }
+            pentatonicMask.clear();
+        }
+    }
+    /***********************************************************************************************
+     *  Renderer state change
+     **********************************************************************************************/
     public void enableRendering(boolean rendering) {
         enableRendering = rendering;
     }
@@ -414,11 +542,12 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         loaded = false;
         Slide = 0;
     }
-    public void resetFretSlider() { Slide = 0;}
-
-    /**********************************************************************************************/
-    /* Neck view */
-    /**********************************************************************************************/
+    public void resetFretSlider() {
+        Slide = 0;
+    }
+    /***********************************************************************************************
+     *  Neck view
+     **********************************************************************************************/
     public void setFretNumberVisible(boolean visible){
         fretsNumberVisible = visible;
     }
@@ -436,6 +565,39 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     object.move((int)(fretWidth * slide), 0);
                 }
             }
+        }
+    }
+
+    private void showFretsNumber(boolean visible) {
+        if(visible) {
+            Log.i("info"," GuitarRenderer Show fret number");
+            float step = fretWidth;
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            circlePaint.setColor(Color.WHITE);
+            circlePaint.setAlpha(200);
+            for(int i = 0; i<24; i++) {
+                SCircle circle;
+                if(!fretsMark.get(i)){
+                    float radius = 0;
+                    if(fretWidth > (height / 6)) {
+                        Log.i("info"," height / 18 " + (height / 18));
+                        radius = height / 18;
+                    } else {
+                        Log.i("info"," fretWidth / 3 " + (fretWidth / 3));
+                        radius = fretWidth / 3;
+                    }
+                    circle = new SCircle(this.width - step + fretWidth / 2, this.height / 2, radius, circlePaint);
+                    circle.setLayer(BAR_NUMBER_LAYER);
+                    circle.setKinematic(true);
+                    circle.drawNumber(i+1, textPaint);
+                    barNumberObjects.add(circle);
+                }
+                step += fretWidth;
+            }
+            drawObjects.addAll(barNumberObjects);
+        } else {
+            barNumberObjects.clear();
         }
     }
 }

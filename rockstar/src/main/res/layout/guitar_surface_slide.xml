@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:progressBarStyleLarge"
             android:id="@+id/textView0"
             android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/button2"
             android:background="@android:color/transparent"
-            android:src="@drawable/storage_button_bar"
+            android:src="@drawable/pentatonic_button_bar"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/button0"
             android:layout_centerInParent="true"/>
@@ -118,20 +118,7 @@
         android:layout_height="fill_parent"
         android:id="@+id/guitarSurfaceView"
         android:layout_below="@+id/fretsSlide"
-        android:layout_above="@+id/linearLayout">
-
-        </com.onquantum.rockstar.guitars.GuitarViewSlide>
-
-    <ProgressBar
-        android:id="@+id/loading_spinner"
-        style="?android:progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:scaleX="0.6"
-        android:scaleY="0.6"/>
+        android:layout_above="@+id/linearLayout"/>
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -143,6 +130,37 @@
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:layout_centerVertical="true"
-        android:layout_below="@+id/relativeLayout"/>
+        android:layout_below="@+id/relativeLayout">
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <ProgressBar
+            android:id="@+id/loading_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            style="@android:style/Widget.Holo.ProgressBar"
+            android:scaleX="1.0"
+            android:scaleY="1.0"/>
+        <TextView
+            android:id="@+id/progressText"
+            android:text="0%"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loading_spinner"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/helpText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressText"
+            android:layout_marginTop="10dp"
+            android:text="first time loading..."/>
+    </RelativeLayout>
 
 </RelativeLayout>

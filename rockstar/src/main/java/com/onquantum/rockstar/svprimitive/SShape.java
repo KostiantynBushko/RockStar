@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Admin on 7/6/14.
  */
@@ -38,6 +40,20 @@ public abstract class SShape {
             public void run() {
                 SystemClock.sleep(delay);
                 remove = true;
+            }
+        }).start();
+    }
+
+    public void RemoveMilliseconds(final long milliseconds) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(milliseconds);
+                    remove = true;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }

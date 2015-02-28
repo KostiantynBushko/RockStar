@@ -29,6 +29,7 @@ public abstract class GuitarAbstract extends SurfaceView {
     public abstract void LoadPentatonicFile(String fileName);
     public abstract void ClosePlayPentatonic();
     public void Stop(){}
+    public void Start(){}
 
     public void SetFretsNumberVisible(boolean visibility){}
     public void SetShowTouchesVisible(boolean visibility){}
@@ -38,4 +39,6 @@ public abstract class GuitarAbstract extends SurfaceView {
     public void setTouchEnable(boolean touchEnable) { isTouchEnable = touchEnable; }
 
     public abstract void slideChange(int slide);
+
+
 }

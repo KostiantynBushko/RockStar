@@ -5,11 +5,12 @@
     <string name="app_label">Rock Star</string>
 
     <string name="settings_label">Settings</string>
+    <string name="frets_tuning_label">Frets tuning</string>
     <string name="about_label">About</string>
     <string name="start_play">Start play</string>
     <string name="help_label">Help</string>
     <string name="menu">Menu</string>
-    <string name="about_text">RockStar will give You more experience to play hard Power-chords , fast arpeggio and taping for two hands, like a real rock guitarist .Use a program like trainer and practice your individual technic. RockStar designed to simulate real electric-guitar. All sound loops was recorded from real "Ibanez RG",with strings 10-52. RockStar-Be a Star!</string>
+    <string name="about_text">RockStar will give You more experience to play hard Power-chords , fast arpeggio and taping for two hands, like a real rock guitarist .Use a program like trainer and practice your individual technic. RockStar designed to simulate real electric-guitar. All sound loops was recorded from real "Ibanez RG",with strings 10-52.</string>
     <string name="number_of_bar">Number of frets:</string>
     <string name="sound_channels">Sound channels:</string>
     <string name="glissando">Glissando</string>
@@ -17,6 +18,8 @@
     <string name="sound_channels_help">This setting allow you to configure how many sound channels can play in one time.</string>
     <string name="glissando_help">Assumes a smooth sliding on string from one sound to another through all sounds between them.</string>
     <string name="help_title_settings">RockStar application settings</string>
+
+    <string name="facebook_app_id">1531825403764639</string>
 
     <color name="gray">#ffa6a4a5</color>
     <color name="dark_gray">#444444</color>

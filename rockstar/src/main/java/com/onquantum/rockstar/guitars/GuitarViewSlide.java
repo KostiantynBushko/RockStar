@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -14,6 +15,7 @@ import android.view.WindowManager;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.sequencer.QSoundPool;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,69 +38,50 @@ public class GuitarViewSlide extends GuitarAbstract {
     private int Slide = 0;
 
     private int[][] touchMask = new int[25][7];
-    List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
+    private List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
 
     public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
-        Log.i("info"," GuitarSurfaceView SLIDE CONSTRUCTOR" );
         getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));
         this.context = context;
         frets = new Settings(context).getFretNumbers();
-
-        soundPool = new SoundPool(200, AudioManager.STREAM_MUSIC,0);
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                Log.i("info","Simple id = " + sampleId);
-                if (sampleId == 24/*new Settings(context).getFretNumbers()*/ * 6) {
-                    isTouchEnable = true;
-                    if (guitarRenderer != null)
-                        guitarRenderer.enableRendering(true);
-                    if (onSoundLoadedCompleteListener != null) {
-                        onSoundLoadedCompleteListener.onSoundLoadedComplete();
-                    }
-                }
-            }
-        });
+        soundPool = QSoundPool.getInstance().getSoundPool();
+        if (soundPool == null) {
+            QSoundPool.getInstance().loadSound();
+        }
         for(int i = 0; i<10; i++) {
             simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
-
-        final String prefix;
-        if(new Settings(context).getDistortion()) {
-            prefix = "distortion";
-        }else {
-            prefix = "clean";
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 25;/*new Settings(context).getFretNumbers();*/ i++) {
-                    for (int j = 0; j < 6; j++){
-                        String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
-                        int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
-                        try {
-                            soundPool.load(context,id,1);
-                        }catch (Resources.NotFoundException e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }).start();
     }
 
+    @Override
+    public void Start() {
+        QSoundPool.getInstance().setOnSoundPoolSuccessLoaded(new QSoundPool.OnSoundPoolSuccessLoaded() {
+            @Override
+            public void soundPoolSuccessLoaded() {
+                isTouchEnable = true;
+                if (guitarRenderer != null)
+                    guitarRenderer.enableRendering(true);
+                if (onSoundLoadedCompleteListener != null) {
+                    Log.i("info"," SOUND LOAD COMPLETE ");
+                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
+                }
+            }
+        });
+        super.Start();
+    }
 
     @Override
     public void onSizeChanged(int width, int height, int oldw, int oldh) {
+        Log.i("info","GUITAR VIEW SIZE CHANGE  width = " + width + "  height = " + height);
         this.width = width;
         this.height = height;
         Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         titleBarH = size.y - this.height;
-        Log.i("info"," GetX = " + this.getX());
-        Log.i("info", " GetY = " + this.getY());
+        if(oldh != height)
+            guitarRenderer.resetLoaded();
         super.onSizeChanged(width, height, oldw, oldh);
     }
 
@@ -158,9 +141,12 @@ public class GuitarViewSlide extends GuitarAbstract {
         return true;
     }
 
+    /***********************************************************************************************
+     * Load pentatonic from file
+     **********************************************************************************************/
     @Override
     public void LoadPentatonicFile(String fileName) {
-        List<Pentatonic> pentatonics = new ArrayList<Pentatonic>();
+        List<Pentatonic> pentatonics = new ArrayList<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(context.getAssets().open("pentatonic/" + fileName)));
@@ -171,8 +157,9 @@ public class GuitarViewSlide extends GuitarAbstract {
                 if (parce.length == 4){
                     pentatonic.bar = Integer.parseInt(parce[0]);
                     pentatonic.line = Integer.parseInt(parce[1]);
-                    pentatonic.delay = Integer.parseInt(parce[2]);
-                    pentatonic.playTime = Integer.parseInt(parce[3]);
+                    pentatonic.delay = Long.parseLong(parce[2]);
+                    pentatonic.playTime = Long.parseLong(parce[3]);
+                    pentatonic.position.set(pentatonic.bar, pentatonic.line);
                     pentatonics.add(pentatonic);
                 }
                 str = reader.readLine();
@@ -186,6 +173,7 @@ public class GuitarViewSlide extends GuitarAbstract {
             e.printStackTrace();
         }
     }
+
     @Override
     public void ClosePlayPentatonic() {
         guitarRenderer.ClosePlayPentatonic();
@@ -193,8 +181,7 @@ public class GuitarViewSlide extends GuitarAbstract {
 
     @Override
     public void Stop() {
-        Log.i("info"," GUITAR SurfaceView slide STOP");
-        soundPool.release();
+        //soundPool.release();
     }
 
     @Override

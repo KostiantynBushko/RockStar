@@ -91,19 +91,19 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onStart() {
-        Log.i("info"," SettingsFragment" + " onStart");
+        //Log.i("info"," SettingsFragment" + " onStart");
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        Log.i("info"," SettingsFragment" + " onStop");
+        //Log.i("info"," SettingsFragment" + " onStop");
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info"," SettingsFragment" + " onDestroy");
+        //Log.i("info"," SettingsFragment" + " onDestroy");
         if (fragmentListener != null) {
             fragmentListener.close();
         }

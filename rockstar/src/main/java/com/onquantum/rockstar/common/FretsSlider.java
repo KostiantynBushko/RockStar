@@ -29,6 +29,7 @@ public class FretsSlider extends View {
     private float textHeightCenter;
     private Paint textPaint;
     private Paint focusedTextPaint;
+    private boolean isVisible = false;
 
     public interface SliderChangeListener{
         public void onSlideButtonListener(int slide);
@@ -70,6 +71,8 @@ public class FretsSlider extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (!isVisible)
+            return false;
         int actionMask = event.getActionMasked();
         float x = event.getX();
 
@@ -88,13 +91,13 @@ public class FretsSlider extends View {
                         slide += s;
                         if (sliderChangeListener != null) {
                             sliderChangeListener.onSlideButtonListener(s);
-                            Log.i("info"," slide = " + Integer.toString(slide) + " s = " + Integer.toString(s));
+                            //Log.i("info"," slide = " + Integer.toString(slide) + " s = " + Integer.toString(s));
                         }
                         touchesX = x;
                         invalidate();
-                        Log.i("info","S " + s);
+                        //Log.i("info","S " + s);
                     }
-                    Log.i("info","Slide " + slide);
+                    //Log.i("info","Slide " + slide);
                 }else {
                     touchesX += delta;
                 }
@@ -107,6 +110,8 @@ public class FretsSlider extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (!isVisible)
+            return;
         float step = fretWidth;
         canvas.drawRect(new Rect(0,0,width,height),paint);
         canvas.drawLine(0,height-2,width,height-2,borderLine);
@@ -138,5 +143,10 @@ public class FretsSlider extends View {
 
     public void setOnSliderChangeListener(SliderChangeListener sliderChangeListener) {
         this.sliderChangeListener = sliderChangeListener;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+        invalidate();
     }
 }

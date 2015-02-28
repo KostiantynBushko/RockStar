@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.sequencer.QSoundPool;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,52 +53,32 @@ public class GuitarViewDefault extends GuitarAbstract {
         frets = new Settings(context).getFretNumbers();
         samplesID = new int[new Settings(context).getFretNumbers()][6];
 
-        soundPool = new SoundPool(new Settings(context).getSoundChannels(), AudioManager.STREAM_MUSIC,0);
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                Log.i("info", " Complete listener : sampleId = " + sampleId + " status = " + status);
-                if(status == 0) {
-                    if(currentString == 5)
-                        currentString = 0;
-                }
-                if (sampleId == 24 /*new Settings(context).getFretNumbers()*/ * 6) {
-                    Log.i("info","  ** Complete loaded sounds ***");
-                    isTouchEnable = true;
-                    if (guitarRenderer != null)
-                        guitarRenderer.enableRendering(true);
-                }
-            }
-        });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String prefix;
-                if(new Settings(context).getDistortion()) {
-                    prefix = "distortion";
-                }else {
-                    prefix = "clean";
-                }
-                for (int i = 0; i < 25/*new Settings(context).getFretNumbers()*/; i++) {
-                    for (int j = 0; j < 6; j++){
-                        String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
-                        //Log.i("info"," sound = " + file);
-                        int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
-                        soundPool.load(context,id,1);
-                    }
-                }
-                if (onSoundLoadedCompleteListener != null) {
-                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
-                }
-            }
-        }).start();
+        soundPool = QSoundPool.getInstance().getSoundPool();
+        if (soundPool == null) {
+            QSoundPool.getInstance().loadSound();
+        }
         for(int i = 0; i<10; i++) {
             simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
-        Log.i("info"," GuitarSurfaceView DEFAULT" );
         this.context = context;
     }
-
+    @Override
+    public void Start() {
+        QSoundPool.getInstance().setOnSoundPoolSuccessLoaded(new QSoundPool.OnSoundPoolSuccessLoaded() {
+            @Override
+            public void soundPoolSuccessLoaded() {
+                isTouchEnable = true;
+                if (guitarRenderer != null)
+                    guitarRenderer.enableRendering(true);
+                if (onSoundLoadedCompleteListener != null) {
+                    Log.i("info"," SOUND LOAD COMPLETE ");
+                    onSoundLoadedCompleteListener.onSoundLoadedComplete();
+                }
+            }
+        });
+        super.Start();
+    }
+    
     @Override
     public void onSizeChanged(int width, int height, int oldw, int oldh) {
         this.width = width;
@@ -147,7 +128,6 @@ public class GuitarViewDefault extends GuitarAbstract {
                     int id = fretMaskStreamID[x][y];
                     soundPool.stop(id);
                 }
-                Log.i("info"," Play");
                 fretMaskStreamID[x][y]= soundPool.play(playId, 1, 1, 1, 0, 1.0f);
                 simpleTouchList.get(pointID).set(fretMaskStreamID[x][y],x,y);
                 break;
@@ -220,6 +200,7 @@ public class GuitarViewDefault extends GuitarAbstract {
                     pentatonic.line = Integer.parseInt(parce[1]);
                     pentatonic.delay = Integer.parseInt(parce[2]);
                     pentatonic.playTime = Integer.parseInt(parce[3]);
+                    pentatonic.position.set(pentatonic.bar, pentatonic.line);
                     pentatonics.add(pentatonic);
                 }
                 str = reader.readLine();
@@ -240,8 +221,7 @@ public class GuitarViewDefault extends GuitarAbstract {
 
     @Override
     public void Stop() {
-        Log.i("info"," GUITAR SurfaceView default STOP");
-        soundPool.release();
+        //soundPool.release();
     }
 
 

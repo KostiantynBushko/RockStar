@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:ignore="MergeRootFrame"
-    android:background="@drawable/background_3">
+    android:background="@drawable/background_portrain">
 
     <Button
         android:layout_width="wrap_content"
@@ -14,15 +14,17 @@
         android:id="@+id/play"
         android:background="@drawable/button_action"
         android:textColor="@color/dark_gray"
-        android:alpha="0.9"
-        android:textStyle="normal|bold|italic|"
-        android:layout_marginBottom="24dp"
+        android:alpha="0.7"
+        android:textStyle="normal|bold"
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/relativeLayout"
-        android:layout_alignStart="@+id/relativeLayout"
-        android:layout_alignRight="@+id/relativeLayout"
-        android:layout_alignEnd="@+id/relativeLayout" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,130 +44,74 @@
 
 
     <RelativeLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="245dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:id="@+id/relativeLayout">
+        android:layout_marginTop="39dp"
+        android:layout_below="@+id/textView0"
+        android:layout_centerHorizontal="true">
 
         <Button
-            android:layout_width="wrap_content"
-            android:minWidth="95dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/settingButton"
-            android:layout_centerVertical="true"
-            android:background="@drawable/button_action"
-            android:drawableTop="@drawable/action_settings"
-            android:text="@string/settings_label"
-            android:textColor="@color/dark_gray"
-            android:layout_marginRight="10dp"
-            android:alpha="0.9"
-            android:textStyle="bold"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:minWidth="95dp"
-            android:layout_height="wrap_content"
-            android:text="@string/help_label"
-            android:id="@+id/helpButton"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/settingButton"
-            android:background="@drawable/button_action"
-            android:drawableTop="@drawable/action_help"
-            android:textColor="@color/dark_gray"
-            android:alpha="0.9"
-            android:textStyle="bold"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/faceBookButton"
+            android:textSize="25sp"
+            android:background="@drawable/button_face_book"
+            android:alpha="0.5"
+            android:textStyle="normal|bold"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/twitterButton"
+            android:layout_toEndOf="@+id/twitterButton"
             android:layout_marginRight="10dp"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:minWidth="95dp"
-            android:layout_height="wrap_content"
-            android:text="@string/about_label"
-            android:id="@+id/aboutButton"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/helpButton"
-            android:background="@drawable/button_action"
-            android:drawableTop="@drawable/action_about"
-            android:textColor="@color/dark_gray"
-            android:alpha="0.9"
-            android:textStyle="bold"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/googlePlus"
+            android:textSize="25sp"
+            android:background="@drawable/button_google_plus"
+            android:alpha="0.5"
+            android:textStyle="normal|bold"
+            android:layout_alignTop="@+id/faceBookButton"
+            android:layout_toRightOf="@+id/faceBookButton"
+            android:layout_toEndOf="@+id/faceBookButton"
+            android:layout_marginRight="10dp"/>
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_below="@+id/relativeLayout"
-        android:layout_marginTop="60dp"
-        android:layout_alignRight="@+id/relativeLayout"
-        android:layout_alignEnd="@+id/relativeLayout"
-        android:layout_alignLeft="@+id/relativeLayout"
-        android:layout_alignStart="@+id/relativeLayout"
-        android:visibility="invisible">
-
-        <com.onquantum.rockstar.common.SwitchButton
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/switchButton"
-            android:layout_alignLeft="@+id/textView"
-            android:layout_alignStart="@+id/textView"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="."
-            android:id="@+id/textView"
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_twitter"
+            android:alpha="0.5"
+            android:id="@+id/twitterButton"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="distortion"
-            android:gravity="right"
-            android:alpha="0.6"
-            android:textStyle="bold|italic"
-            android:id="@+id/textView1"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/textView"
-            android:layout_toStartOf="@+id/textView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"/>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/buttonInfo"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/googlePlus"
+            android:layout_toEndOf="@+id/googlePlus"
+            android:background="@drawable/button_info"
+            android:alpha="0.5"
+            android:layout_marginRight="10dp"/>
 
     </RelativeLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:text="Editor"
-        android:id="@+id/button"
-        android:layout_marginTop="52dp"
-        android:layout_below="@+id/textView0"
-        android:layout_alignRight="@+id/relativeLayout"
-        android:layout_alignEnd="@+id/relativeLayout"
-        android:background="@drawable/button_action"
-        android:visibility="invisible"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="SGuitar"
-        android:id="@+id/button3"
-        android:layout_alignTop="@+id/button"
-        android:layout_toLeftOf="@+id/button"
-        android:layout_toStartOf="@+id/button"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/button_action"
-        android:visibility="invisible"/>
+
+    <!--<com.twitter.sdk.android.tweetui.TweetView
+        xmlns:twittersdk="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/photo_default_tweet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        twittersdk:tw__tweet_id="20"
+        android:layout_below="@+id/textView14"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="31dp" />-->
 
 </RelativeLayout>
