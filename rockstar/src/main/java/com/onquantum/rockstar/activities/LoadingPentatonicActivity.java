@@ -63,7 +63,7 @@ public class LoadingPentatonicActivity extends Activity {
                     new int[]{R.id.textView1}
             );
             listView.setAdapter(adapter);
-            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

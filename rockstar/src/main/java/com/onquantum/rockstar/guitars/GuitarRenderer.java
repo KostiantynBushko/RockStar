@@ -393,7 +393,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             try{
                 if(x == currentPentatonic.bar + Slide  && y == currentPentatonic.line) {
                     currentPentatonic = null;
-                    current.Remove(0);
+                    //current.Remove(0);
                 }
             }catch (NullPointerException e){}
         }
@@ -432,23 +432,25 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         pentatonicList = null;
         isPentatonicLoaded = false;
         currentPentatonic = null;
-        pentatonicObjectsList.clear();
+        //pentatonicObjectsList.clear();
         currentPentatonicStep = 0;
-        if(current != null)
-            current.Remove(0);
+        //if(current != null)
+        //    current.Remove(0);
     }
     private void drawSimplePentatonic() {
         int x = pentatonicList.get(currentPentatonicStep).bar + 1;
         int y = pentatonicList.get(currentPentatonicStep).line;
         currentPentatonic = pentatonicList.get(currentPentatonicStep);
-        int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
-        int sh = (int)guitarString.get(y).getHeight();
-        current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
-        pentatonicObjectsList.add(current);
-        current.setKinematic(true);
-        current.setLayer(PENTATONIC_LAYER);
-        drawObjects.add(current);
-        currentPentatonicStep++;
+        current = pentatonicMask.get(currentPentatonicStep);
+        current.setColor(Color.RED);
+        //int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+        //int sh = (int)guitarString.get(y).getHeight();
+        //current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
+        //pentatonicObjectsList.add(current);
+        //current.setKinematic(true);
+        //current.setLayer(PENTATONIC_LAYER);
+        //drawObjects.add(current);
+        //currentPentatonicStep++;
     }
     /***********************************************************************************************
      *  Play pentatonic engine
@@ -458,7 +460,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     boolean pentatonicIsStoped = true;
     private void startPlayPentatonic() {
         new Thread(new Runnable() {
-
             @Override
             public void run() {
                 Log.i("info","RENDERER Play Pentatonic");
@@ -468,17 +469,22 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         Log.i("info"," pentatonicList size = " + pentatonicList.size());
                         if(currentPentatonicStep == pentatonicList.size())
                             currentPentatonicStep = 0;
-                        int x = pentatonicList.get(currentPentatonicStep).bar + 1;
-                        int y = pentatonicList.get(currentPentatonicStep).line;
+                        //int x = pentatonicList.get(currentPentatonicStep).bar + 1;
+                        //int y = pentatonicList.get(currentPentatonicStep).line;
                         currentPentatonic = pentatonicList.get(currentPentatonicStep);
-                        int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
+                        /*int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
                         int sh = (int)guitarString.get(y).getHeight();
                         current = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,circlePaint);
                         current.RemoveMilliseconds(currentPentatonic.playTime);
                         pentatonicObjectsList.add(current);
                         current.setKinematic(true);
                         current.setLayer(PENTATONIC_LAYER);
-                        drawObjects.add(current);
+                        drawObjects.add(current);*/
+                        if(current != null) {
+                            current.setColor(Color.YELLOW);
+                        }
+                        current = (SCircle)(pentatonicMask.get(currentPentatonicStep));
+                        current.setColor(Color.RED);
                         currentPentatonicStep++;
                         try {
                             TimeUnit.MILLISECONDS.sleep(currentPentatonic.delay);
@@ -506,11 +512,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 if (item != null)
                     pList.add(item);
             }
-            Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            maskPaint.setColor(Color.YELLOW);
-            maskPaint.setAlpha(160);
 
             for (Pentatonic p : pList) {
+                Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                maskPaint.setColor(Color.YELLOW);
+                maskPaint.setAlpha(160);
                 int x = p.bar + 1;
                 int y = p.line;
                 int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;

@@ -1,6 +1,7 @@
 package com.onquantum.rockstar.svprimitive;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.SystemClock;
 
@@ -64,6 +65,17 @@ public abstract class SShape {
     public abstract float getWidth();
     public abstract float getHeight();
     public abstract void setAlpha(int alpha);
+
+    public Paint getPaint() {
+        return paint;
+    }
+
+    public void setColor(int color) {
+        int alpha = paint.getAlpha();
+        paint.setColor(color);
+        paint.setAlpha(alpha);
+    }
+
 
     public boolean isKinematic() {return isKinematic;}
     public void setKinematic(boolean kinematic) {
