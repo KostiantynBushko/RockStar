@@ -7,6 +7,8 @@ import android.media.SoundPool;
 import android.os.Debug;
 import android.util.Log;
 
+import com.onquantum.rockstar.Settings;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class QSoundPool {
     private boolean successLoaded = false;
 
     private String path = null;
-    private String prefix = "clean";
+    private String prefix;
 
     private Context context;
     private int load = 0;
@@ -54,6 +56,12 @@ public class QSoundPool {
     }
 
     private QSoundPool(){
+        Settings.SetOnGuitarPackageChange(new Settings.GuitarPackageListener() {
+            @Override
+            public void onGuitarPackageChange(String guitarPackage) {
+                Log.i("info"," QSoundPool : onGuitarPackageChange ");
+            }
+        });
         soundPool = new SoundPool(200, AudioManager.STREAM_MUSIC,0);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
@@ -84,6 +92,8 @@ public class QSoundPool {
             Log.i("info","  QSOUND POOL LOADED IN PROGRESS");
             return;
         }
+        prefix = new Settings(context).getCurrentGuitarPackage();
+
         successLoaded = false;
         loadedInProgress = true;
         new Thread(new Runnable() {

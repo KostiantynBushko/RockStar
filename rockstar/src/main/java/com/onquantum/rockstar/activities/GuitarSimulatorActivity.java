@@ -50,6 +50,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
     private boolean isFretSlider = false;
     private int fretNumber;
     private boolean isLoaded = false;
+    private TextView packageName;
 
 
     @Override
@@ -69,7 +70,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
     @Override
     public void onStart() {
         //Log.i("info","GUITAR SIMULATOR ACTIVITY START");
-        //isLoaded = true;
         super.onStart();
     }
 
@@ -127,6 +127,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                 ((TextView)findViewById(R.id.helpText)).setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 progressText.setVisibility(View.GONE);
+                packageName.setVisibility(View.GONE);
                 if (new Settings(context).isFretsSliderVisible()) {
                     fretsSlider.setVisible(true);
                     fretsSlider.setVisibility(View.VISIBLE);
@@ -150,6 +151,9 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
 
         controlPanel = (RelativeLayout)findViewById(R.id.playPentatonicPanel);
+
+        packageName = (TextView)findViewById(R.id.soundPackageName);
+        packageName.setText(settings.getCurrentGuitarPackage() + " guitar");
 
         ((ImageButton) this.findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,8 +185,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                 startActivity(intent);
             }
         });
-        //isSlide = settings.getSlide();
-        //fretNumber = settings.getFretNumbers();
         boolean visibility = settings.isFretsSliderVisible();
         if (visibility) {
             fretsSlider.setVisibility(View.VISIBLE);

@@ -25,8 +25,13 @@ public class Settings {
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
     private static final String SHOW_TOUCHES = "show_touches";
 
+    // Guitar package type
+    private static final String CURRENT_GUITAR_PACKAGE = "current_guitar_package";
+
     private final SharedPreferences settings;
 
+    /**********************************************************************************************/
+    // Interface section
     public interface FretsNumberVisible{
         public void isFretsNumberVisible(boolean visibility);
     }
@@ -34,6 +39,7 @@ public class Settings {
     public void setOnFretsNumberVisibleListener(FretsNumberVisible fretsNumberVisible){
         this.fretsNumberVisible = fretsNumberVisible;
     }
+
     public interface ShowTouchesListener{
         public void showTouches(boolean visibility);
     }
@@ -41,6 +47,7 @@ public class Settings {
     public void setShowTouchesListener(ShowTouchesListener showTouchesListener){
         this.showTouchesListener = showTouchesListener;
     }
+
     public interface FretsSliderListener {
         public void showFretsSlider(boolean visibility);
     }
@@ -49,7 +56,15 @@ public class Settings {
         this.fretsSliderListener = fretsSliderListener;
     }
 
-
+    public interface GuitarPackageListener {
+        public void onGuitarPackageChange(String guitarPackage);
+    }
+    public static GuitarPackageListener guitarPackageListener;
+    public static void SetOnGuitarPackageChange(GuitarPackageListener guitarPackageListener) {
+        Settings.guitarPackageListener = guitarPackageListener;
+    }
+    // End interface section
+    /**********************************************************************************************/
 
     public Settings(Context context) {
         settings = context.getSharedPreferences(context.getResources().getString(R.string.app_name),Context.MODE_PRIVATE);
@@ -130,5 +145,18 @@ public class Settings {
         editor.commit();
         if (showTouchesListener != null)
             showTouchesListener.showTouches(visibility);
+    }
+
+    // Guitar type
+    public String getCurrentGuitarPackage() {
+        return settings.getString(CURRENT_GUITAR_PACKAGE, "clean");
+    }
+    public void setCurrentGuitarPackage(String guitarPackage) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(CURRENT_GUITAR_PACKAGE, guitarPackage);
+        editor.commit();
+        if(guitarPackageListener != null) {
+            guitarPackageListener.onGuitarPackageChange(guitarPackage);
+        }
     }
 }
