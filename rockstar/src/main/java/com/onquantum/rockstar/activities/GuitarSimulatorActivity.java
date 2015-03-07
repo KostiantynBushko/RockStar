@@ -115,6 +115,9 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         }
         progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         progressText = (TextView)findViewById(R.id.progressText);
+        packageName = (TextView)findViewById(R.id.soundPackageName);
+        packageName.setText(settings.getCurrentGuitarPackage() + " guitar");
+
         QSoundPool.getInstance().setOnProgressUpdate(new QSoundPool.OnProgressUpdate() {
             @Override
             public void progressUpdate(int progress) {
@@ -151,9 +154,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
 
         controlPanel = (RelativeLayout)findViewById(R.id.playPentatonicPanel);
-
-        packageName = (TextView)findViewById(R.id.soundPackageName);
-        packageName.setText(settings.getCurrentGuitarPackage() + " guitar");
 
         ((ImageButton) this.findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
             @Override
