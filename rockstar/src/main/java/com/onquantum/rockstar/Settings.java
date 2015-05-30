@@ -24,6 +24,7 @@ public class Settings {
     private static final String SHOW_FRETS_NUMBER = "show_frets_number";
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
     private static final String SHOW_TOUCHES = "show_touches";
+    private static final String OPEN_STRING = "open_string";
 
     // Guitar package type
     private static final String CURRENT_GUITAR_PACKAGE = "current_guitar_package";
@@ -97,7 +98,7 @@ public class Settings {
 
     // Distortion option on/off
     public boolean getDistortion() {
-        return settings.getBoolean(DISTORTION,false);
+        return settings.getBoolean(DISTORTION, false);
     }
     public void setDistortion(boolean distortion) {
         SharedPreferences.Editor editor = settings.edit();
@@ -158,5 +159,15 @@ public class Settings {
         if(guitarPackageListener != null) {
             guitarPackageListener.onGuitarPackageChange(guitarPackage);
         }
+    }
+
+    // Open string settings
+    public boolean getOpenStringStatus() {
+        return settings.getBoolean(OPEN_STRING, true);
+    }
+    public void setOpenString(boolean enabled) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(OPEN_STRING, enabled);
+        editor.commit();
     }
 }
