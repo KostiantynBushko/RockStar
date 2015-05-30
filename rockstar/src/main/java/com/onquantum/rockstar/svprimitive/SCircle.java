@@ -39,10 +39,14 @@ public class SCircle extends SShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(centerX,centerY, radius, paint);
-        if (numberText == null)
-            return;
-        canvas.drawText(numberText,centerX,centerY+radius/4,textPaint);
+        if(visibleArea != null) {
+            if((centerX - radius) < visibleArea.left || (centerX + radius) > visibleArea.right)
+                return;
+            canvas.drawCircle(centerX,centerY, radius, paint);
+            if (numberText == null)
+                return;
+            canvas.drawText(numberText,centerX,centerY+radius/4,textPaint);
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.onquantum.rockstar.svprimitive;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.SystemClock;
 
 import java.util.concurrent.TimeUnit;
@@ -18,12 +19,15 @@ public abstract class SShape {
     public static final int BITMAP = 4;
     public static final int TEXT = 5;
 
+
     public boolean remove = false;
 
     protected Paint paint = null;
 
     private int type = 0;
     private boolean isKinematic = false;
+    protected RectF visibleArea = null;
+    protected String tag = "";
 
     public int getType() {
         return type;
@@ -87,4 +91,11 @@ public abstract class SShape {
     public void setLayer(int layer) { this.layer = layer; }
 
     public boolean isActive = true;
+
+    public void setVisibleArea(RectF visibleArea) {
+        this.visibleArea = visibleArea;
+    }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 }

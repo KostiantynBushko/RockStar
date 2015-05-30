@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.os.Debug;
+import android.util.Log;
 
 /**
  * Created by Admin on 7/23/14.
@@ -30,7 +32,12 @@ public class SBitmap extends SShape {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap,x,y,paint);
+        if(visibleArea != null) {
+            if (x < visibleArea.left || x > visibleArea.right) {
+                return;
+            }
+            canvas.drawBitmap(bitmap, x, y, paint);
+        }
     }
 
     @Override
