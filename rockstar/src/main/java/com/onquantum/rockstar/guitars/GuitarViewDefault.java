@@ -45,6 +45,8 @@ public class GuitarViewDefault extends GuitarAbstract {
     private int currentString = 0;
     private int Slide = 0;
 
+    private boolean openString = false;
+
     public GuitarViewDefault(final Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
 
@@ -61,6 +63,7 @@ public class GuitarViewDefault extends GuitarAbstract {
             simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
         this.context = context;
+        openString = new Settings(context).getOpenStringStatus();
     }
     @Override
     public void Start() {
@@ -101,10 +104,21 @@ public class GuitarViewDefault extends GuitarAbstract {
 
         int x,y;
         y = (int)(height - (event.getY(pointIndex))) / (height / 6);
-        x = (int)(width - event.getX(pointIndex)) / (width / frets);
-        x += Slide;
+        x = (int)(width - event.getX(pointIndex)) / (width / frets) + 1;
         if (y > 5)
             return false;
+
+        if(openString) {
+            if(x > frets - 1){
+                Log.i("info"," OPEN STRING TOUCH");
+                x = 0;
+            } else {
+                x+= Slide;
+            }
+        } else {
+            x+= Slide;
+        }
+
         int playId = (y + 1) + (6 * x);
 
         switch(actionMask) {

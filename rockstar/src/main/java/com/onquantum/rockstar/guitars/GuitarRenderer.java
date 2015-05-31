@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -33,6 +34,8 @@ import java.util.logging.SocketHandler;
 public class GuitarRenderer implements SurfaceHolder.Callback {
 
     private final int BACKGROUND_LAYER = 1000;
+    private final int BACKGROUND_LAYER_1 = 1001;
+    private final int BACKGROUND_LAYER_2 = 1002;
     private final int STRING_SHADOW_LAYER =2000;
     private final int STRING_LAYER = 3000;
     private final int PENTATONIC_LAYER = 4000;
@@ -70,6 +73,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private BitSet fretsMark = new BitSet(24);
 
     // Frets view
+    private RectF fretsVisibleArea;
     private boolean fretsNumberVisible = false;
     private boolean touchVisible = false;
     private boolean sliderFretsVisible = false;
@@ -129,9 +133,15 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         this.width = width;
         this.height = height;
 
-        fretWidth = this.width / fretCount;
+        fretWidth = (int)(this.width / fretCount);
         float step = fretWidth;
         float heightDiv = this.height / 14;
+
+        // Fret visible rect
+        fretsVisibleArea = new RectF(0.0f, height, width, 0.0f);
+        if((new Settings(context).getOpenStringStatus())) {
+            fretsVisibleArea.left = fretWidth;
+        }
 
         Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setColor(Color.RED);
@@ -141,19 +151,33 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             testLine.add(line);
         }
 
+        /******************************************************************************************/
         // Draw frets
+        /******************************************************************************************/
         float fret = 1;
         for(int i = 0; i<24; i++) {
             SBitmap bitmap;
-            if(fretsMark.get(i)){
-                bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b1);
-            }else{
-                bitmap = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.b0);
-                //SCircle circle = new SCircle(this.width - step,this.height / 2, this.height / 18);
+            if (fretsMark.get(i)) {
+                bitmap = new SBitmap(this.width - step, 0, fretWidth, this.height, context, R.drawable.b1);
+            } else {
+                bitmap = new SBitmap(this.width - step, 0, fretWidth, this.height, context, R.drawable.b0);
             }
             bitmap.setLayer(BACKGROUND_LAYER);
+            bitmap.setVisibleArea(fretsVisibleArea);
             bitmap.setKinematic(true);
             backGroundLayer.add(bitmap);
+
+            // Draw open string fret
+            if(new Settings(context).getOpenStringStatus()) {
+                if(i == (fretCount-1)) {
+                    SBitmap soundCapture;
+                    soundCapture = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.sound_capture);
+                    soundCapture.setLayer(BACKGROUND_LAYER);
+                    soundCapture.setKinematic(false);
+                    soundCapture.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
+                    backGroundLayer.add(soundCapture);
+                }
+            }
             step += fretWidth;
             fret++;
         }
@@ -161,10 +185,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         float stepLad = 0;
         float ladWidth = fretWidth * 0.16f;
         float ld = ladWidth / 2.0f;
-        for (int i = 0; i < 24/*fretCount+1*/; i++) {
+        for (int i = 0; i < fretCount + 1/*24 fretCount+1*/; i++) {
             SBitmap bitmap = new SBitmap(this.width - stepLad - ld,0,ladWidth,this.height,context, R.drawable.lad);
-            bitmap.setLayer(BACKGROUND_LAYER);
-            bitmap.setKinematic(true);
+            bitmap.setLayer(BACKGROUND_LAYER_2);
+            bitmap.setKinematic(false);
+            bitmap.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
             backGroundLayer.add(bitmap);
             stepLad += fretWidth;
         }
@@ -190,6 +215,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 shadowLadStep += fretWidth;
                 shadow1.setAlpha(alpha);
                 shadow1.setLayer(STRING_SHADOW_LAYER);
+                shadow1.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
                 backGroundLayer.add(shadow1);
 
                 SBitmap shadow = new SBitmap(
@@ -202,6 +228,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 );
                 shadow.setAlpha(alpha);
                 shadow.setLayer(STRING_SHADOW_LAYER);
+                shadow.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
                 backGroundLayer.add(shadow);
                 shadowStep += fretWidth;
             }
@@ -215,36 +242,42 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         float stringHeight = heightDiv * 0.12f;
         float inc = this.height - heightDiv;
         SGuitarString string1 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight, context,R.drawable.string_3);
+        string1.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string1);
         string1.setLayer(STRING_LAYER);
 
         stringHeight = heightDiv * 0.14f;
         inc -= heightDiv * 2.5f;
         SGuitarString string2 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_3);
+        string2.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string2);
         string2.setLayer(STRING_LAYER);
 
         stringHeight = heightDiv * 0.16f;
         inc -= heightDiv * 2.5f;
         SGuitarString string3 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_3);
+        string3.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string3);
         string3.setLayer(STRING_LAYER);
 
         stringHeight = heightDiv * 0.25f;
         inc -= heightDiv * 2.5f;
         SGuitarString string4 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_5);
+        string4.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string4);
         string4.setLayer(STRING_LAYER);
 
         stringHeight = heightDiv * 0.3f;
         inc -= heightDiv * 2.5f;
         SGuitarString string5 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_5);
+        string5.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string5);
         string5.setLayer(STRING_LAYER);
 
         stringHeight = heightDiv * 0.35f;
         inc -= heightDiv * 2.5f;
         SGuitarString string6 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_6);
+        string6.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         string6.setLayer(STRING_LAYER);
         guitarString.add(string6);
 
@@ -258,15 +291,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         drawObjects.addAll(guitarString);
         drawObjects.addAll(pentatonicObjectsList);
 
-        /*for (int i = drawObjects.size() - 1; i >= 0; i--) {
-            for (int j = 0; j<i; j++) {
-                if(drawObjects.get(j).getLayer() > drawObjects.get(j+1).getLayer()){
-                    SShape temp = drawObjects.get(j);
-                    drawObjects.set(j,drawObjects.get(j+1));
-                    drawObjects.set(j+1,temp);
-                }
-            }
-        }*/
         showFretsNumber(fretsNumberVisible);
         sortLayer();
         loaded = true;
@@ -389,21 +413,31 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     public void onTouchDown(final int x, final int y) {
         if (y >= 6)
             return;
+        // Pentatonic touch handler
         if(isPentatonicLoaded && !playWillStart) {
             try{
-                if(x == currentPentatonic.bar + Slide  && y == currentPentatonic.line) {
+                int slide = x == 0 ? 0 : Slide;
+                if(x == currentPentatonic.bar + slide  && y == currentPentatonic.line) {
                     currentPentatonic = null;
-                    //current.Remove(0);
                 }
             }catch (NullPointerException e){}
         }
+
+        // Draw touch
         if (touchVisible){
             int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
             int sh = (int)guitarString.get(y).getHeight();
-            SCircle circle = new SCircle(width - (fretWidth * (x - Slide + 1)) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
+            SCircle circle;
+            if(x == 0) {
+                circle = new SCircle(width - (fretWidth * fretCount) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
+            } else {
+                circle = new SCircle(width - (fretWidth * (x - Slide)) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
+            }
+            circle.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
             circle.Remove(250);
             drawObjects.add(circle);
         }
+
         ((SGuitarString)guitarString.get(y)).setAnimate();
     }
     public void onTouchUp(int x, int y) {}
@@ -425,9 +459,10 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         return true;
     }
     public void ClosePlayPentatonic() {
-        Log.i("info","GuitarRenderer : ClosePlayPentatonic");
-        removePentatonicMask();
+        Log.i("info", "GuitarRenderer : ClosePlayPentatonic");
         stopPlay = true;
+        removePentatonicMask();
+        //stopPlay = true;
         playWillStart = false;
         pentatonicList = null;
         isPentatonicLoaded = false;
@@ -519,13 +554,24 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 maskPaint.setColor(Color.YELLOW);
                 maskPaint.setAlpha(160);
-                int x = p.bar + 1;
+                int x = p.bar;
                 int y = p.line;
                 int _y = (int) ((SGuitarString)guitarString.get(y)).getPosition().y;
                 int sh = (int)guitarString.get(y).getHeight();
-                SCircle circle = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
+
+                SCircle circle;
+                if(p.bar == 0) {
+                    maskPaint.setColor(Color.GREEN);
+                    circle = new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
+                    circle.setVisibleArea(new RectF(0.0f,height,fretsVisibleArea.left,0.0f));
+                } else {
+                    circle = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
+                    circle.setVisibleArea(fretsVisibleArea);
+                }
                 circle.setKinematic(false);
                 circle.setLayer(PENTATONIC_LAYER);
+
+
                 pentatonicMask.add(circle);
                 for (Pentatonic pentatonic : pentatonicList) {
                     if (pentatonic.position.equals(p.bar, p.line)) {
@@ -604,6 +650,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     circle.setLayer(BAR_NUMBER_LAYER);
                     circle.setKinematic(true);
                     circle.drawNumber(i+1, textPaint);
+                    circle.setVisibleArea(fretsVisibleArea);
                     barNumberObjects.add(circle);
                 }
                 step += fretWidth;

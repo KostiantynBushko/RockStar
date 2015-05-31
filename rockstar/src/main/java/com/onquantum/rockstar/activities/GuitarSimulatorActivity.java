@@ -139,7 +139,10 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         });
         fretsSlider = (FretsSlider)findViewById(R.id.fretsSlide);
         if(settings.isFretsSliderVisible()) {
-            fretsSlider.setSliderWidth(new Settings(context).getFretNumbers());
+            int fretSliderWidth = new Settings(context).getFretNumbers();
+            if(new Settings(context).getOpenStringStatus())
+                fretSliderWidth -= 1;
+            fretsSlider.setSliderWidth(fretSliderWidth);
             fretsSlider.setVisibility(View.INVISIBLE);
             fretsSlider.setOnSliderChangeListener(new FretsSlider.SliderChangeListener() {
                 @Override

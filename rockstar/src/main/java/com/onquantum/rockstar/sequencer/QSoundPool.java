@@ -99,10 +99,11 @@ public class QSoundPool {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 24; i++) {
+                for (int i = 0; i < 25; i++) {
                     for (int j = 0; j < 6; j++){
                         String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                         int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
+                        Log.i("info"," FILE : " + file + " id = " + id);
                         try {
                             soundPool.load(context,id,1);
                         }catch (Resources.NotFoundException e){

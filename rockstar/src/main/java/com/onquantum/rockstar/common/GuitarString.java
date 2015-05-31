@@ -26,7 +26,7 @@ public class GuitarString {
     private boolean isStoped = false;
 
     public GuitarString(int streamId, int x, int y, Context context,SoundPool soundPool) {
-        playID = new int[24];
+        playID = new int[25];
         this.x = x;
         this.y = y;
         this.streamId = streamId;
@@ -45,7 +45,6 @@ public class GuitarString {
     }
 
     public void set(int x, int y) {
-        Log.i("info"," X = " + x + " Y = " + y);
         isStoped = false;
         startPlay = System.currentTimeMillis();
         this.x = x;
@@ -55,6 +54,7 @@ public class GuitarString {
         int playId2 = 0;
         int playId3 = 0;
         playID[x] = soundPool.play(playId1,1,1,1,0,1);
+        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1);
 
         if ((x + 1) < (fretsCount + Slide)){
             playId2 = (y + 1) + (6 * (x+1));

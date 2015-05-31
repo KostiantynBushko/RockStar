@@ -33,12 +33,14 @@ public class GuitarViewSlide extends GuitarAbstract {
     private GuitarRenderer guitarRenderer;
 
     private final int frets;
-    private int width, height;
+    private int width, height, fretWidth;
     private int titleBarH = 0;
     private int Slide = 0;
 
     private int[][] touchMask = new int[25][7];
     private List<GuitarString>simpleTouchList = new ArrayList<GuitarString>(10);
+
+    private boolean openString = false;
 
     public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
@@ -52,6 +54,8 @@ public class GuitarViewSlide extends GuitarAbstract {
         for(int i = 0; i<10; i++) {
             simpleTouchList.add(new GuitarString(0,0,0,context,soundPool));
         }
+
+        openString = new Settings(context).getOpenStringStatus();
     }
 
     @Override
@@ -76,6 +80,7 @@ public class GuitarViewSlide extends GuitarAbstract {
         Log.i("info","GUITAR VIEW SIZE CHANGE  width = " + width + "  height = " + height);
         this.width = width;
         this.height = height;
+        fretWidth = width / frets;
         Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -96,10 +101,22 @@ public class GuitarViewSlide extends GuitarAbstract {
 
         int x,y;
         y = (int)((height - (event.getY(pointIndex))) / (height / 6));
-        x = (int)(width - event.getX(pointIndex)) / (width / frets);
-        x+= Slide;
+        x = (int)(width - event.getX(pointIndex)) / fretWidth + 1;
         if (y > 5)
             return false;
+
+        if(openString) {
+            if(x > frets - 1){
+                Log.i("info"," OPEN STRING TOUCH");
+                x = 0;
+            } else {
+                x+= Slide;
+            }
+        } else {
+            x+= Slide;
+        }
+
+        Log.i("info", "TOUCH : x = " + x + " y = " + y);
 
         switch(actionMask) {
             case MotionEvent.ACTION_POINTER_DOWN:{
@@ -117,12 +134,16 @@ public class GuitarViewSlide extends GuitarAbstract {
                 break;
             }
             case MotionEvent.ACTION_POINTER_UP:  {
+                if(x > touchMask.length)
+                    break;
                 touchMask[x][y] = 0;
                 guitarRenderer.onTouchUp((int)x,(int)y);
                 simpleTouchList.get(pointID).stop();
                 break;
             }
             case MotionEvent.ACTION_UP: {
+                if(x > touchMask.length)
+                    break;
                 touchMask[x][y] = 0;
                 guitarRenderer.onTouchUp((int)x,(int)y);
                 simpleTouchList.get(pointID).stop();
