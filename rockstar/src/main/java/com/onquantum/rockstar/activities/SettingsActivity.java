@@ -51,9 +51,9 @@ public class SettingsActivity extends Activity {
             public void onSwitchChange(boolean isOn) {
                 new Settings(context).setSlide(isOn);
                 if (isOn)
-                    ((RelativeLayout)findViewById(R.id.relativeLayout3)).setVisibility(View.GONE);
+                    ((RelativeLayout) findViewById(R.id.relativeLayout3)).setVisibility(View.GONE);
                 else
-                    ((RelativeLayout)findViewById(R.id.relativeLayout3)).setVisibility(View.VISIBLE);
+                    ((RelativeLayout) findViewById(R.id.relativeLayout3)).setVisibility(View.VISIBLE);
             }
         });
 
@@ -68,7 +68,7 @@ public class SettingsActivity extends Activity {
         });
 
         CounterView fretsCounter = (CounterView)findViewById(R.id.btnFrets);
-        fretsCounter.setMaxMinValue(5,13);
+        fretsCounter.setMaxMinValue(5, 13);
         fretsCounter.setCountValue(settings.getFretNumbers());
         fretsCounter.setOnCountChangeValue(new CounterView.OnCountChangeValue() {
             @Override
@@ -76,5 +76,15 @@ public class SettingsActivity extends Activity {
                 settings.setFretNumbers(countValue);
             }
         });
+
+        SwitchButton openStringSwitch = (SwitchButton)findViewById(R.id.btnOpenStr);
+        openStringSwitch.Set(new Settings(context).getOpenStringStatus());
+        openStringSwitch.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
+            @Override
+            public void onSwitchChange(boolean isOn) {
+                new Settings(context).setOpenString(isOn);
+            }
+        });
+
     }
 }
