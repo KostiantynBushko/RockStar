@@ -1,11 +1,9 @@
 package com.onquantum.rockstar.guitars;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -22,11 +20,9 @@ import com.onquantum.rockstar.svprimitive.SShape;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.SocketHandler;
 
 /**
  * Created by Admin on 8/16/14.
@@ -74,6 +70,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     // Frets view
     private RectF fretsVisibleArea;
+    private RectF openStringDrawArea;
     private boolean fretsNumberVisible = false;
     private boolean touchVisible = false;
     private boolean sliderFretsVisible = false;
@@ -141,6 +138,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         fretsVisibleArea = new RectF(0.0f, height, width, 0.0f);
         if((new Settings(context).getOpenStringStatus())) {
             fretsVisibleArea.left = fretWidth;
+            openStringDrawArea = new RectF(0.0f, height, width, 0.0f);
         }
 
         Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -174,7 +172,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     soundCapture = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.sound_capture);
                     soundCapture.setLayer(BACKGROUND_LAYER);
                     soundCapture.setKinematic(false);
-                    soundCapture.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
+                    soundCapture.setVisibleArea(new RectF(width - step - fretWidth, height, fretWidth, 0.0f));
                     backGroundLayer.add(soundCapture);
                 }
             }
@@ -182,10 +180,11 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             fret++;
         }
 
+        // Draw frets
         float stepLad = 0;
         float ladWidth = fretWidth * 0.16f;
         float ld = ladWidth / 2.0f;
-        for (int i = 0; i < fretCount + 1/*24 fretCount+1*/; i++) {
+        for (int i = 0; i < fretCount + 1; i++) {
             SBitmap bitmap = new SBitmap(this.width - stepLad - ld,0,ladWidth,this.height,context, R.drawable.lad);
             bitmap.setLayer(BACKGROUND_LAYER_2);
             bitmap.setKinematic(false);
@@ -429,7 +428,8 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             int sh = (int)guitarString.get(y).getHeight();
             SCircle circle;
             if(x == 0) {
-                circle = new SCircle(width - (fretWidth * fretCount) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
+                //circle = new SCircle(width - (fretWidth * fretCount) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
+                circle =  new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
             } else {
                 circle = new SCircle(width - (fretWidth * (x - Slide)) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
             }
@@ -561,7 +561,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
                 SCircle circle;
                 if(p.bar == 0) {
-                    maskPaint.setColor(Color.GREEN);
                     circle = new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
                     circle.setVisibleArea(new RectF(0.0f,height,fretsVisibleArea.left,0.0f));
                 } else {
