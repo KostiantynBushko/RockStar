@@ -180,15 +180,25 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             fret++;
         }
 
-        // Draw frets
+        // Draw frets on visible neck
         float stepLad = 0;
         float ladWidth = fretWidth * 0.16f;
         float ld = ladWidth / 2.0f;
-        for (int i = 0; i < fretCount + 1; i++) {
-            SBitmap bitmap = new SBitmap(this.width - stepLad - ld,0,ladWidth,this.height,context, R.drawable.lad);
+        int visibleFrets = fretCount;
+        if(new Settings(context).getOpenStringStatus() == false)
+            visibleFrets+=1;
+
+        for (int i = 0; i < visibleFrets; i++) {
+            SBitmap bitmap = new SBitmap(
+                    this.width - stepLad - ld,
+                    0,
+                    ladWidth,
+                    this.height,context,
+                    R.drawable.lad
+            );
             bitmap.setLayer(BACKGROUND_LAYER_2);
             bitmap.setKinematic(false);
-            bitmap.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
+            bitmap.setVisibleArea(new RectF(-ladWidth, height, width, 0.0f));
             backGroundLayer.add(bitmap);
             stepLad += fretWidth;
         }
@@ -202,7 +212,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         float c2 = 0.18f;
 
         for (int i = 0; i<6; i++) {
-            for (int j = 0; j<fretCount+1; j++) {
+            for (int j = 0; j < fretCount+1; j++) {
                 SBitmap shadow1 = new SBitmap(
                         shadowLadStep,
                         stringStep + heightDiv * c1,
