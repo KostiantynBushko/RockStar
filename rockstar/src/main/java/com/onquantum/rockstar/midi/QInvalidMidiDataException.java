@@ -1,6 +1,10 @@
-package com.onquantum.rockstar.qmidi;
+package midi;
 
 public class QInvalidMidiDataException extends Exception{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public QInvalidMidiDataException() {
 		super();
