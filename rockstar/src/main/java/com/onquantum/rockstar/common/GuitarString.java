@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.midi.QSequence;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 
 /**
@@ -54,7 +55,7 @@ public class GuitarString {
         int playId2 = 0;
         int playId3 = 0;
         playID[x] = soundPool.play(playId1,1,1,1,0,1);
-        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1);
+        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y));
 
         if ((x + 1) < (fretsCount + Slide)){
             playId2 = (y + 1) + (6 * (x+1));

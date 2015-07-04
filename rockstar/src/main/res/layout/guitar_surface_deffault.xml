@@ -113,7 +113,7 @@
         android:layout_below="@+id/relativeLayout"
         android:visibility="gone"/>
 
-    <com.onquantum.rockstar.guitars.GuitarViewDefault
+    <com.onquantum.rockstar.guitar.GuitarDefaultView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/guitarSurfaceView"

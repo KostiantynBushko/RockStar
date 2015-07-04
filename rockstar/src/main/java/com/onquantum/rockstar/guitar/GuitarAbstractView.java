@@ -1,4 +1,4 @@
-package com.onquantum.rockstar.guitars;
+package com.onquantum.rockstar.guitar;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,11 +7,11 @@ import android.view.SurfaceView;
 /**
  * Created by Admin on 8/18/14.
  */
-public abstract class GuitarAbstract extends SurfaceView {
+public abstract class GuitarAbstractView extends SurfaceView {
     protected boolean isTouchEnable = false;
 
 
-    public GuitarAbstract(Context context, AttributeSet attributeSet) {
+    public GuitarAbstractView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
     }
 
@@ -39,6 +39,4 @@ public abstract class GuitarAbstract extends SurfaceView {
     public void setTouchEnable(boolean touchEnable) { isTouchEnable = touchEnable; }
 
     public abstract void slideChange(int slide);
-
-
 }

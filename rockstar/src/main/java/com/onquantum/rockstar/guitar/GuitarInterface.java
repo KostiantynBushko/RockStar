@@ -1,4 +1,4 @@
-package com.onquantum.rockstar.guitars;
+package com.onquantum.rockstar.guitar;
 
 /**
  * Created by Admin on 8/10/14.

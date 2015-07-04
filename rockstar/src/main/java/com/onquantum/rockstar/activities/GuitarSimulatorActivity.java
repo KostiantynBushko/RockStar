@@ -1,16 +1,11 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.Debug;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -25,21 +20,18 @@ import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.FretsSlider;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
-import com.onquantum.rockstar.guitars.GuitarInterface;
-import com.onquantum.rockstar.guitars.GuitarAbstract;
-import com.onquantum.rockstar.guitars.GuitarViewDefault;
-import com.onquantum.rockstar.guitars.GuitarViewSlide;
+import com.onquantum.rockstar.guitar.GuitarInterface;
+import com.onquantum.rockstar.guitar.GuitarAbstractView;
+import com.onquantum.rockstar.guitar.GuitarDefaultView;
+import com.onquantum.rockstar.guitar.GuitarSlideView;
 import com.onquantum.rockstar.sequencer.QSoundPool;
-
-import fragments.FragmentListener;
-import fragments.SettingsFragment;
 
 /**
  * Created by Admin on 8/16/14.
  */
 public class GuitarSimulatorActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
 
-    private GuitarAbstract guitarSurfaceView;
+    private GuitarAbstractView guitarSurfaceView;
     private ProgressBar progressBar;
     private TextView progressText;
     private RelativeLayout controlPanel;
@@ -108,10 +100,10 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
 
         if(settings.getSlide()) {
             setContentView(R.layout.guitar_surface_slide);
-            guitarSurfaceView = (GuitarViewSlide)findViewById(R.id.guitarSurfaceView);
+            guitarSurfaceView = (GuitarSlideView)findViewById(R.id.guitarSurfaceView);
         }else{
             setContentView(R.layout.guitar_surface_deffault);
-            guitarSurfaceView = (GuitarViewDefault)findViewById(R.id.guitarSurfaceView);
+            guitarSurfaceView = (GuitarDefaultView)findViewById(R.id.guitarSurfaceView);
         }
         progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         progressText = (TextView)findViewById(R.id.progressText);
@@ -124,7 +116,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
                 progressText.setText(new String(Integer.toString(progress) + "%"));
             }
         });
-        guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarViewSlide.OnSoundLoadedCompleteListener() {
+        guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarSlideView.OnSoundLoadedCompleteListener() {
             @Override
             public void onSoundLoadedComplete() {
                 ((TextView)findViewById(R.id.helpText)).setVisibility(View.GONE);

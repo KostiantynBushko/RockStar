@@ -1,8 +1,7 @@
-package com.onquantum.rockstar.guitars;
+package com.onquantum.rockstar.guitar;
 
 import android.content.Context;
 import android.graphics.Point;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -26,7 +25,7 @@ import java.util.List;
 /**
  * Created by Admin on 8/20/14.
  */
-public class GuitarViewDefault extends GuitarAbstract {
+public class GuitarDefaultView extends GuitarAbstractView {
 
     private Context context;
     private SoundPool soundPool;
@@ -47,7 +46,7 @@ public class GuitarViewDefault extends GuitarAbstract {
 
     private boolean openString = false;
 
-    public GuitarViewDefault(final Context context, AttributeSet attributeSet) {
+    public GuitarDefaultView(final Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
 
         getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));

@@ -1,11 +1,8 @@
-package com.onquantum.rockstar.guitars;
+package com.onquantum.rockstar.guitar;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Point;
-import android.media.AudioManager;
 import android.media.SoundPool;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -26,7 +23,7 @@ import java.util.List;
 /**
  * Created by Admin on 8/16/14.
  */
-public class GuitarViewSlide extends GuitarAbstract {
+public class GuitarSlideView extends GuitarAbstractView {
 
     private Context context;
     private SoundPool soundPool;
@@ -42,7 +39,7 @@ public class GuitarViewSlide extends GuitarAbstract {
 
     private boolean openString = false;
 
-    public GuitarViewSlide(final Context context, AttributeSet attributeSet) {
+    public GuitarSlideView(final Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
         getHolder().addCallback(guitarRenderer = new GuitarRenderer(context));
         this.context = context;
@@ -107,7 +104,7 @@ public class GuitarViewSlide extends GuitarAbstract {
 
         if(openString) {
             if(x > frets - 1){
-                Log.i("info"," OPEN STRING TOUCH");
+                //Log.i("info"," OPEN STRING TOUCH");
                 x = 0;
             } else {
                 x+= Slide;
@@ -116,7 +113,7 @@ public class GuitarViewSlide extends GuitarAbstract {
             x+= Slide;
         }
 
-        Log.i("info", "TOUCH : x = " + x + " y = " + y);
+        //Log.i("info", "TOUCH : x = " + x + " y = " + y);
 
         switch(actionMask) {
             case MotionEvent.ACTION_POINTER_DOWN:{
