@@ -1,4 +1,4 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
 public class QMidiEvent {
 	// The MIDI message for this event.

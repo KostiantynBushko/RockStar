@@ -1,4 +1,4 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
 public class QInvalidMidiDataException extends Exception{
 	/**

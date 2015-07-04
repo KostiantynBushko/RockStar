@@ -1,5 +1,4 @@
-package midi;
-import midi.QInvalidMidiDataException;
+package com.onquantum.rockstar.midi;
 
 public class QSysexMessage extends QMidiMessage{
 	/*

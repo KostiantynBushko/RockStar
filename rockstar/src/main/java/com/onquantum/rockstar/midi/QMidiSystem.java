@@ -1,17 +1,17 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 
 public class QMidiSystem {
-	private static int[] MTRK = new int[]{'M','T','r','k'};
-	private QMidiSystem() {}
-	
-	public static QSequence getSequence(File file) throws QInvalidMidiDataException, IOException {
-        FileInputStream fileInputStream = new FileInputStream(file);
+    private static int[] MTRK = new int[]{'M','T','r','k'};
+    private QMidiSystem() {}
+
+    public static QSequence getSequence(InputStream inputStream) throws QInvalidMidiDataException, IOException {
         Vector<SimpleTrack> simpleTracks = null;
         int[] intArray;
         int midiFileFormat = -1;
@@ -19,130 +19,133 @@ public class QMidiSystem {
         int timingResolution = 0;
         float timingDivisionType = 0;
 
-		int fileSize = fileInputStream.available();
+        int fileSize = inputStream.available();
 
-		intArray = new int[fileSize];
-		int count = 0;
-		int b;
-		int c = 0;
-		while((b = fileInputStream.read()) != -1) {
-			intArray[count] = b;
-			//System.out.println( c + " : " + Integer.toHexString(b) + "h " + /*"ASCII : " + (char)b */ (byte)b); c++;
-			count++;
-		}
-		midiFileFormat = getFileFormat(fileInputStream, intArray);
-		numberOfTrack = getNumberOfTrack(fileInputStream, intArray);
-		timingDivisionType = getTimingDivisionType(intArray);
-		timingResolution = getTimingResolution(intArray);
+        intArray = new int[fileSize];
+        int count = 0;
+        int b;
+        int c = 0;
+        while((b = inputStream.read()) != -1) {
+            intArray[count] = b;
+            //System.out.println( c + " : " + Integer.toHexString(b) + "h " + /*"ASCII : " + (char)b */ (byte)b); c++;
+            count++;
+        }
+        midiFileFormat = getFileFormat(inputStream, intArray);
+        numberOfTrack = getNumberOfTrack(inputStream, intArray);
+        timingDivisionType = getTimingDivisionType(intArray);
+        timingResolution = getTimingResolution(intArray);
 
 
-		simpleTracks = findAllAddressOfTracks(fileSize,intArray);
-		Vector<QTrack> trackList = parseTracks(simpleTracks, intArray);
-
-        //System.out.println("Midi file format = " + midiFileFormat);
-
+        simpleTracks = findAllAddressOfTracks(fileSize,intArray);
+        Vector<QTrack> trackList = parseTracks(simpleTracks, intArray);
         return new QSequence(timingDivisionType,timingResolution,trackList);
-	}
+    }
+
+    public static QSequence getSequence(File file) throws QInvalidMidiDataException, IOException {
+        FileInputStream fileInputStream = new FileInputStream(file);
+        InputStream inputStream = (InputStream)fileInputStream;
+        return getSequence(inputStream);
+    }
 
 
-	private static void getHeader() {
-		try {
-			QSequence s = new QSequence(0,0);
-			s.tracks.add(new QTrack());
-		} catch (QInvalidMidiDataException e) {
-			e.printStackTrace();
-		}
-	}
-	// Get MIDI file format ( 0, 1, 2 ) 
-	private static int getFileFormat(FileInputStream fileInputStream, int[] intArray) {
-		if(fileInputStream == null)
-			return -1;
-		return ((intArray[8] << 8 & 0xFF00) | (intArray[9] & 0x00FF));
-	}
+    private static void getHeader() {
+        try {
+            QSequence s = new QSequence(0,0);
+            s.tracks.add(new QTrack());
+        } catch (QInvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+    }
+    // Get MIDI file format ( 0, 1, 2 )
+    private static int getFileFormat(InputStream inputStream, int[] intArray) {
+        if(inputStream == null)
+            return -1;
+        return ((intArray[8] << 8 & 0xFF00) | (intArray[9] & 0x00FF));
+    }
 
-	private static int getNumberOfTrack(FileInputStream fileInputStream, int[] intArray) {
-		if(fileInputStream == null)
-			return 0;
-		return ((intArray[10] << 8 & 0xFF00) | (intArray[11] & 0x00FF));
-	}
+    private static int getNumberOfTrack(InputStream inputStream, int[] intArray) {
+        if(inputStream == null)
+            return 0;
+        return ((intArray[10] << 8 & 0xFF00) | (intArray[11] & 0x00FF));
+    }
 
-	private static float getTimingDivisionType(int[] intArray) {
-		int timing = ((intArray[12] << 8 & 0xFF00) | (intArray[13] & 0x00FF));
-		if((timing & 0x8000) == 0) {
-			return 0.0f;
-		}else {
-			int t = timing & 0x7f00;
-			if(t == 24) {
-				return 24.0f;
-			}else if(t == 25) {
-				return 25.0f;
-			}else if(t == 29) {
-				return 29.97f;
-			}else if(t == 30) {
-				return 30.0f;
-			}else {
-				return 0.0f;
-			}
-		}
-	}
+    private static float getTimingDivisionType(int[] intArray) {
+        int timing = ((intArray[12] << 8 & 0xFF00) | (intArray[13] & 0x00FF));
+        if((timing & 0x8000) == 0) {
+            return 0.0f;
+        }else {
+            int t = timing & 0x7f00;
+            if(t == 24) {
+                return 24.0f;
+            }else if(t == 25) {
+                return 25.0f;
+            }else if(t == 29) {
+                return 29.97f;
+            }else if(t == 30) {
+                return 30.0f;
+            }else {
+                return 0.0f;
+            }
+        }
+    }
 
-	private static int getTimingResolution(int[] intArray) {
-		int timing = ((intArray[12] << 8 & 0xFF00) | (intArray[13] & 0x00FF));
-		return timing & 0x7fff;
-	}
-	
-	// Check if it is begin of track
-	private static boolean checkBeginOfTrack(int beginFromPosition, int[] intArray) {
-		int[] s = Arrays.copyOfRange(intArray, beginFromPosition, beginFromPosition + 4);
-		return Arrays.equals(s, MTRK);
-	}
-	
-	// Find all tracks in the file and save address of tracks to array
-	private static Vector<SimpleTrack> findAllAddressOfTracks(int fileSize, int[] intArray) {
-		int index = 0;
+    private static int getTimingResolution(int[] intArray) {
+        int timing = ((intArray[12] << 8 & 0xFF00) | (intArray[13] & 0x00FF));
+        return timing & 0x7fff;
+    }
+
+    // Check if it is begin of track
+    private static boolean checkBeginOfTrack(int beginFromPosition, int[] intArray) {
+        int[] s = Arrays.copyOfRange(intArray, beginFromPosition, beginFromPosition + 4);
+        return Arrays.equals(s, MTRK);
+    }
+
+    // Find all tracks in the file and save address of tracks to array
+    private static Vector<SimpleTrack> findAllAddressOfTracks(int fileSize, int[] intArray) {
+        int index = 0;
         Vector<SimpleTrack>simpleTrackVector = new Vector<SimpleTrack>();
-		while(index < fileSize) {
-			if(checkBeginOfTrack(index,intArray)) {
-				SimpleTrack simpleTrack = new SimpleTrack();
-				simpleTrack.address = index;
-				simpleTrack.size = getTrackSize(index,intArray);
-				simpleTrackVector.add(simpleTrack);
-			}
-			index++;
-		}
+        while(index < fileSize) {
+            if(checkBeginOfTrack(index,intArray)) {
+                SimpleTrack simpleTrack = new SimpleTrack();
+                simpleTrack.address = index;
+                simpleTrack.size = getTrackSize(index,intArray);
+                simpleTrackVector.add(simpleTrack);
+            }
+            index++;
+        }
         return simpleTrackVector;
-	}
-	
-	// Get track size
-	private static int getTrackSize(int trackAddress, int[] intArray) {
-	    int size = 0;
+    }
+
+    // Get track size
+    private static int getTrackSize(int trackAddress, int[] intArray) {
+        int size = 0;
         size |= ((byte)intArray[trackAddress + 4] & 0xFF) << 8;
         size |= ((byte)intArray[trackAddress + 5] & 0xFF) << 8;
         size |= ((byte)intArray[trackAddress + 6] & 0xFF) << 8;
         size |= ((byte)intArray[trackAddress + 7] & 0xFF);
-		return size;
-	}
+        return size;
+    }
 
-	
-	// Parse tracks from midi file
-	private static Vector<QTrack> parseTracks(Vector<SimpleTrack>simpleTracks, int[] intArray) {
+
+    // Parse tracks from midi file
+    private static Vector<QTrack> parseTracks(Vector<SimpleTrack>simpleTracks, int[] intArray) {
 
         Vector<QTrack>midiTracks = new Vector<QTrack>();
 
-		Iterator<SimpleTrack> iterator = simpleTracks.iterator();
+        Iterator<SimpleTrack> iterator = simpleTracks.iterator();
 
         int currentTrack = 0;
 
-		while(iterator.hasNext()) {
+        while(iterator.hasNext()) {
             midiTracks.add(new QTrack());
 
-			SimpleTrack track = iterator.next();
+            SimpleTrack track = iterator.next();
 
-			int trackSize = track.size;                           // Track size
-			int trackStartAddress = track.address;                // Track start address contain MTrk + address and messages
-			int trackEventsStartAddress = trackStartAddress + 8;  // 4 byte "MTrk" (0x4D 0x54 0x72 0x6B) + 4 chunk size
-			int dataByteMask = 0x7F;                              // 01111111b check if byte is data byte
-			int statusByteMask = 0x80;                            // 10000000b check id byte is status byte
+            int trackSize = track.size;                           // Track size
+            int trackStartAddress = track.address;                // Track start address contain MTrk + address and messages
+            int trackEventsStartAddress = trackStartAddress + 8;  // 4 byte "MTrk" (0x4D 0x54 0x72 0x6B) + 4 chunk size
+            int dataByteMask = 0x7F;                              // 01111111b check if byte is data byte
+            int statusByteMask = 0x80;                            // 10000000b check id byte is status byte
 
             int count = 0;
             int[] marker = new int[1];
@@ -216,13 +219,13 @@ public class QMidiSystem {
                         lastStatusByte = 0;
 
                         switch (intArray[marker[0]]) {
-                                // System exclusive
+                            // System exclusive
                             case 0xF0:
                             case 0xF7: {
                                 System.out.println(" ERROR UNDEFINED PARSER : " + Integer.toHexString(intArray[marker[0]]));
                                 break;
                             }
-                                //System common message
+                            //System common message
                             case 0xF1:
                             case 0xF3:{
                                 int statusByte = intArray[marker[0]];
@@ -341,9 +344,9 @@ public class QMidiSystem {
                 }
             }
             currentTrack += 1;
-		}
-		return midiTracks;
-	}
+        }
+        return midiTracks;
+    }
 
     public static byte[] CreateMidiFromSequence(QSequence sequence) {
         List<Byte>out = new ArrayList<Byte>();
@@ -455,7 +458,7 @@ public class QMidiSystem {
         for (int i = 0; i < out.size(); i++) {
             result[i] = out.get(i);
         }
-        
+
         return result;
     }
 
@@ -500,16 +503,9 @@ public class QMidiSystem {
     }
 
 
-	private static class SimpleTrack {
-		public SimpleTrack(){}
-		int address;
-		int size;
-	}
+    private static class SimpleTrack {
+        public SimpleTrack(){}
+        int address;
+        int size;
+    }
 }
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
    /*
     * A MetaMessage is a MidiMessage that is not meaningful to synthesizers,
@@ -16,7 +16,7 @@ package midi;
     * depending on the type of MetaMessage.
     */
 
-public class QMetaMessage extends QMidiMessage{
+public class QMetaMessage extends QMidiMessage {
 
      private static byte[] defaultMessage = { (byte)QMIDI.META,0 };
 

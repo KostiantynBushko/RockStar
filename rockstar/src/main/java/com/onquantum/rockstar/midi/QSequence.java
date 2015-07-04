@@ -1,6 +1,5 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
-import java.util.List;
 import java.util.Vector;
 
 public class QSequence {

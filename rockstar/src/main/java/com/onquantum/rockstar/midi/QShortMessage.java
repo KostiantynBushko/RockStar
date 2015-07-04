@@ -1,4 +1,4 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
 /*
  * 	A ShortMessage contains a MIDI message that has at most two data bytes following its status byte. 

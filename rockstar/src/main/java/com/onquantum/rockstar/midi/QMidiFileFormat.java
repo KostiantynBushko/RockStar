@@ -1,4 +1,4 @@
-package midi;
+package com.onquantum.rockstar.midi;
 
 import java.util.Collections;
 import java.util.HashMap;
