@@ -123,4 +123,8 @@ public class QMIDI {
         int octave = (note / 12) - 1;
         return NOTE_NAMES[index] + octave;
     }
+
+    public static int getOctaveForNote(int note) {
+        return (note / 12) - 1;
+    }
 }

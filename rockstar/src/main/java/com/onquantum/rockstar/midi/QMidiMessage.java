@@ -61,4 +61,11 @@ public abstract class QMidiMessage {
 
         return " Object [QMidiMessage] Type [" + MessageType.toString() + "] Status byte(" + Integer.toHexString(statusByte) + "h) " + QMIDI.StatusByte(statusByte);
     }
+
+	public int getDataByteOne() {
+		if(data.length > 1) {
+			return data[1];
+		}
+		return 0;
+	}
 }
