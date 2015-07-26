@@ -50,7 +50,6 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/imageView"
-            android:src="@drawable/neck"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />

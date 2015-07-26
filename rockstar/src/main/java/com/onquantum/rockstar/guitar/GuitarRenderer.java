@@ -5,12 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.svprimitive.SBitmap;
 import com.onquantum.rockstar.svprimitive.SCircle;
 import com.onquantum.rockstar.svprimitive.SGuitarString;
@@ -20,6 +22,7 @@ import com.onquantum.rockstar.svprimitive.SShape;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.TimeUnit;
@@ -28,14 +31,6 @@ import java.util.concurrent.TimeUnit;
  * Created by Admin on 8/16/14.
  */
 public class GuitarRenderer implements SurfaceHolder.Callback {
-
-    private final int BACKGROUND_LAYER = 1000;
-    private final int BACKGROUND_LAYER_1 = 1001;
-    private final int BACKGROUND_LAYER_2 = 1002;
-    private final int STRING_SHADOW_LAYER =2000;
-    private final int STRING_LAYER = 3000;
-    private final int PENTATONIC_LAYER = 4000;
-    private final int BAR_NUMBER_LAYER = 20001;
 
     private int fretCount = 0;
     private float fretWidth = 0;
@@ -74,6 +69,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     private boolean fretsNumberVisible = false;
     private boolean touchVisible = false;
     private boolean sliderFretsVisible = false;
+    private boolean isNotesVisible = false;
 
     //Slide
     private int Slide = 0;
@@ -106,6 +102,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         touchVisible = settings.isTouchesVisible();
         fretsNumberVisible = settings.isFretsNumberVisible();
         sliderFretsVisible = settings.isFretsSliderVisible();
+        isNotesVisible = settings.getShowNotes();
     }
 
     @Override
@@ -145,7 +142,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         linePaint.setColor(Color.RED);
         for (int i = 0; i<6; i++) {
             SLine line = new SLine(0,height - (height / 6f * i),width,height - (height / 6f * i),linePaint);
-            line.setLayer(PENTATONIC_LAYER);
+            line.setLayer(Layer.PENTATONIC_LAYER);
             testLine.add(line);
         }
 
@@ -160,7 +157,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             } else {
                 bitmap = new SBitmap(this.width - step, 0, fretWidth, this.height, context, R.drawable.b0);
             }
-            bitmap.setLayer(BACKGROUND_LAYER);
+            bitmap.setLayer(Layer.BACKGROUND_LAYER_0);
             bitmap.setVisibleArea(fretsVisibleArea);
             bitmap.setKinematic(true);
             backGroundLayer.add(bitmap);
@@ -170,7 +167,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 if(i == (fretCount-1)) {
                     SBitmap soundCapture;
                     soundCapture = new SBitmap(this.width - step,0,fretWidth,this.height,context, R.drawable.sound_capture);
-                    soundCapture.setLayer(BACKGROUND_LAYER);
+                    soundCapture.setLayer(Layer.BACKGROUND_LAYER_0);
                     soundCapture.setKinematic(false);
                     soundCapture.setVisibleArea(new RectF(width - step - fretWidth, height, fretWidth, 0.0f));
                     backGroundLayer.add(soundCapture);
@@ -196,7 +193,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     this.height,context,
                     R.drawable.lad
             );
-            bitmap.setLayer(BACKGROUND_LAYER_2);
+            bitmap.setLayer(Layer.BACKGROUND_LAYER_2);
             bitmap.setKinematic(false);
             bitmap.setVisibleArea(new RectF(-ladWidth, height, width, 0.0f));
             backGroundLayer.add(bitmap);
@@ -223,7 +220,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 );
                 shadowLadStep += fretWidth;
                 shadow1.setAlpha(alpha);
-                shadow1.setLayer(STRING_SHADOW_LAYER);
+                shadow1.setLayer(Layer.STRING_SHADOW_LAYER);
                 shadow1.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
                 backGroundLayer.add(shadow1);
 
@@ -236,7 +233,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         R.drawable.shadow_p1
                 );
                 shadow.setAlpha(alpha);
-                shadow.setLayer(STRING_SHADOW_LAYER);
+                shadow.setLayer(Layer.STRING_SHADOW_LAYER);
                 shadow.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
                 backGroundLayer.add(shadow);
                 shadowStep += fretWidth;
@@ -253,41 +250,41 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         SGuitarString string1 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight, context,R.drawable.string_3);
         string1.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string1);
-        string1.setLayer(STRING_LAYER);
+        string1.setLayer(Layer.STRING_LAYER);
 
         stringHeight = heightDiv * 0.14f;
         inc -= heightDiv * 2.5f;
         SGuitarString string2 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_3);
         string2.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string2);
-        string2.setLayer(STRING_LAYER);
+        string2.setLayer(Layer.STRING_LAYER);
 
         stringHeight = heightDiv * 0.16f;
         inc -= heightDiv * 2.5f;
         SGuitarString string3 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_3);
         string3.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string3);
-        string3.setLayer(STRING_LAYER);
+        string3.setLayer(Layer.STRING_LAYER);
 
         stringHeight = heightDiv * 0.25f;
         inc -= heightDiv * 2.5f;
         SGuitarString string4 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_5);
         string4.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string4);
-        string4.setLayer(STRING_LAYER);
+        string4.setLayer(Layer.STRING_LAYER);
 
         stringHeight = heightDiv * 0.3f;
         inc -= heightDiv * 2.5f;
         SGuitarString string5 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_5);
         string5.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
         guitarString.add(string5);
-        string5.setLayer(STRING_LAYER);
+        string5.setLayer(Layer.STRING_LAYER);
 
         stringHeight = heightDiv * 0.35f;
         inc -= heightDiv * 2.5f;
         SGuitarString string6 = new SGuitarString(0,inc + stringHeight / 2, width,stringHeight,context,R.drawable.string_6);
         string6.setVisibleArea(new RectF(0.0f, height, width, 0.0f));
-        string6.setLayer(STRING_LAYER);
+        string6.setLayer(Layer.STRING_LAYER);
         guitarString.add(string6);
 
         /*******************************************************************************************
@@ -301,6 +298,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         drawObjects.addAll(pentatonicObjectsList);
 
         showFretsNumber(fretsNumberVisible);
+        showNotes(isNotesVisible);
         sortLayer();
         loaded = true;
     }
@@ -319,6 +317,22 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             }
         }
     }
+    /**********************************************************************************************/
+    public void AddDrawableObject(SShape drawObject) {
+        this.drawObjects.add(drawObject);
+        sortLayer();
+    }
+
+    public boolean RemoveDrawableObjectByTag(String tag) {
+        ListIterator<SShape> iterator = this.drawObjects.listIterator();
+        while (iterator.hasNext()) {
+            if(iterator.next().getTag().equals(tag)) {
+                iterator.remove();
+            }
+        }
+        return false;
+    }
+
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         boolean retry = true;
@@ -333,9 +347,10 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         }
     }
 
+    /**********************************************************************************************/
     /* Draw Frame */
+    /**********************************************************************************************/
     class DrawFrame extends Thread {
-
         private boolean isRunning = false;
         private SurfaceHolder surfaceHolder;
         public DrawFrame(SurfaceHolder surfaceHolder) {
@@ -415,7 +430,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             }
         }
     }
-
     /**********************************************************************************************/
     /* Touches */
     /**********************************************************************************************/
@@ -528,6 +542,9 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             }
         }).start();
     }
+    /**********************************************************************************************/
+    /**/
+    /**********************************************************************************************/
     private void drawPentatonicMask() {
         if (pentatonicList != null && !pentatonicList.isEmpty()) {
             List<Pentatonic>pList = new ArrayList<Pentatonic>();
@@ -559,7 +576,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     circle.setVisibleArea(fretsVisibleArea);
                 }
                 circle.setKinematic(false);
-                circle.setLayer(PENTATONIC_LAYER);
+                circle.setLayer(Layer.PENTATONIC_LAYER);
 
 
                 pentatonicMask.add(circle);
@@ -637,7 +654,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         radius = fretWidth / 3;
                     }
                     circle = new SCircle(this.width - step + fretWidth / 2, this.height / 2, radius, circlePaint);
-                    circle.setLayer(BAR_NUMBER_LAYER);
+                    circle.setLayer(Layer.BAR_NUMBER_LAYER);
                     circle.setKinematic(true);
                     circle.drawNumber(i+1, textPaint);
                     circle.setVisibleArea(fretsVisibleArea);
@@ -650,5 +667,57 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             barNumberObjects.clear();
         }
     }
-}
 
+    private void showNotes(boolean visible) {
+        if (visible) {
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            textPaint.setColor(Color.WHITE);
+            for (int x = 0; x < 25; x++) {
+                for (int y = 0; y < 6; y++) {
+                    Paint notesPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                    notesPaint.setColor(getColorForOctave(QSoundPool.getInstance().GetOctaveForGuitarString(x,y)));
+                    notesPaint.setAlpha(150);
+
+                    int _y = (int) ((SGuitarString) guitarString.get(y)).getPosition().y;
+                    int sh = (int)guitarString.get(y).getHeight();
+                    SCircle circle;
+                    if(x == 0) {
+                        circle = new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 22, notesPaint);
+                        circle.setVisibleArea(new RectF(0.0f,height,fretsVisibleArea.left,0.0f));
+                        circle.setKinematic(false);
+                    } else {
+                        circle = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 22, notesPaint);
+                        circle.setVisibleArea(fretsVisibleArea);
+                        circle.setKinematic(true);
+                    }
+                    circle.setLayer(Layer.NOTES_LAYER);
+                    String note = QSoundPool.getInstance().GetNoteForGuitarString(x,y);//y + "," + x;
+                    circle.drawText(note, textPaint);
+                    drawObjects.add(circle);
+                }
+            }
+        }
+    }
+
+    private int getColorForOctave(int octave) {
+        switch (octave) {
+            case 0: return Color.WHITE;
+            case 1: return Color.CYAN;
+            case 2: return Color.BLUE;
+            case 3: return Color.RED;
+            case 4: return Color.YELLOW;
+        }
+        return Color.WHITE;
+    }
+
+    public static class Layer {
+        private static final int BACKGROUND_LAYER_0 = 1000;
+        private static final int BACKGROUND_LAYER_1 = 1001;
+        private static final int BACKGROUND_LAYER_2 = 1002;
+        private static final int STRING_SHADOW_LAYER =2000;
+        private static final int STRING_LAYER = 3000;
+        private static final int NOTES_LAYER = 3001;
+        private static final int PENTATONIC_LAYER = 4000;
+        private static final int BAR_NUMBER_LAYER = 2001;
+    }
+}

@@ -13,22 +13,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.android.Facebook;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.onquantum.rockstar.activities.AboutActivity;
+import com.onquantum.rockstar.activities.SoundPacksListActivity;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.activities.GuitarSimulatorActivity;
+import com.onquantum.rockstar.services.UpdateGuitarsService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -39,8 +35,6 @@ import java.net.URL;
 import io.fabric.sdk.android.Fabric;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 
 public class RockStarMain extends Activity {
 
@@ -67,6 +61,7 @@ public class RockStarMain extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //setContentView(R.layout.main);
         setContentView(R.layout.main);
         context = this;
 
@@ -201,6 +196,14 @@ public class RockStarMain extends Activity {
             }
         });
 
+        ((Button)findViewById(R.id.button4)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context, SoundPacksListActivity.class));
+                //startService(new Intent(context, UpdateGuitarsService.class));
+            }
+        });
+
         Typeface titleFont = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(titleFont);
 
@@ -241,6 +244,14 @@ public class RockStarMain extends Activity {
     protected void onStart() {
         super.onStart();
         googleApiClient.connect();
+
+        startService(new Intent(context, UpdateGuitarsService.class));
+
+        //DBHelper dbHelper = new DBHelper(this);
+        //SQLiteDatabase db = dbHelper.getWritableDatabase();
+        //int count = DBGuitarTable.GetCountOfRows(context,DBGuitarTable.DB_GUITAR_TABLE);
+        //Log.i("info"," DBGuitarTable ROWS COUNT : " + count);
+
     }
     @Override
     protected void onStop() {

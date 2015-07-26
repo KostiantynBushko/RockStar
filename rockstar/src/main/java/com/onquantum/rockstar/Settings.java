@@ -25,6 +25,7 @@ public class Settings {
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
     private static final String SHOW_TOUCHES = "show_touches";
     private static final String OPEN_STRING = "open_string";
+    private static final String SHOW_NOTS = "show_notes";
 
     // Guitar package type
     private static final String CURRENT_GUITAR_PACKAGE = "current_guitar_package";
@@ -168,6 +169,16 @@ public class Settings {
     public void setOpenString(boolean enabled) {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(OPEN_STRING, enabled);
+        editor.commit();
+    }
+
+    //Show note and octave for string
+    public boolean getShowNotes() {
+        return settings.getBoolean(SHOW_NOTS, false);
+    }
+    public void setShowNotes(Boolean enabled) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(SHOW_NOTS, enabled);
         editor.commit();
     }
 }

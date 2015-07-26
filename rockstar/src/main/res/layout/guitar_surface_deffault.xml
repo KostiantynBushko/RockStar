@@ -30,7 +30,7 @@
             android:layout_marginRight="8dp"
             android:background="@android:color/transparent"
             android:src="@drawable/settings_button_bar"
-            android:layout_alignTop="@+id/button1"
+            android:layout_alignTop="@id/button1"
             android:layout_alignParentRight="true"/>
 
         <ImageButton

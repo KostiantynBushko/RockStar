@@ -21,8 +21,10 @@
 
     <string name="facebook_app_id">1531825403764639</string>
 
+    <color name="white">#ffffffff</color>
     <color name="gray">#ffa6a4a5</color>
     <color name="dark_gray">#444444</color>
+    <color name="black">#000000</color>
     <color name="green">#ff9ad39a</color>
     <color name="blue">#ff516fb9</color>
     <color name="red">#fffb7d7b</color>

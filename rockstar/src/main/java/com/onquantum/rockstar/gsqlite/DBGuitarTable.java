@@ -25,6 +25,8 @@ public class DBGuitarTable extends DBAbstractTable{
     public static String PURCHASE_ID = "_purchase_id";
     public static String SAMPLE_SOUND = "_sample_sound";
     public static String DESCRIPTION = "_description";
+    public static String SUCCESS_PURCHASED = "_success_purchased";
+
     public static String IS_ACTIVE = "is_active";
 
     @Override
@@ -35,7 +37,8 @@ public class DBGuitarTable extends DBAbstractTable{
                         + ICON + " text,"
                         + PURCHASE_ID + " integer,"
                         + SAMPLE_SOUND + " text,"
-                        + DESCRIPTION + " text" + ");"
+                        + DESCRIPTION + " text,"
+                        + SUCCESS_PURCHASED + " integer" + ");"
         );
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME,"Clean");
@@ -43,6 +46,7 @@ public class DBGuitarTable extends DBAbstractTable{
         contentValues.put(PURCHASE_ID,0);
         contentValues.put(SAMPLE_SOUND, "clean.mp3");
         contentValues.put(DESCRIPTION,"Clean electric guitar");
+        contentValues.put(SUCCESS_PURCHASED,1);
 
         long id = db.insert(DB_GUITAR_TABLE,null,contentValues);
         Log.i("info","INSERT " + DB_GUITAR_TABLE + " id: " + id);
@@ -103,6 +107,7 @@ public class DBGuitarTable extends DBAbstractTable{
             contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
             contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
             contentValues.put(DESCRIPTION,guitarEntity.description);
+            contentValues.put(SUCCESS_PURCHASED, guitarEntity.success_purchased);
 
             long ret = db.insert(DB_GUITAR_TABLE, null, contentValues);
             Log.i("info"," INSERT : " + ret + " " + guitarEntity.toString());

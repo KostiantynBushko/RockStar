@@ -23,9 +23,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Bushko on 7/15/15.
@@ -100,7 +98,7 @@ public class UpdateGuitarsService extends Service {
                 LinkedList<GuitarEntity>guitarEntities = new LinkedList<GuitarEntity>();
                 JSONArray guitarObjects = new JSONArray(stringBuilder.toString());
                 for (int i = 0; i < guitarObjects.length(); i++) {
-                    GuitarEntity guitarEntity = GuitarEntity.GetGuitarEntity((JSONObject) guitarObjects.get(i));
+                    GuitarEntity guitarEntity = GuitarEntity.CreateGuitarEntity((JSONObject) guitarObjects.get(i));
                     Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
                     guitarEntities.add(guitarEntity);
                 }

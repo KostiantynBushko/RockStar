@@ -3,19 +3,21 @@
     <item android:state_pressed="true">
         <shape>
             <solid android:color="#ffbcd6fa"/>
-            <padding android:left="5dip"
-                android:right="5dip"
-                android:top="5dip"
-                android:bottom="5dip"/>
+            <padding
+                android:left="0dip"
+                android:right="0dip"
+                android:top="0dip"
+                android:bottom="0dip"/>
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="#ffffffff"/>
-            <padding android:left="5dip"
-                android:right="5dip"
-                android:top="5dip"
-                android:bottom="5dip"/>
+            <solid android:color="#ffffff"/>
+            <padding
+                android:left="0dip"
+                android:right="0dip"
+                android:top="0dip"
+                android:bottom="0dip"/>
         </shape>
     </item>
 </selector>

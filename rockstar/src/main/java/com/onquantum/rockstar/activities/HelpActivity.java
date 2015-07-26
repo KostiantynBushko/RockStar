@@ -52,13 +52,13 @@ public class HelpActivity extends Activity {
         listItems.add(item);
 
         item = new HashMap<String, Object>();
-        item.put(ICON,R.drawable.sound);
+        //item.put(ICON,R.drawable.sound);
         item.put(TITLE,getResources().getString(R.string.sound_channels));
         item.put(TEXT,getResources().getString(R.string.sound_channels_help));
         listItems.add(item);
 
         item = new HashMap<String, Object>();
-        item.put(ICON,R.drawable.neck);
+       // item.put(ICON,R.drawable.neck);
         item.put(TITLE,getResources().getString(R.string.number_of_bar));
         item.put(TEXT,getResources().getString(R.string.number_of_bar_help));
         listItems.add(item);

@@ -10,7 +10,7 @@ public class SCircle extends SShape {
 
     protected float centerX = 0, centerY = 0,radius = 0;
     private Paint textPaint = null;
-    private String numberText = null;
+    private String text = null;
     private int number = 0;
     private int textSize = 0;
 
@@ -43,9 +43,9 @@ public class SCircle extends SShape {
             if((centerX - radius) < visibleArea.left || (centerX + radius) > visibleArea.right)
                 return;
             canvas.drawCircle(centerX,centerY, radius, paint);
-            if (numberText == null)
+            if (text == null)
                 return;
-            canvas.drawText(numberText,centerX,centerY+radius/4,textPaint);
+            canvas.drawText(text,centerX,centerY+radius/4,textPaint);
         }
     }
 
@@ -86,8 +86,15 @@ public class SCircle extends SShape {
         this.textPaint = paint;
         this.textPaint.setTextSize(radius);
         this.textPaint.setTextAlign(Paint.Align.CENTER);
-        numberText = Integer.toString(number);
+        text = Integer.toString(number);
         this.number = number;
+    }
+
+    public void drawText(String text, Paint paint) {
+        this.textPaint = paint;
+        this.textPaint.setTextSize(radius);
+        this.textPaint.setTextAlign(Paint.Align.CENTER);
+        this.text = text;
     }
 
     public int getNumber() {

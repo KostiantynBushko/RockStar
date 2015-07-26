@@ -60,5 +60,14 @@ public class FretsSettingsActivity extends Activity {
                 settings.setTouchesVisibility(isOn);
             }
         });
+
+        SwitchButton showNotes = (SwitchButton)findViewById(R.id.showNotes);
+        showNotes.Set(new Settings(context).getShowNotes());
+        showNotes.setOnSwitchListener(new SwitchButton.OnSwitchListener() {
+            @Override
+            public void onSwitchChange(boolean isOn) {
+                new Settings(context).setShowNotes(isOn);
+            }
+        });
     }
 }

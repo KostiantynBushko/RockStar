@@ -25,6 +25,8 @@ import com.onquantum.rockstar.gsqlite.GuitarEntity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Admin on 7/23/15.
@@ -81,9 +83,15 @@ public class SoundPackActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //progressBar.setVisibility(View.VISIBLE);
-                stopButton.setVisibility(View.INVISIBLE);
                 playButton.setVisibility(View.INVISIBLE);
-                PlaySample();
+                stopButton.setVisibility(View.VISIBLE);
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        PlaySample();
+                    }
+                }, 100);
+                //PlaySample();
             }
         });
 
@@ -126,8 +134,6 @@ public class SoundPackActivity extends Activity {
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
                 Log.i("info", " MediaPlayer : Buffering Update = " + percent + " %");
                 //progressBar.setVisibility(View.INVISIBLE);
-                playButton.setVisibility(View.INVISIBLE);
-                stopButton.setVisibility(View.VISIBLE);
             }
         });
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

@@ -8,7 +8,6 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.guitars.GuitarInterface;
 
 /**
  * Created by Admin on 6/28/14.

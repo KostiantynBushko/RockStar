@@ -13,13 +13,14 @@ public class GuitarEntity {
     public int purchase_id = 0;
     public String sample_sound = null;
     public String description = null;
+    public boolean success_purchased = false;
 
     @Override
     public String toString() {
         return "id : " + id + ", name : " + name + ", icon : " + icon + ", purchase_id : " + purchase_id + ", sample_sound = " + sample_sound + ", description = " + description;
     }
 
-    public static GuitarEntity GetGuitarEntity(JSONObject jsonObject) {
+    public static GuitarEntity CreateGuitarEntity(JSONObject jsonObject) {
         GuitarEntity guitarEntity = new GuitarEntity();
         try {
             guitarEntity.id = jsonObject.getInt(DBGuitarTable.ID);
@@ -28,6 +29,7 @@ public class GuitarEntity {
             guitarEntity.purchase_id = jsonObject.getInt(DBGuitarTable.PURCHASE_ID);
             guitarEntity.sample_sound = jsonObject.getString(DBGuitarTable.SAMPLE_SOUND);
             guitarEntity.description = jsonObject.getString(DBGuitarTable.DESCRIPTION);
+            guitarEntity.success_purchased = false;
         } catch (JSONException e) {
             e.printStackTrace();
         }
