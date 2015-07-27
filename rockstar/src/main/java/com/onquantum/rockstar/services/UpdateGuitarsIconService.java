@@ -1,6 +1,7 @@
 package com.onquantum.rockstar.services;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
@@ -101,7 +102,7 @@ public class UpdateGuitarsIconService extends Service {
 
                 // Read data from http
                 //BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                File iconFile = new File(FileSystem.ICON_PATH,this.iconFileName);
+                File iconFile = new File(FileSystem.GetIconPath(),this.iconFileName);
                 FileOutputStream fileOutputStream = new FileOutputStream(iconFile);
                 InputStream inputStream = httpURLConnection.getInputStream();
                 byte[] buffer = new byte[1024];

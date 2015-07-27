@@ -20,14 +20,8 @@ public class RockStarApplication extends Application {
         super.onCreate();
         context = getApplicationContext();
 
-        File rootPath = new File(FileSystem.ROOT_PATH);
-        if(rootPath.exists() == false) {
-            rootPath.mkdir();
-        }
-        File iconPath = new File(FileSystem.ICON_PATH);
-        if(iconPath.exists() == false) {
-            iconPath.mkdir();
-        }
+        FileSystem.GetRootPath();
+        FileSystem.GetIconPath();
     }
 
     public static Context getContext() {

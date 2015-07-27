@@ -112,7 +112,7 @@ public class SoundPacksListActivity extends Activity {
     }
 
     private Bitmap soundPackIcon(String iconFileName) {
-        File iconFile = new File(FileSystem.ICON_PATH, iconFileName);
+        File iconFile = new File(FileSystem.GetIconPath(), iconFileName);
         Bitmap bitmap = null;
         if(iconFile.exists()) {
             bitmap = BitmapFactory.decodeFile(iconFile.getAbsolutePath());
@@ -125,7 +125,7 @@ public class SoundPacksListActivity extends Activity {
     private void updateIcon(int itemId, String iconFileName) {
         if(soundPackList == null || itemId < 0)
             return;
-        File iconFile = new File(FileSystem.ICON_PATH, iconFileName);
+        File iconFile = new File(FileSystem.GetIconPath(), iconFileName);
         Bitmap bitmap = null;
         if(iconFile.exists()) {
             bitmap = BitmapFactory.decodeFile(iconFile.getAbsolutePath());

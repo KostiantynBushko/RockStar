@@ -64,7 +64,7 @@ public class SoundPackActivity extends Activity {
         soundPackName.setTypeface(typeFaceCapture);
 
 
-        File iconFile = new File(FileSystem.ICON_PATH, guitarEntity.icon);
+        File iconFile = new File(FileSystem.GetIconPath(), guitarEntity.icon);
         Bitmap bitmap = null;
         if(iconFile.exists()) {
             bitmap = BitmapFactory.decodeFile(iconFile.getAbsolutePath());
