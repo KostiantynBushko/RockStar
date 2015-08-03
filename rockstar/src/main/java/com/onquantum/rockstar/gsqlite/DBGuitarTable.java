@@ -21,32 +21,37 @@ public class DBGuitarTable extends DBAbstractTable{
     public  static String DB_GUITAR_TABLE = "guitar_tb";
     public static String ID = "_id";
     public static String NAME = "_name";
-    public static String ICON = "_icon";
+    public static String ARTICLE = "_article";
     public static String PURCHASE_ID = "_purchase_id";
+    public static String ICON = "_icon";
     public static String SAMPLE_SOUND = "_sample_sound";
     public static String DESCRIPTION = "_description";
     public static String SUCCESS_PURCHASED = "_success_purchased";
-
-    public static String IS_ACTIVE = "is_active";
+    public static String IS_ACTIVE = "is_available";
 
     @Override
     public void Create(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + DB_GUITAR_TABLE + " ("
                         + ID + " integer primary key autoincrement,"
                         + NAME + " text,"
-                        + ICON + " text,"
+                        + ARTICLE + " text,"
                         + PURCHASE_ID + " integer,"
+                        + ICON + " text,"
                         + SAMPLE_SOUND + " text,"
+                        + SUCCESS_PURCHASED + " integer,"
                         + DESCRIPTION + " text,"
-                        + SUCCESS_PURCHASED + " integer" + ");"
+                        + IS_ACTIVE + " integer" + ");"
         );
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME,"Clean");
-        contentValues.put(ICON,"clean.png");
+        contentValues.put(ARTICLE, "clean");
         contentValues.put(PURCHASE_ID,0);
+        contentValues.put(SUCCESS_PURCHASED,1);
+        contentValues.put(ICON,"clean.png");
         contentValues.put(SAMPLE_SOUND, "clean.mp3");
         contentValues.put(DESCRIPTION,"Clean electric guitar");
-        contentValues.put(SUCCESS_PURCHASED,1);
+        contentValues.put(IS_ACTIVE,1);
+
 
         long id = db.insert(DB_GUITAR_TABLE,null,contentValues);
         Log.i("info","INSERT " + DB_GUITAR_TABLE + " id: " + id);
@@ -66,10 +71,13 @@ public class DBGuitarTable extends DBAbstractTable{
             GuitarEntity guitarEntity = new GuitarEntity();
             guitarEntity.id = cursor.getInt(0);
             guitarEntity.name = cursor.getString(1);
-            guitarEntity.icon = cursor.getString(2);
+            guitarEntity.article = cursor.getString(2);
             guitarEntity.purchase_id = cursor.getInt(3);
-            guitarEntity.sample_sound = cursor.getString(4);
-            guitarEntity.description = cursor.getString(5);
+            guitarEntity.icon = cursor.getString(4);
+            guitarEntity.sample_sound = cursor.getString(5);
+            guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+            guitarEntity.description = cursor.getString(7);
+            guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
             guitars.add(guitarEntity);
             cursor.moveToNext();
         }
@@ -89,10 +97,13 @@ public class DBGuitarTable extends DBAbstractTable{
         GuitarEntity guitarEntity = new GuitarEntity();
         guitarEntity.id = cursor.getInt(0);
         guitarEntity.name = cursor.getString(1);
-        guitarEntity.icon = cursor.getString(2);
+        guitarEntity.article = cursor.getString(2);
         guitarEntity.purchase_id = cursor.getInt(3);
-        guitarEntity.sample_sound = cursor.getString(4);
-        guitarEntity.description = cursor.getString(5);
+        guitarEntity.icon = cursor.getString(4);
+        guitarEntity.sample_sound = cursor.getString(5);
+        guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+        guitarEntity.description = cursor.getString(7);
+        guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
         cursor.close();
         db.close();
         return guitarEntity;
@@ -103,14 +114,15 @@ public class DBGuitarTable extends DBAbstractTable{
         for (GuitarEntity guitarEntity : guitarEntities) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(NAME, guitarEntity.name);
-            contentValues.put(ICON, guitarEntity.icon);
+            contentValues.put(ARTICLE, guitarEntity.article);
             contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
+            contentValues.put(ICON, guitarEntity.icon);
             contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
+            contentValues.put(SUCCESS_PURCHASED, (guitarEntity.success_purchased == true) ? 1 : 0);
             contentValues.put(DESCRIPTION,guitarEntity.description);
-            contentValues.put(SUCCESS_PURCHASED, guitarEntity.success_purchased);
-
+            contentValues.put(IS_ACTIVE, (guitarEntity.is_active == true) ? 1 : 0);
             long ret = db.insert(DB_GUITAR_TABLE, null, contentValues);
-            Log.i("info"," INSERT : " + ret + " " + guitarEntity.toString());
+            Log.i("info"," GUITAR TABLE INSERT : " + ret + " " + guitarEntity.toString());
         }
         db.close();
     }
