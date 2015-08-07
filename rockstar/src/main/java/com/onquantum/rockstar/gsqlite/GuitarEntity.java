@@ -1,5 +1,7 @@
 package com.onquantum.rockstar.gsqlite;
 
+import android.util.Log;
+
 import com.onquantum.rockstar.file_system.FileSystem;
 
 import org.json.JSONException;
@@ -23,7 +25,13 @@ public class GuitarEntity {
 
     @Override
     public String toString() {
-        return "id : " + id + ", name : " + name + ", article : " + article + ", icon : " + icon + ", purchase_id : " + purchase_id + ", sample_sound = " + sample_sound + ", description = " + description;
+        return "id : " + id
+                + ", name : " + name
+                + ", article : " + article
+                + ", icon : " + icon
+                + ", purchase_id : " + purchase_id
+                + ", sample_sound = " + sample_sound
+                + ", description = " + description;
     }
 
     public static GuitarEntity CreateGuitarEntity(JSONObject jsonObject) {
@@ -47,7 +55,7 @@ public class GuitarEntity {
     public boolean isSoundPackAvailable() {
         if(id == 1)
             return true;
-        File filesDir = new File(FileSystem.GetSoundFilesPath());
+        File filesDir = new File(FileSystem.GetSoundFilesPath(article));
         if(filesDir.isDirectory()) {
             long fileCount = filesDir.list().length;
             if(fileCount < 150)
@@ -56,4 +64,19 @@ public class GuitarEntity {
         }
         return false;
     }
+
+    public boolean isSoundPackAvailable(long[] progress) {
+        if(id == 1)
+            return true;
+        File filesDir = new File(FileSystem.GetSoundFilesPath(article));
+        if(filesDir.isDirectory()) {
+            long fileCount = filesDir.list().length;
+            progress[0] = fileCount;
+            if(fileCount < 150)
+                return false;
+            return true;
+        }
+        return false;
+    }
+
 }

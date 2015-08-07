@@ -1,6 +1,7 @@
 package com.onquantum.rockstar.file_system;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.onquantum.rockstar.RockStarApplication;
 
@@ -36,6 +37,16 @@ public class FileSystem {
 
     public static String GetSoundFilesPath() {
         File soundFilesPath = new File(SOUND_FILES_PATH);
+        if(soundFilesPath.exists() == false) {
+            if(soundFilesPath.mkdirs() == false) {
+                return null;
+            }
+        }
+        return soundFilesPath.toString();
+    }
+
+    public static String GetSoundFilesPath(String dir) {
+        File soundFilesPath = new File(SOUND_FILES_PATH + dir);
         if(soundFilesPath.exists() == false) {
             if(soundFilesPath.mkdirs() == false) {
                 return null;

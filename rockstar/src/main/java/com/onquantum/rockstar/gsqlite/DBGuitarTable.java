@@ -109,6 +109,36 @@ public class DBGuitarTable extends DBAbstractTable{
         return guitarEntity;
     }
 
+    public static GuitarEntity GetGuitarEntityByArticle(Context context, String article) {
+        SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
+        String query = "SELECT * FROM " + DB_GUITAR_TABLE + " WHERE " + ARTICLE + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{article});
+        if(cursor.getCount() == 0)
+            return null;
+        cursor.moveToFirst();
+        GuitarEntity guitarEntity = getGuitarEntity(cursor);
+        cursor.close();
+        db.close();
+        return guitarEntity;
+    }
+
+    private static GuitarEntity getGuitarEntity(Cursor cursor) {
+        if(cursor.getCount() == 0)
+            return null;
+        GuitarEntity guitarEntity = new GuitarEntity();
+        guitarEntity.id = cursor.getInt(0);
+        guitarEntity.name = cursor.getString(1);
+        guitarEntity.article = cursor.getString(2);
+        guitarEntity.purchase_id = cursor.getInt(3);
+        guitarEntity.icon = cursor.getString(4);
+        guitarEntity.sample_sound = cursor.getString(5);
+        guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+        guitarEntity.description = cursor.getString(7);
+        guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
+
+        return guitarEntity;
+    }
+
     public static void AddGuitarEntities(Context context, List<GuitarEntity> guitarEntities) {
         SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
         for (GuitarEntity guitarEntity : guitarEntities) {
@@ -125,5 +155,33 @@ public class DBGuitarTable extends DBAbstractTable{
             Log.i("info"," GUITAR TABLE INSERT : " + ret + " " + guitarEntity.toString());
         }
         db.close();
+    }
+
+    public static void SetActiveGuitar(Context context, long id) {
+        SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
+        db.execSQL("UPDATE " + DB_GUITAR_TABLE + " SET " + IS_ACTIVE + " = 0" + " WHERE " + IS_ACTIVE + "=1" );
+        db.execSQL("UPDATE " + DB_GUITAR_TABLE + " SET " + IS_ACTIVE + " = 1" + " WHERE " + ID + "=" + id);
+        db.close();
+    }
+
+    public static String GetCurrentActivePackageName(Context context) {
+        SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
+        String query = "SELECT " + ARTICLE + " FROM " + DB_GUITAR_TABLE + " WHERE " + IS_ACTIVE + "=?";
+        Cursor cursor = db.rawQuery(query, new String[]{"1"});
+        cursor.moveToFirst();
+        return cursor.getString(0);
+    }
+
+    public static GuitarEntity GetCurrentActive(Context context) {
+        SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
+        String query = "SELECT * FROM " + DB_GUITAR_TABLE + " WHERE " + IS_ACTIVE + "=?";
+        Cursor cursor = db.rawQuery(query, new String[]{"1"});
+        if(cursor.getCount() == 0)
+            return null;
+        cursor.moveToFirst();
+        GuitarEntity guitarEntity = getGuitarEntity(cursor);
+        cursor.close();
+        db.close();
+        return guitarEntity;
     }
 }
