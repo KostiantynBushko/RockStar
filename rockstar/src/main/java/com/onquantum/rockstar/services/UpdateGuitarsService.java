@@ -59,7 +59,7 @@ public class UpdateGuitarsService extends Service {
         @Override
         public void run() {
             updateTaskIsRunning = true;
-            Log.i("info", " UpdateTask : run");
+            Log.i("info", " UpdateGuitarService UpdateTask : run");
             long countRows = DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
             countRows++;
 

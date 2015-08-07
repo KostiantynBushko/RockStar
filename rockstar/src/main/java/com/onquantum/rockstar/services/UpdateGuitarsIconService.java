@@ -111,12 +111,14 @@ public class UpdateGuitarsIconService extends Service {
                     fileOutputStream.write(buffer, 0, bufferSize);
                 }
                 fileOutputStream.close();
+                inputStream.close();
 
                 // Send broadcast message the image icon file complete download
                 Intent intent = new Intent(BROADCAST_COMPLETE_DOWNLOAD_ICON_FILE_ACTION);
                 intent.putExtra(DBGuitarTable.ICON, iconFileName);
                 intent.putExtra(DBGuitarTable.ID,id);
                 sendBroadcast(intent);
+                httpURLConnection.disconnect();
                 stopSelf(startId);
 
             } catch (MalformedURLException e) {
