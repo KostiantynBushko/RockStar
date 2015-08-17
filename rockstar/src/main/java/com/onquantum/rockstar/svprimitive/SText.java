@@ -14,7 +14,7 @@ public class SText extends SShape {
     private Paint paint;
     private String text = "0";
 
-    public SText(int centerX, int centerY, float size) {
+    public SText(float centerX, float centerY, float size) {
         super(SShape.TEXT);
         this.centerX = centerX;
         this.centerY = centerY;
@@ -22,10 +22,11 @@ public class SText extends SShape {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(size);
+        paint.setColor(Color.BLACK);
     }
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawText(text,centerX, centerY-(size/2),paint);
+        canvas.drawText(text,centerX, centerY+(size/2),paint);
     }
 
     @Override
@@ -61,5 +62,9 @@ public class SText extends SShape {
     @Override
     public void setAlpha(int alpha) {
         paint.setAlpha(alpha);
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

@@ -12,7 +12,7 @@ import android.graphics.Paint;
  */
 public class SBar extends SShape {
 
-    private int x, y, width, height;
+    private float x, y, width, height;
     private Paint paint;
     private Context context;
     private Bitmap bitmap;
@@ -20,9 +20,9 @@ public class SBar extends SShape {
     private int textSize = 0;
     private Paint textPaint;
     private int number = 1;
-    private int textX, textY;
+    private float textX, textY;
 
-    public SBar(int x, int y, int width, int height, Context context, int resource) {
+    public SBar(float x, float y, float width, float height, Context context, int resource) {
         super(SShape.BITMAP);
         this.x = x;
         this.y = y;
@@ -30,13 +30,13 @@ public class SBar extends SShape {
         this.height = height;
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), resource);
-        bitmap = resizeBitmap(bitmap, width, height);
+        bitmap = resizeBitmap(bitmap, (int)width, (int)height);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        textSize = Math.abs(height / 3);
+        textSize = (int)Math.abs(height / 3);
 
         textX = this.x + width / 2;
-        textY = (int)(this.y - height * 0.1f);
+        textY = (this.y - height * 0.1f);
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(textSize);

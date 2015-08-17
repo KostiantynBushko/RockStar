@@ -86,6 +86,12 @@ public class SBitmap extends SShape {
         return resizedBitmap;
     }
 
+    public void rotate(float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, (int)width, (int)height,matrix,false);
+    }
+
     public void setTranslate(float x, float y) {
         this.x = x;
         this.y = y;
