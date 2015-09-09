@@ -22,9 +22,9 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.onquantum.rockstar.activities.AboutActivity;
 import com.onquantum.rockstar.activities.SoundPacksListActivity;
+import com.onquantum.rockstar.pentatonic_editor.PentatonicEditorActivity;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.activities.GuitarSimulatorActivity;
-import com.onquantum.rockstar.services.UpdateGuitarsService;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -174,7 +174,7 @@ public class RockStarMain extends Activity {
         googlePlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!googleApiClient.isConnected()) {
+                if (!googleApiClient.isConnected()) {
                     mSignInClicked = true;
                     resolveSignInError();
                 } else {
@@ -201,6 +201,14 @@ public class RockStarMain extends Activity {
             public void onClick(View v) {
                 startActivity(new Intent(context, SoundPacksListActivity.class));
                 //startService(new Intent(context, UpdateGuitarsService.class));
+            }
+        });
+
+
+        ((Button)findViewById(R.id.button5)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(RockStarMain.this, PentatonicEditorActivity.class));
             }
         });
 
@@ -245,12 +253,8 @@ public class RockStarMain extends Activity {
         super.onStart();
         googleApiClient.connect();
 
-        startService(new Intent(context, UpdateGuitarsService.class));
-
-        //DBHelper dbHelper = new DBHelper(this);
-        //SQLiteDatabase db = dbHelper.getWritableDatabase();
-        //int count = DBGuitarTable.GetCountOfRows(context,DBGuitarTable.DB_GUITAR_TABLE);
-        //Log.i("info"," DBGuitarTable ROWS COUNT : " + count);
+        //startService(new Intent(context, UpdateGuitarsService.class));
+        //startService(new Intent(context, UpdatePurchaseTable.class));
 
     }
     @Override
