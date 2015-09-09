@@ -59,7 +59,7 @@
 
         <activity
             android:name=".tools.Editor"
-            android:screenOrientation="landscape">
+            android:screenOrientation="reverseLandscape">
         </activity>
 
         <activity
@@ -89,6 +89,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".pentatonic_editor.PentatonicEditorActivity"
+            android:screenOrientation="reverseLandscape">
+        </activity>
+
         <service
             android:name=".services.UpdateGuitarsService"
             android:enabled="true"
@@ -97,6 +102,18 @@
 
         <service
             android:name=".services.UpdateGuitarsIconService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <service
+            android:name=".services.UpdatePurchaseTable"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <service
+            android:name=".services.DownloadSoundPackage"
             android:enabled="true"
             android:exported="true">
         </service>
