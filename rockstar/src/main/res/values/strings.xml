@@ -3,6 +3,7 @@
 
     <string name="app_name">RockStar</string>
     <string name="app_label">Rock Star</string>
+    <string name="pentatonic_editor">Pentatonic editor</string>
 
     <string name="settings_label">Settings</string>
     <string name="frets_tuning_label">Frets tuning</string>
