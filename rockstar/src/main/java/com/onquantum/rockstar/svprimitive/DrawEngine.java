@@ -23,7 +23,7 @@ import java.util.ListIterator;
 /**
  * Created by Admin on 8/8/15.
  */
-public class DrawEngine extends SurfaceView implements SurfaceHolder.Callback{
+public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Callback{
     public SurfaceHolder surfaceHolder;
     protected Context context;
     DrawFrame drawFrame;
@@ -33,7 +33,7 @@ public class DrawEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     private int backgroundColor = Color.GRAY;
 
-    private List<SLayer>obj = Collections.synchronizedList(new ArrayList<SLayer>());
+    private List<SLayer>obj = null;
 
     public DrawEngine(Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
@@ -51,8 +51,10 @@ public class DrawEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if(running)
+        if(running && this.width == width && this.height == height)
             return;
+        obj = null;
+        obj = Collections.synchronizedList(new ArrayList<SLayer>());
         this.width = width;
         this.height = height;
         this.surfaceHolder = holder;
@@ -72,7 +74,7 @@ public class DrawEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public void OnSurfaceChanged(int width, int height) {}
+    public abstract void OnSurfaceChanged(int width, int height);
 
     public void addLayer(SLayer layer) {
         obj.add(layer);
