@@ -15,6 +15,8 @@ import com.onquantum.rockstar.svprimitive.SLayer;
 import com.onquantum.rockstar.svprimitive.SShape;
 import com.onquantum.rockstar.svprimitive.SText;
 
+import java.util.BitSet;
+
 /**
  * Created by Admin on 8/12/15.
  */
@@ -24,9 +26,11 @@ public class BarSelectView extends DrawEngine {
     private float barWidth;
     private SLayer layer = new SLayer();
     private SLayer barNumberLayer = new SLayer();
+    private BitSet fretsMark = new BitSet(24);
 
     private SShape barCursor = null;
 
+    // Interface
     public interface OnBarSelectListener {
         public void onBarSelect(int barSelected);
     }
@@ -35,23 +39,35 @@ public class BarSelectView extends DrawEngine {
         this.onBarSelectListener = onBarSelectListener;
     }
 
+
     public BarSelectView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setBackgroundColor(Color.DKGRAY);
-        addLayer(layer);
-        addLayer(barNumberLayer);
+        fretsMark.set(0);
+        fretsMark.set(2);
+        fretsMark.set(4);
+        fretsMark.set(6);
+        fretsMark.set(8);
+        fretsMark.set(11);
+        fretsMark.set(14);
+        fretsMark.set(16);
+        fretsMark.set(18);
+        fretsMark.set(20);
+        fretsMark.set(23);
     }
 
-    @Override
     public void OnSurfaceChanged(int width, int height) {
-        super.OnSurfaceChanged(width, height);
         barWidth = (float)width / 25;
 
         float barStartPosition = 0;
         for (int i = 0; i < 25; i ++) {
             SBitmap bar;
             if(i < 24) {
-                bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.b0);
+                if (fretsMark.get(i)) {
+                    bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.b1);
+                } else {
+                    bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.b0);
+                }
             } else {
                 bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.sound_capture);
                 bar.rotate(180);
@@ -86,13 +102,19 @@ public class BarSelectView extends DrawEngine {
 
         barCursor = new SBarCursor(0, (int)(height * 0.3f), (int)(barWidth), height);
         barCursor.setVisibleArea(new RectF(0,height, width,0));
+        barCursor.setColor(Color.YELLOW);
         layer.addShape(barCursor);
         
         SText currentSelected = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
-        currentSelected.setColor(Color.RED);
+        currentSelected.setColor(Color.YELLOW);
+
+        addLayer(layer);
+        addLayer(barNumberLayer);
     }
 
+
     private int lastSelectedBar = 0;
+
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         int motionAction = motionEvent.getAction();
@@ -106,7 +128,7 @@ public class BarSelectView extends DrawEngine {
                 preview.setColor(Color.WHITE);
                 lastSelectedBar = bar;
                 SText currentSelected = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
-                currentSelected.setColor(Color.RED);
+                currentSelected.setColor(Color.YELLOW);
                 break;
             }
             default:break;

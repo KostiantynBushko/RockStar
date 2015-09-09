@@ -19,19 +19,19 @@ import com.onquantum.rockstar.svprimitive.SText;
  */
 public class NotePanelSurfaceView extends DrawEngine {
 
-    SLayer layer = new SLayer();
-    SLayer touchLayer = new SLayer();
+    SLayer layer = null;
+    SLayer touchLayer = null;
 
     public NotePanelSurfaceView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setBackgroundColor(Color.LTGRAY);
-        addLayer(touchLayer);
-        addLayer(layer);
     }
 
     @Override
     public void OnSurfaceChanged(int width, int height) {
-        super.OnSurfaceChanged(width, height);
+        layer = new SLayer();
+        touchLayer = new SLayer();
+
         final String[] notes = {"B3","F#3", "D3", "A2", "E2","B1"};
         float step = height / 7;
         for(int i = 0; i < 6; i++) {
@@ -41,5 +41,8 @@ public class NotePanelSurfaceView extends DrawEngine {
             layer.addShape(text);
             step += height / 7;
         }
+
+        addLayer(touchLayer);
+        addLayer(layer);
     }
 }
