@@ -20,6 +20,7 @@ import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.Settings;
 import com.onquantum.rockstar.common.FretsSlider;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
+import com.onquantum.rockstar.gsqlite.DBGuitarTable;
 import com.onquantum.rockstar.guitar.GuitarInterface;
 import com.onquantum.rockstar.guitar.GuitarAbstractView;
 import com.onquantum.rockstar.guitar.GuitarDefaultView;
@@ -108,7 +109,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         progressText = (TextView)findViewById(R.id.progressText);
         packageName = (TextView)findViewById(R.id.soundPackageName);
-        packageName.setText(settings.getCurrentGuitarPackage() + " guitar");
+        packageName.setText(DBGuitarTable.GetCurrentActivePackageName(this) + " guitar");
 
         QSoundPool.getInstance().setOnProgressUpdate(new QSoundPool.OnProgressUpdate() {
             @Override
