@@ -13,8 +13,8 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="com.onquantum.rockstar.permission.C2D_MESSAGE" />
 
-    <user-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <user-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-feature
         android:glEsVersion="0x00020000"

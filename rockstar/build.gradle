@@ -22,7 +22,7 @@ android {
     signingConfigs {
     }
     compileSdkVersion 21
-    buildToolsVersion '19.1.0'
+    buildToolsVersion '21'
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 21
