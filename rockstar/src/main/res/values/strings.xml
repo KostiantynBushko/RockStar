@@ -29,5 +29,7 @@
     <color name="green">#ff9ad39a</color>
     <color name="blue">#ff516fb9</color>
     <color name="red">#fffb7d7b</color>
+    <color name="blue_tr">#af516fb9</color>
+    <color name="default_background">#000000</color>
 
 </resources>

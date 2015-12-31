@@ -1,0 +1,167 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MergeRootFrame"
+    android:background="@drawable/background_landscape">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play"
+        android:id="@+id/play"
+        android:background="@drawable/button_action"
+        android:textColor="@color/dark_gray"
+        android:alpha="0.7"
+        android:textStyle="normal|bold"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_toRightOf="@+id/textView9"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Use headphones for the best experiences . . ."
+        android:id="@+id/textView0"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        android:gravity="right"
+        android:layout_alignRight="@+id/textView9"
+        android:layout_alignEnd="@+id/textView9"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <RelativeLayout
+        android:layout_width="245dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/relativeLayout5"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView9"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_marginTop="30dp">
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/faceBookButton"
+            android:textSize="25sp"
+            android:background="@drawable/button_face_book"
+            android:alpha="0.5"
+            android:textStyle="normal|bold"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/twitterButton"
+            android:layout_toEndOf="@+id/twitterButton"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/googlePlus"
+            android:textSize="25sp"
+            android:background="@drawable/button_google_plus"
+            android:alpha="0.5"
+            android:textStyle="normal|bold"
+            android:layout_alignTop="@+id/faceBookButton"
+            android:layout_toRightOf="@+id/faceBookButton"
+            android:layout_toEndOf="@+id/faceBookButton"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_twitter"
+            android:alpha="0.5"
+            android:id="@+id/twitterButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"/>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/buttonInfo"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/googlePlus"
+            android:layout_toEndOf="@+id/googlePlus"
+            android:background="@drawable/button_info"
+            android:alpha="0.5"
+            android:layout_marginRight="10dp"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sound bank"
+        android:id="@+id/button4"
+        android:background="@drawable/button_action"
+        android:textColor="@color/dark_gray"
+        android:alpha="0.7"
+        android:textStyle="normal|bold"
+        android:textSize="18sp"
+        android:layout_above="@+id/play"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView9"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Editor"
+        android:id="@+id/button5"
+        android:textColor="@color/dark_gray"
+        android:alpha="0.7"
+        android:textStyle="normal|bold"
+        android:textSize="18sp"
+        android:background="@drawable/button_action"
+        android:layout_above="@+id/button4"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView9"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="|"
+        android:id="@+id/textView9"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
+
+
+    <!--<com.twitter.sdk.android.tweetui.TweetView
+        xmlns:twittersdk="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/photo_default_tweet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        twittersdk:tw__tweet_id="20"
+        android:layout_below="@+id/textView14"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="31dp" />-->
+
+</RelativeLayout>

@@ -11,47 +11,66 @@
         android:background="@drawable/panel_1"
         android:id="@+id/relativeLayout">
 
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/backButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/back_button"
+            android:scaleType="fitCenter"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="10dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/textView0"
             android:gravity="center_vertical"
-            android:layout_marginLeft="10dp"
             android:textSize="16dp"
             android:textColor="@color/gray"
-            android:text="@string/app_label"/>
+            android:text="@string/app_label"
+            android:layout_toRightOf="@+id/backButton"
+            android:layout_toEndOf="@+id/backButton"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:id="@+id/button1"
             android:layout_centerInParent="true"
             android:layout_marginRight="8dp"
             android:background="@android:color/transparent"
             android:src="@drawable/settings_button_bar"
             android:layout_alignTop="@id/button1"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:scaleType="fitCenter"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:id="@+id/button0"
             android:src="@drawable/neck_settings_button"
             android:background="@android:color/transparent"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/button1"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:scaleType="fitCenter"/>
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:id="@+id/button2"
             android:background="@android:color/transparent"
             android:src="@drawable/pentatonic_button_bar"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/button0"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:scaleType="fitCenter"/>
 
         <RelativeLayout
             android:id="@+id/playPentatonicPanel"
@@ -80,14 +99,15 @@
                 android:layout_marginLeft="2dp"/>
 
             <ImageButton
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/cancelButton"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:background="@android:color/transparent"
-                android:src="@drawable/cancel_button"/>
+                android:src="@drawable/cancel_button"
+                android:scaleType="fitCenter"/>
 
             <TextView
                 android:layout_width="wrap_content"

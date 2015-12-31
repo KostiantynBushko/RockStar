@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_background">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:background="@drawable/panel_1"
         android:id="@+id/relativeLayout">
+
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/backButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/back_button"
+            android:scaleType="fitCenter"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -16,10 +32,60 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/textView0"
             android:gravity="center_vertical"
-            android:layout_marginLeft="10dp"
             android:textSize="16dp"
             android:textColor="@color/gray"
-            android:text="@string/pentatonic_editor"/>
+            android:text="@string/pentatonic_editor"
+            android:layout_toRightOf="@+id/backButton"
+            android:layout_toEndOf="@+id/backButton"/>
+
+        <RelativeLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/textView0"
+            android:layout_toEndOf="@+id/textView0">
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:text="New Button"
+                android:id="@+id/openFile"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:scaleType="fitCenter"
+                android:layout_marginRight="8dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_open_file"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/saveFile"
+                android:layout_alignBottom="@+id/openFile"
+                android:layout_toLeftOf="@+id/openFile"
+                android:layout_toStartOf="@+id/openFile"
+                android:scaleType="fitCenter"
+                android:layout_marginRight="8dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_save_file"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/setupMetronom"
+                android:layout_alignBottom="@+id/saveFile"
+                android:layout_toLeftOf="@+id/saveFile"
+                android:layout_toStartOf="@+id/saveFile"
+                android:scaleType="fitCenter"
+                android:layout_marginRight="8dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_metronom"/>
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -30,7 +96,8 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/playPentatonicPanel"
         android:id="@+id/relativeLayout10"
-        android:visibility="gone"></RelativeLayout>
+        android:visibility="gone">
+    </RelativeLayout>
 
     <com.onquantum.rockstar.pentatonic_editor.PentatonicEditorSurfaceView
         android:layout_width="fill_parent"
@@ -39,7 +106,7 @@
         android:layout_toEndOf="@+id/noteSurfaceView"
         android:layout_toRightOf="@+id/noteSurfaceView"
         android:layout_above="@+id/barSelect"
-        android:layout_below="@+id/relativeLayout10" />
+        android:layout_below="@+id/relativeLayout10"/>
 
     <com.onquantum.rockstar.pentatonic_editor.BarSelectView
         android:layout_width="match_parent"
@@ -53,10 +120,113 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:layout_alignParentBottom="true"
         android:id="@+id/linearLayout"
-        android:background="@color/dark_gray"></LinearLayout>
+        android:background="@color/dark_gray"
+        android:gravity="right"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.99">
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/playTabs"
+                android:scaleType="fitCenter"
+                android:layout_marginLeft="10dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/button_play_circle"/>
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/fastRewind"
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_fast_rewind"/>
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/fastForward"
+                android:layout_marginLeft="5dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_fast_forward"/>
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/buttonUndo"
+                android:layout_marginLeft="10dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_undo"/>
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/clearAll"
+                android:layout_marginLeft="10dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/button_content_cut"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent">
+
+            <ImageButton
+                android:id="@+id/buttonNoteWhole"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/note_whole"
+                android:background="@drawable/button_note"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"/>
+            <ImageButton
+                android:id="@+id/buttonNoteHalf"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/note_half"
+                android:background="@drawable/button_note"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"/>
+            <ImageButton
+                android:id="@+id/buttonNoteQuartet"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/note_quartet"
+                android:background="@drawable/button_note"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"/>
+            <ImageButton
+                android:id="@+id/buttonNoteEight"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/note_eight"
+                android:background="@drawable/button_note"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"/>
+            <ImageButton
+                android:id="@+id/buttonNoteSixteenth"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/note_sixteenth"
+                android:background="@drawable/button_note"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <com.onquantum.rockstar.pentatonic_editor.NotePanelSurfaceView
         android:layout_width="30dp"
