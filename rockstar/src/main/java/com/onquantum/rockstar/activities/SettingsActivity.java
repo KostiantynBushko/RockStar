@@ -40,6 +40,13 @@ public class SettingsActivity extends Activity {
         Typeface typeFace = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeFace);
 
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         settings = new Settings(context);
         if(settings.getSlide())
             ((RelativeLayout)findViewById(R.id.relativeLayout3)).setVisibility(View.GONE);
@@ -85,6 +92,5 @@ public class SettingsActivity extends Activity {
                 new Settings(context).setOpenString(isOn);
             }
         });
-
     }
 }

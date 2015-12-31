@@ -120,18 +120,18 @@ public class DownloadSoundPackage extends Service {
             }
 
             if(guitarPackageName == null || fileName == null) {
-                Log.i("info","DownloadSounFile : fake call");
+                Log.i("info","DownloadSoundFile : fake call");
                 stopSelf(startId);
                 return;
             }
-
+            HttpURLConnection httpURLConnection = null;
             try {
 
                 URL url = new URL(QURL.GET_SOUND_FILE);
-                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection = (HttpURLConnection)url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setConnectTimeout(15000);
-                httpURLConnection.setReadTimeout(10000);
+                httpURLConnection.setConnectTimeout(50000);
+                httpURLConnection.setReadTimeout(50000);
                 httpURLConnection.setDoInput(true);
                 httpURLConnection.setDoInput(true);
 
@@ -155,8 +155,6 @@ public class DownloadSoundPackage extends Service {
                 }
                 fileOutputStream.close();
                 inputStream.close();
-                httpURLConnection.disconnect();
-                stopSelf(startId);
 
                 Log.i("info", "DownloadSoundFile : packageName = " + guitarPackageName + " fileName = " + fileName + " startId = " + startId);
                 GuitarEntity guitarEntity = DBGuitarTable.GetGuitarEntityByArticle(getApplicationContext(), guitarPackageName);
@@ -178,6 +176,9 @@ public class DownloadSoundPackage extends Service {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                httpURLConnection.disconnect();
+                stopSelf(startId);
             }
         }
     }

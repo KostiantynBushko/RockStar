@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.onquantum.rockstar.file_system.FileSystem;
+import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.services.UpdateGuitarsService;
 import com.onquantum.rockstar.services.UpdatePurchaseTable;
+import com.onquantum.rockstar.tabulature.SimpleTab;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Admin on 7/19/15.
@@ -17,7 +20,6 @@ import java.io.File;
 public class RockStarApplication extends Application {
 
     private static Context context = null;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -28,6 +30,9 @@ public class RockStarApplication extends Application {
 
         startService(new Intent(context, UpdateGuitarsService.class));
         startService(new Intent(context, UpdatePurchaseTable.class));
+
+        QSoundPool.getInstance().setContext(getApplicationContext());
+        QSoundPool.getInstance().loadSound();
     }
 
     public static Context getContext() {

@@ -63,8 +63,12 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     private ServiceConnection serviceConnection;
     private boolean isBanded = false;
     private BroadcastReceiver broadcastReceiver;
+
+    private RelativeLayout progressLayout;
     private ProgressBar downloadSoundProgress;
-    DownloadSoundPackage downloadSoundPackage;
+    private TextView progressPercentage;
+
+    private DownloadSoundPackage downloadSoundPackage;
 
 
     @Override
@@ -110,8 +114,12 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         TextView description = (TextView)findViewById(R.id.textView16);
         description.setText(guitarEntity.description);
 
-        controlLayout = (RelativeLayout)findViewById(R.id.relativeLayout9);
+        // Progress
+        progressLayout = (RelativeLayout)findViewById(R.id.progressLayout);
+        progressPercentage = (TextView)findViewById(R.id.progressPercentage);
         downloadSoundProgress = (ProgressBar)findViewById(R.id.progressBar2);
+
+        controlLayout = (RelativeLayout)findViewById(R.id.relativeLayout9);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         playButton = (ImageButton)findViewById(R.id.playSampleSound);
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -169,6 +177,13 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                 buySoundPack.setText(purchaseEntity.price + purchaseEntity.currency_code);
             }
         }
+
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -181,7 +196,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                     Log.i("info","SoundPackActivity : BROADCAST MESSAGE : complete download sound package - " + guitarEntity.article);
                     downloadSoundPack.setVisibility(View.INVISIBLE);
                     buySoundPack.setVisibility(View.INVISIBLE);
-                    downloadSoundProgress.setVisibility(View.INVISIBLE);
+                    progressLayout.setVisibility(View.INVISIBLE);
                     applySoundPack.setVisibility(View.VISIBLE);
                 }
             }
@@ -192,8 +207,8 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer = null;
@@ -232,7 +247,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         downloadSoundPack.setVisibility(View.INVISIBLE);
         applySoundPack.setVisibility(View.INVISIBLE);
         buySoundPack.setVisibility(View.INVISIBLE);
-        downloadSoundProgress.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.VISIBLE);
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 6; j++) {
                 Intent intent = new Intent(this, DownloadSoundPackage.class);
@@ -266,15 +281,17 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                 }
                 long currentProgress = downloadSoundPackage.GetProgressForSoundPack(guitarEntity.article);
                 controlLayout.setVisibility(View.VISIBLE);
-                downloadSoundProgress.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.VISIBLE);
                 downloadSoundPack.setVisibility(View.INVISIBLE);
                 downloadSoundProgress.setProgress((int)currentProgress);
+                progressPercentage.setText((int)currentProgress + "%");
                 downloadSoundPackage.SetOnProgressUpdateListener(SoundPackActivity.this);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 Log.i("info"," +++++ SoundPackActivity : Disconnect from download service");
+                UnbindFromDownloadService();
                 isBanded = false;
             }
         };
@@ -293,13 +310,20 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         }
         if(downloadSoundPackage != null)
             downloadSoundPackage.SetOnProgressUpdateListener(null);
+        serviceConnection = null;
     }
 
     @Override
-    public void updateProgress(String soundPackage, long progress) {
+    public void updateProgress(String soundPackage, final long progress) {
         if (soundPackage.equals(guitarEntity.article)) {
             Log.i("info", " UPDATE PROGRESS SOUND PACK = " + soundPackage + " PROGRESS = " + progress);
             downloadSoundProgress.setProgress((int)progress);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressPercentage.setText((int)progress + "%");
+                }
+            });
         }
     }
 

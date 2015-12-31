@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,13 +90,17 @@ public class SoundPacksListActivity extends Activity {
         List<GuitarEntity>guitarEntities = DBGuitarTable.GetAllGuitarsEntity(context);
         for (GuitarEntity guitarEntity : guitarEntities) {
             HashMap<String, Object>guitarItem = new HashMap<String, Object>();
-            guitarItem.put(DBGuitarTable.ICON,soundPackIcon(guitarEntity.icon));
+            guitarItem.put(DBGuitarTable.ICON,soundPackIcon(guitarEntity.id, guitarEntity.icon));
             guitarItem.put(DBGuitarTable.NAME,guitarEntity.name);
             guitarItem.put(DBGuitarTable.ID, new Integer(guitarEntity.id));
             listObjects.add(guitarItem);
         }
-        SoundPackListItemAdapter simpleAdapter = new SoundPackListItemAdapter(this, listObjects, R.layout.item_sond_pack,
-                new String[]{DBGuitarTable.NAME,DBGuitarTable.ICON}, new int[] {R.id.soundPackageName, R.id.soundPackIcon} );
+        SoundPackListItemAdapter simpleAdapter = new SoundPackListItemAdapter(this,
+                listObjects,
+                R.layout.item_sond_pack,
+                new String[]{DBGuitarTable.NAME,DBGuitarTable.ICON},
+                new int[] {R.id.soundPackageName, R.id.soundPackIcon} );
+
         soundPackList.setAdapter(simpleAdapter);
         soundPackList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         soundPackList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,15 +114,26 @@ public class SoundPacksListActivity extends Activity {
             }
         });
 
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
-    private Bitmap soundPackIcon(String iconFileName) {
+    private Bitmap soundPackIcon(int id, String iconFileName) {
         File iconFile = new File(FileSystem.GetIconPath(), iconFileName);
         Bitmap bitmap = null;
         if(iconFile.exists()) {
             bitmap = BitmapFactory.decodeFile(iconFile.getAbsolutePath());
         } else {
             bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            Intent intent = new Intent(this, UpdateGuitarsIconService.class);
+            intent.putExtra(DBGuitarTable.ICON,iconFileName);
+            intent.putExtra(DBGuitarTable.ID, id);
+            startService(intent);
         }
         return bitmap;
     }

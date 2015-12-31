@@ -24,6 +24,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +37,8 @@ public class UpdateGuitarsIconService extends Service {
 
     public static String BROADCAST_COMPLETE_DOWNLOAD_ICON_FILE_ACTION = "com.onquantum.rockstar.services.updateguitarsiconservice";
     private ExecutorService executorService;
+
+    Set<String>downloadFileInProgress = new HashSet<String>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,7 +61,11 @@ public class UpdateGuitarsIconService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
         Log.i("info", "UpdateGuitarsIconService : onStartCommand flag = " + flag + " startId = " + startId);
-        executorService.execute(new DownloadIcon(startId, intent.getStringExtra(DBGuitarTable.ICON),intent.getIntExtra(DBGuitarTable.ID,0)));
+        String fileName = intent.getStringExtra(DBGuitarTable.ICON);
+        if(!downloadFileInProgress.contains(fileName)) {
+            downloadFileInProgress.add(fileName);
+            executorService.execute(new DownloadIcon(startId, intent.getStringExtra(DBGuitarTable.ICON),intent.getIntExtra(DBGuitarTable.ID,0)));
+        }
         return START_REDELIVER_INTENT;
     }
 
@@ -85,8 +93,8 @@ public class UpdateGuitarsIconService extends Service {
                 URL url = new URL(QURL.GET_SOUND_PACK_ICON);
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setConnectTimeout(15000);
-                httpURLConnection.setReadTimeout(20000);
+                httpURLConnection.setConnectTimeout(50000);
+                httpURLConnection.setReadTimeout(50000);
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
 
@@ -125,6 +133,8 @@ public class UpdateGuitarsIconService extends Service {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                downloadFileInProgress.remove(iconFileName);
             }
         }
     }

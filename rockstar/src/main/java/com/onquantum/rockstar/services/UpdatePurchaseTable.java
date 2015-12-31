@@ -78,7 +78,6 @@ public class UpdatePurchaseTable extends Service {
                 // POST parameter
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-
                 Uri.Builder builder = new Uri.Builder();
                 builder.appendQueryParameter("fromId", Long.toString(countRows));
                 String queryParams = builder.build().getEncodedQuery();

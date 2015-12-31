@@ -24,9 +24,18 @@ public class SText extends SShape {
         paint.setTextSize(size);
         paint.setColor(Color.BLACK);
     }
+
+    public SText(float centerX, float centerY, float size, Paint paint) {
+        super(SShape.TEXT);
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.paint = paint;
+        this.size = size;
+    }
+
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawText(text,centerX, centerY+(size/2),paint);
+        canvas.drawText(text,centerX, centerY + (size / 2), paint);
     }
 
     @Override

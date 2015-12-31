@@ -187,6 +187,13 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         } else {
             fretsSlider.setVisibility(View.GONE);
         }
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         guitarSurfaceView.SetShowTouchesVisible(settings.isTouchesVisible());
         guitarSurfaceView.SetFretsNumberVisible(settings.isFretsNumberVisible());
         super.onResume();

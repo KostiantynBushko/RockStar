@@ -184,4 +184,18 @@ public class DBGuitarTable extends DBAbstractTable{
         db.close();
         return guitarEntity;
     }
+
+    public static boolean GuitarPackageAlreadyExists(Context context, String article) {
+        SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
+        String query = "SELECT " + ID + " FROM " + DB_GUITAR_TABLE + " WHERE " + ARTICLE + "=" + "'" + article + "'" + " LIMIT 1";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.getCount() > 0) {
+            cursor.close();
+            db.close();
+            return true;
+        }
+        cursor.close();
+        db.close();
+        return false;
+    }
 }

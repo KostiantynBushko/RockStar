@@ -75,6 +75,19 @@ public class GuitarString {
         }
     }
 
+    public void playSimpleString(int x, int y) {
+        isStoped = false;
+        startPlay = System.currentTimeMillis();
+        this.x = x;
+        this.y = y;
+
+        int playId1 = (y + 1) + (6 * x);
+
+        playID[x] = soundPool.play(playId1,1,1,1,0,1);
+        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y) + " octave = "
+                + QSoundPool.getInstance().GetOctaveForGuitarString(x, y));
+    }
+
     public void move(int x, int y) {
         long currentTime = System.currentTimeMillis();
         long duration = (currentTime - startPlay) / 1000L;
@@ -92,6 +105,25 @@ public class GuitarString {
         }
     }
 
+    public void stopSimpleString() {
+        if (isStoped == true)
+            return;
+        isStoped = true;
+        new Thread(new Runnable() {
+            int _x = x;
+            int _id = playID[_x];
+            @Override
+            public void run() {
+                float volume = 0.8f;
+                while (volume > 0.01f){
+                    soundPool.setVolume(_id, volume, volume);
+                    SystemClock.sleep(10);
+                    volume-=0.01f;
+                }
+                soundPool.stop(_id);
+            }
+        }).start();
+    }
     public void stop() {
         if (isStoped == true)
             return;

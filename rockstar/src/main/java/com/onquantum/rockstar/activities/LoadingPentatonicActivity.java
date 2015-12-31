@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -43,6 +44,12 @@ public class LoadingPentatonicActivity extends Activity {
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
 
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

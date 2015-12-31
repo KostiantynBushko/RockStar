@@ -176,7 +176,7 @@ public class QSoundPool {
                 for (int j = 0; j < 6; j++){
                     String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                     int id = context.getResources().getIdentifier(file,"raw",context.getPackageName());
-                    Log.i("info"," FILE : " + file + " id = " + id);
+                    //Log.i("info"," FILE : " + file + " id = " + id);
                     try {
                         synchronized (QSoundPool.this) {
                             if(loadedInProgress) {
@@ -200,12 +200,12 @@ public class QSoundPool {
                 for (int j = 0; j < 6; j++){
                     String file = prefix + "_" + Integer.toString(i) + "_" + Integer.toString(j);
                     File filePath = new File(FileSystem.GetSoundFilesPath(prefix) + "/" + file + ".ogg") ;
-                    Log.i("info"," FILE : " + filePath.getAbsolutePath());
+                    //Log.i("info"," FILE : " + filePath.getAbsolutePath());
                     try {
                         if(loadedInProgress) {
                             soundPool.load(filePath.getAbsolutePath(),1);
                         } else {
-                            Log.i("info","  ************** BRAKE LOADING FILE = " + file);
+                            //Log.i("info","  ************** BRAKE LOADING FILE = " + file);
                             return;
                         }
                     }catch (Resources.NotFoundException e){

@@ -20,6 +20,9 @@ public class Settings {
     public static final String STYLE_DISTORTION = "style_distortion";
     public static final int MAX_FRET = 13;
 
+    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
+
     // Guitar neck view options
     private static final String SHOW_FRETS_NUMBER = "show_frets_number";
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
@@ -27,10 +30,13 @@ public class Settings {
     private static final String OPEN_STRING = "open_string";
     private static final String SHOW_NOTS = "show_notes";
 
+    private static final String BPM = "bpm";
+
     // Guitar package type
     private static final String CURRENT_GUITAR_PACKAGE = "current_guitar_package";
 
     private final SharedPreferences settings;
+
 
     /**********************************************************************************************/
     // Interface section
@@ -179,6 +185,16 @@ public class Settings {
     public void setShowNotes(Boolean enabled) {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(SHOW_NOTS, enabled);
+        editor.commit();
+    }
+
+    // BPM
+    public int getBPM() {
+        return settings.getInt(BPM, 240);
+    }
+    public void setBPM(int bpm) {
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(BPM, bpm);
         editor.commit();
     }
 }

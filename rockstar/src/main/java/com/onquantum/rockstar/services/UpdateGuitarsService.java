@@ -60,9 +60,10 @@ public class UpdateGuitarsService extends Service {
         public void run() {
             updateTaskIsRunning = true;
             Log.i("info", " UpdateGuitarService UpdateTask : run");
-            long countRows = DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
+            long countRows = 1; //DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
             countRows++;
 
+            OutputStream outputStream = null;
             try {
                 URL url = new URL(QURL.GET_SOUND_PACK);
 
@@ -74,11 +75,12 @@ public class UpdateGuitarsService extends Service {
                 httpURLConnection.setDoOutput(true);
 
                 // POST parameter
-                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
 
                 Uri.Builder builder = new Uri.Builder();
                 builder.appendQueryParameter("fromId", Long.toString(countRows));
+                builder.appendQueryParameter("status_id", "3");
                 String queryParams = builder.build().getEncodedQuery();
 
                 bufferedWriter.write(queryParams);
@@ -99,8 +101,10 @@ public class UpdateGuitarsService extends Service {
                 JSONArray guitarObjects = new JSONArray(stringBuilder.toString());
                 for (int i = 0; i < guitarObjects.length(); i++) {
                     GuitarEntity guitarEntity = GuitarEntity.CreateGuitarEntity((JSONObject) guitarObjects.get(i));
-                    Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
-                    guitarEntities.add(guitarEntity);
+                    if(DBGuitarTable.GuitarPackageAlreadyExists(getApplicationContext(), guitarEntity.article) == false) {
+                        Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
+                        guitarEntities.add(guitarEntity);
+                    }
                 }
 
                 if(guitarEntities.size() > 0) {
@@ -115,7 +119,8 @@ public class UpdateGuitarsService extends Service {
                         }
                     }
 
-                    for (GuitarEntity guitarEntity : guitarEntities) {
+                    for (GuitarEntity entity : guitarEntities) {
+                        GuitarEntity guitarEntity = DBGuitarTable.GetGuitarEntityByArticle(getApplication(), entity.article);
                         String iconFileName = guitarEntity.icon;
                         Intent intent = new Intent(getApplicationContext(), UpdateGuitarsIconService.class);
                         intent.putExtra(DBGuitarTable.ICON,iconFileName);
@@ -130,6 +135,13 @@ public class UpdateGuitarsService extends Service {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
+            }finally {
+                if(outputStream != null)
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
 
             updateTaskIsRunning = false;

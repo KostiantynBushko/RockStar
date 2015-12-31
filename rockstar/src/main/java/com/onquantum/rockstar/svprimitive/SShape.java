@@ -70,6 +70,9 @@ public abstract class SShape {
     public abstract float getHeight();
     public abstract void setAlpha(int alpha);
 
+    public void setHeight(float height) {}
+    public void setWidth(float width) {}
+
     public Paint getPaint() {
         return paint;
     }

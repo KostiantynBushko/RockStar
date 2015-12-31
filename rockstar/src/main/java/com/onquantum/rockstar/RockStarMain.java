@@ -1,6 +1,7 @@
 package com.onquantum.rockstar;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -22,19 +23,26 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.onquantum.rockstar.activities.AboutActivity;
 import com.onquantum.rockstar.activities.SoundPacksListActivity;
-import com.onquantum.rockstar.pentatonic_editor.PentatonicEditorActivity;
+import com.onquantum.rockstar.activities.PentatonicEditorActivity;
+import com.onquantum.rockstar.common.Constants;
+import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.activities.GuitarSimulatorActivity;
+import com.onquantum.rockstar.services.RegistrationIntentService;
+import com.onquantum.rockstar.util.IabHelper;
+import com.onquantum.rockstar.util.IabResult;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import io.fabric.sdk.android.Fabric;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.android.vending.billing.IInAppBillingService;
 
 public class RockStarMain extends Activity {
 
@@ -49,11 +57,16 @@ public class RockStarMain extends Activity {
     private ConnectionResult mConnectionResult;
     private boolean mSignInClicked;
 
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
     // Facebook
     private UiLifecycleHelper uiHelper;
 
     private Context context;
     private Button selectStyle;
+
+    // Billing
+    private IabHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +74,8 @@ public class RockStarMain extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //setContentView(R.layout.main);
         setContentView(R.layout.main);
         context = this;
-
-        // Social initialisation
-        //TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        //Fabric.with(this, new Twitter(authConfig));
-        //Fabric.with(this, new TweetComposer());
 
 
         uiHelper = new UiLifecycleHelper(this, null);
@@ -111,8 +118,6 @@ public class RockStarMain extends Activity {
             }
         });
 
-        //Facebook facebook = new Facebook(getResources().getString(R.string.facebook_app_id));
-
         Button faceBookButton = (Button)findViewById(R.id.faceBookButton);
         faceBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,25 +129,6 @@ public class RockStarMain extends Activity {
                         .setApplicationName(getResources().getString(R.string.app_name))
                         .build();
                 uiHelper.trackPendingDialogCall(shareDialog.present());
-                /*Session.openActiveSession((Activity) context, true, new Session.StatusCallback() {
-                    @Override
-                    public void call(Session session, SessionState sessionState, Exception e) {
-                        if (session.isOpened()) {
-                            Request.newMeRequest(session, new Request.GraphUserCallback() {
-                                @Override
-                                public void onCompleted(GraphUser graphUser, Response response) {
-                                    if (graphUser != null) {
-                                        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(RockStarMain.this)
-                                                .setLink("https://play.google.com/store/apps/details?id=" + context.getPackageName())
-                                                .setPicture("http://rockstar-onquantum.rhcloud.com/files/images/rock_star_banner_web.png")
-                                                .build();
-                                        uiHelper.trackPendingDialogCall(shareDialog.present());
-                                    }
-                                }
-                            }).executeAsync();
-                        }
-                    }
-                });*/
             }
         });
 
@@ -208,6 +194,9 @@ public class RockStarMain extends Activity {
         ((Button)findViewById(R.id.button5)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File file = new File(FileSystem.GetCachePath() + "/cache_tabs");
+                if(file.exists())
+                    file.delete();
                 startActivity(new Intent(RockStarMain.this, PentatonicEditorActivity.class));
             }
         });
@@ -215,8 +204,29 @@ public class RockStarMain extends Activity {
         Typeface titleFont = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(titleFont);
 
-        QSoundPool.getInstance().setContext(getApplicationContext());
-        QSoundPool.getInstance().loadSound();
+
+        Log.i("info"," ROCK STAR MAIN : onCreate");
+        //QSoundPool.getInstance().setContext(getApplicationContext());
+        //QSoundPool.getInstance().loadSound();
+
+
+        // GCM
+        Intent intent = new Intent(this, RegistrationIntentService.class);
+        startService(intent);
+
+        // Billing
+        mHelper = new IabHelper(this, Constants.LICENSE_KEY);
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    // Oh noes, there was a problem.
+                    Log.d("info", "RockStarMain :  Problem setting up In-app Billing: " + result);
+                    return;
+                }
+                // Hooray, IAB is fully set up!
+
+            }
+        });
     }
 
     @Override
@@ -247,16 +257,14 @@ public class RockStarMain extends Activity {
         }
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
         googleApiClient.connect();
-
         //startService(new Intent(context, UpdateGuitarsService.class));
         //startService(new Intent(context, UpdatePurchaseTable.class));
-
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -305,5 +313,8 @@ public class RockStarMain extends Activity {
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }
+
+        if (mHelper != null) mHelper.dispose();
+        mHelper = null;
     }
 }

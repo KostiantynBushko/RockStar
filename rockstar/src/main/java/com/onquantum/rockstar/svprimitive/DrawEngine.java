@@ -35,6 +35,11 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
 
     private List<SLayer>obj = null;
 
+    protected DrawEngineInterface drawEngineInterface;
+    public void SetOnDrawEngineInterface(DrawEngineInterface drawEngineInterface) {
+        this.drawEngineInterface = drawEngineInterface;
+    }
+
     public DrawEngine(Context context, AttributeSet attributeSet) {
         super(context,attributeSet);
         getHolder().addCallback(this);
@@ -60,6 +65,8 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
         this.surfaceHolder = holder;
         running = true;
         OnSurfaceChanged(width, height);
+        if(drawEngineInterface != null)
+            drawEngineInterface.SurfaceSuccessCreated();
     }
 
     @Override
@@ -104,7 +111,7 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
                 long time_start = System.currentTimeMillis();
                 canvas = null;
                 try {
-                    canvas = this.surfaceHolder.lockCanvas();
+                    canvas = this.surfaceHolder.lockCanvas(null);
                     if(canvas == null)
                         continue;
                     canvas.drawColor(backgroundColor);
@@ -135,11 +142,13 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
                 if (sleep > 0){
                     try {
                         this.sleep(sleep);
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException e) {
+                        Log.i("info","DRAW ENGINE : InterruptExeption : " + e.toString());
+                    }
                 }
-                while (sleep < 0) {
+                /*while (sleep < 0) {
                     sleep += 33.33333333333333;
-                }
+                }*/
             }
         }
     }

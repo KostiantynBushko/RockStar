@@ -2,6 +2,7 @@ package com.onquantum.rockstar.pentatonic_editor;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,6 +12,7 @@ import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.svprimitive.DrawEngine;
 import com.onquantum.rockstar.svprimitive.SBarCursor;
 import com.onquantum.rockstar.svprimitive.SBitmap;
+import com.onquantum.rockstar.svprimitive.SCircle;
 import com.onquantum.rockstar.svprimitive.SLayer;
 import com.onquantum.rockstar.svprimitive.SShape;
 import com.onquantum.rockstar.svprimitive.SText;
@@ -29,7 +31,6 @@ public class BarSelectView extends DrawEngine {
     private BitSet fretsMark = new BitSet(24);
 
     private SShape barCursor = null;
-
     // Interface
     public interface OnBarSelectListener {
         public void onBarSelect(int barSelected);
@@ -99,14 +100,17 @@ public class BarSelectView extends DrawEngine {
             barStartPosition += barWidth;
             barNumberLayer.addShape(number);
         }
-
-        barCursor = new SBarCursor(0, (int)(height * 0.3f), (int)(barWidth), height);
-        barCursor.setVisibleArea(new RectF(0,height, width,0));
-        barCursor.setColor(Color.YELLOW);
+        SetCurrentBar(0);
+        /*Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.YELLOW);
+        paint.setAlpha(230);
+        barCursor = new SCircle(barWidth - barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, paint); //new SBarCursor(0, (int)(height * 0.3f), (int)(barWidth), height);
+        barCursor.setVisibleArea(new RectF(-100,height, width,100));
+        barCursor.setKinematic(true);
         layer.addShape(barCursor);
         
         SText currentSelected = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
-        currentSelected.setColor(Color.YELLOW);
+        currentSelected.setColor(Color.YELLOW);*/
 
         addLayer(layer);
         addLayer(barNumberLayer);
@@ -121,9 +125,28 @@ public class BarSelectView extends DrawEngine {
         switch (motionAction) {
             case MotionEvent.ACTION_DOWN : {
                 int bar = (int)(motionEvent.getX() / barWidth);
-                if(this.onBarSelectListener != null)
-                    onBarSelectListener.onBarSelect((int)(motionEvent.getX() / barWidth + 1));
-                barCursor.move((int) (bar * barWidth), 0);
+                Log.i("info"," BAR = " + bar);
+                if(this.onBarSelectListener != null) {
+                    if(bar == 24) {
+                        Log.i("info"," BAR CURSOR SELECTED = " + 0);
+                        onBarSelectListener.onBarSelect(0);
+                    } else {
+                        int b = (int)(motionEvent.getX() / barWidth + 1);
+                        Log.i("info"," BAR CURSOR SELECTED = " + b);
+                        onBarSelectListener.onBarSelect(b);
+                    }
+                }
+                barCursor.Remove(0);
+                Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                paint.setColor(Color.YELLOW);
+                paint.setAlpha(230);
+                barCursor = new SCircle(barWidth * (bar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, paint);
+                barCursor.setVisibleArea(new RectF(-100,height, width,100));
+                barCursor.setKinematic(true);
+                layer.addShape(barCursor);
+                Log.i("info"," BAR CURSOR LAYER = " + layer.getShapeList().size());
+
+                //barCursor.move((int)((barWidth * bar) - (barWidth / 2)), 0);
                 SText preview = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
                 preview.setColor(Color.WHITE);
                 lastSelectedBar = bar;
@@ -134,5 +157,32 @@ public class BarSelectView extends DrawEngine {
             default:break;
         }
         return true;
+    }
+
+    public void SetCurrentBar(int bar) {
+        Log.i("info"," BAR CURSOR SELECTED = " + bar);
+        if(this.onBarSelectListener != null) {
+            onBarSelectListener.onBarSelect(bar);
+        }
+        if(bar == 0)
+            bar = 25;
+        bar-=1;
+        if(barCursor != null)
+            barCursor.Remove(0);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.YELLOW);
+        paint.setAlpha(230);
+        barCursor = new SCircle(barWidth * (bar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, paint);
+        barCursor.setVisibleArea(new RectF(-100,height, width,100));
+        barCursor.setKinematic(true);
+        layer.addShape(barCursor);
+        //Log.i("info"," BAR CURSOR LAYER = " + layer.getShapeList().size());
+
+        //barCursor.move((int)((barWidth * bar) - (barWidth / 2)), 0);
+        SText preview = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
+        preview.setColor(Color.WHITE);
+        lastSelectedBar = bar;
+        SText currentSelected = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
+        currentSelected.setColor(Color.YELLOW);
     }
 }
