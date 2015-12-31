@@ -96,6 +96,8 @@
             android:screenOrientation="reverseLandscape">
         </activity>
 
+        <activity android:name=".activities.LoadTabActivity"></activity>
+
         <service
             android:name=".services.UpdateGuitarsService"
             android:enabled="true"
