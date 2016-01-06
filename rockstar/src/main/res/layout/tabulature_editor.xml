@@ -120,7 +120,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="30dp"
+        android:layout_height="@dimen/bottom_control_panel"
         android:layout_alignParentBottom="true"
         android:id="@+id/linearLayout"
         android:background="@color/dark_gray"
@@ -134,46 +134,51 @@
             android:layout_weight="0.99">
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:id="@+id/playTabs"
                 android:scaleType="fitCenter"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:src="@drawable/button_play_circle"/>
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:id="@+id/fastRewind"
                 android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/button_fast_rewind"/>
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:id="@+id/fastForward"
                 android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/button_fast_forward"/>
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:id="@+id/buttonUndo"
                 android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/button_undo"/>
 
             <ImageButton
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:id="@+id/clearAll"
                 android:layout_marginLeft="10dp"
+                android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 android:src="@drawable/button_content_cut"/>
@@ -186,40 +191,40 @@
 
             <ImageButton
                 android:id="@+id/buttonNoteWhole"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:src="@drawable/note_whole"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"/>
             <ImageButton
                 android:id="@+id/buttonNoteHalf"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:src="@drawable/note_half"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"/>
             <ImageButton
                 android:id="@+id/buttonNoteQuartet"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:src="@drawable/note_quartet"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"/>
             <ImageButton
                 android:id="@+id/buttonNoteEight"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:src="@drawable/note_eight"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"/>
             <ImageButton
                 android:id="@+id/buttonNoteSixteenth"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/control_button"
+                android:layout_height="@dimen/control_button"
                 android:src="@drawable/note_sixteenth"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
