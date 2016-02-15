@@ -35,6 +35,8 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
 
     private List<SLayer>obj = null;
 
+    private boolean isSuccessLoaded = false;
+
     protected DrawEngineInterface drawEngineInterface;
     public void SetOnDrawEngineInterface(DrawEngineInterface drawEngineInterface) {
         this.drawEngineInterface = drawEngineInterface;
@@ -67,6 +69,7 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
         OnSurfaceChanged(width, height);
         if(drawEngineInterface != null)
             drawEngineInterface.SurfaceSuccessCreated();
+        isSuccessLoaded = true;
     }
 
     @Override
@@ -115,6 +118,7 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
                     if(canvas == null)
                         continue;
                     canvas.drawColor(backgroundColor);
+                    int drawObjectsCount = 0;
                     synchronized (obj) {
                         for(int i = 0; i < obj.size(); i++) {
                             synchronized (obj.get(i)) {
@@ -125,10 +129,13 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
                                     shape.draw(canvas);
                                     if(shape.remove)
                                         iterator.remove();
+                                    drawObjectsCount++;
                                 }
                             }
                         }
                     }
+                    //Log.i("info","DRAW OBJECTS = " + drawObjectsCount);
+                    drawObjectsCount = 0;
 
                 } finally {
                     if(canvas != null) {
@@ -146,10 +153,9 @@ public abstract class DrawEngine extends SurfaceView implements SurfaceHolder.Ca
                         Log.i("info","DRAW ENGINE : InterruptExeption : " + e.toString());
                     }
                 }
-                /*while (sleep < 0) {
-                    sleep += 33.33333333333333;
-                }*/
             }
         }
     }
+
+    public boolean isSuccessLoaded() { return isSuccessLoaded; }
 }

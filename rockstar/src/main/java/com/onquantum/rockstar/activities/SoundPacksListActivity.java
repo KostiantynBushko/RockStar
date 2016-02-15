@@ -39,6 +39,7 @@ import java.util.Objects;
 public class SoundPacksListActivity extends Activity {
 
     private ListView soundPackList = null;
+    private int listViewCurrentPosition = 0;
     private ArrayList<HashMap<String, Object>>listObjects = null;
     private Context context;
 
@@ -86,33 +87,40 @@ public class SoundPacksListActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        listObjects = new ArrayList<HashMap<String, Object>>();
-        List<GuitarEntity>guitarEntities = DBGuitarTable.GetAllGuitarsEntity(context);
-        for (GuitarEntity guitarEntity : guitarEntities) {
-            HashMap<String, Object>guitarItem = new HashMap<String, Object>();
-            guitarItem.put(DBGuitarTable.ICON,soundPackIcon(guitarEntity.id, guitarEntity.icon));
-            guitarItem.put(DBGuitarTable.NAME,guitarEntity.name);
-            guitarItem.put(DBGuitarTable.ID, new Integer(guitarEntity.id));
-            listObjects.add(guitarItem);
-        }
-        SoundPackListItemAdapter simpleAdapter = new SoundPackListItemAdapter(this,
-                listObjects,
-                R.layout.item_sond_pack,
-                new String[]{DBGuitarTable.NAME,DBGuitarTable.ICON},
-                new int[] {R.id.soundPackageName, R.id.soundPackIcon} );
-
-        soundPackList.setAdapter(simpleAdapter);
-        soundPackList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        soundPackList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("info"," position = " + position + " id = " + id);
-                HashMap<String, Object>item = listObjects.get(position);
-                Intent intent = new Intent(context,SoundPackActivity.class);
-                intent.putExtra(DBGuitarTable.ID, (Integer)item.get(DBGuitarTable.ID));
-                context.startActivity(intent);
+        if(listObjects == null) {
+            listObjects = new ArrayList<HashMap<String, Object>>();
+            List<GuitarEntity>guitarEntities = DBGuitarTable.GetAllGuitarsEntity(context);
+            for (GuitarEntity guitarEntity : guitarEntities) {
+                HashMap<String, Object>guitarItem = new HashMap<String, Object>();
+                guitarItem.put(DBGuitarTable.ICON,soundPackIcon(guitarEntity.id, guitarEntity.icon));
+                guitarItem.put(DBGuitarTable.NAME,guitarEntity.name);
+                guitarItem.put(DBGuitarTable.ID, new Integer(guitarEntity.id));
+                listObjects.add(guitarItem);
             }
-        });
+            SoundPackListItemAdapter simpleAdapter = new SoundPackListItemAdapter(this,
+                    listObjects,
+                    R.layout.item_sond_pack,
+                    new String[]{DBGuitarTable.NAME,DBGuitarTable.ICON},
+                    new int[] {R.id.soundPackageName, R.id.soundPackIcon} );
+
+            soundPackList.setAdapter(simpleAdapter);
+            soundPackList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            soundPackList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i("info"," position = " + position + " id = " + id);
+                    HashMap<String, Object>item = listObjects.get(position);
+                    Intent intent = new Intent(context,SoundPackActivity.class);
+                    intent.putExtra(DBGuitarTable.ID, (Integer)item.get(DBGuitarTable.ID));
+                    context.startActivity(intent);
+                    listViewCurrentPosition = position;
+                }
+            });
+        }
+        soundPackList.setSelection(listViewCurrentPosition);
+
+
+
 
         ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
             @Override

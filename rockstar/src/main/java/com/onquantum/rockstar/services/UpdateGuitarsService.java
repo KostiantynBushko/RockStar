@@ -38,19 +38,19 @@ public class UpdateGuitarsService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("info","UpdateGuitarsService : onCreate");
+        ///Log.i("info","UpdateGuitarsService : onCreate");
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info","UpdateGuitarsService : onDestroy");
+        ///Log.i("info","UpdateGuitarsService : onDestroy");
         super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
-        Log.i("info","UpdateGuitarsService : onStartCommand : flag = " + flag + " startId = " + startId);
+        ///Log.i("info","UpdateGuitarsService : onStartCommand : flag = " + flag + " startId = " + startId);
         new UpdateTask().start();
         return START_REDELIVER_INTENT;
     }
@@ -59,7 +59,7 @@ public class UpdateGuitarsService extends Service {
         @Override
         public void run() {
             updateTaskIsRunning = true;
-            Log.i("info", " UpdateGuitarService UpdateTask : run");
+            ///Log.i("info", " UpdateGuitarService UpdateTask : run");
             long countRows = 1; //DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
             countRows++;
 
@@ -94,7 +94,7 @@ public class UpdateGuitarsService extends Service {
                 StringBuilder stringBuilder = new StringBuilder();
                 while ((line = bufferedReader.readLine()) != null) {
                     stringBuilder.append(line);
-                    Log.i("info"," UpdateGuitarsService response: " + line);
+                    ///Log.i("info"," UpdateGuitarsService response: " + line);
                 }
 
                 LinkedList<GuitarEntity>guitarEntities = new LinkedList<GuitarEntity>();
@@ -102,7 +102,7 @@ public class UpdateGuitarsService extends Service {
                 for (int i = 0; i < guitarObjects.length(); i++) {
                     GuitarEntity guitarEntity = GuitarEntity.CreateGuitarEntity((JSONObject) guitarObjects.get(i));
                     if(DBGuitarTable.GuitarPackageAlreadyExists(getApplicationContext(), guitarEntity.article) == false) {
-                        Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
+                        ///Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
                         guitarEntities.add(guitarEntity);
                     }
                 }

@@ -86,7 +86,7 @@ public class UpdateGuitarsIconService extends Service {
                 stopSelf(startId);
                 return;
             }
-            Log.i("info", "UpdateGuitarsIconService: START TASK Download file icon : startId = " + startId + " dataBaseId = " + id + " iconFileName = " + iconFileName);
+            //Log.i("info", "UpdateGuitarsIconService: START TASK Download file icon : startId = " + startId + " dataBaseId = " + id + " iconFileName = " + iconFileName);
             //SystemClock.sleep(5000);
 
             try {

@@ -58,6 +58,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     private Button applySoundPack;
     private Button downloadSoundPack;
     private Button buySoundPack;
+    private Button StartPlay;
     private RelativeLayout controlLayout;
 
     private ServiceConnection serviceConnection;
@@ -73,7 +74,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Log.i("info","onCreate");
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -118,30 +119,24 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         progressLayout = (RelativeLayout)findViewById(R.id.progressLayout);
         progressPercentage = (TextView)findViewById(R.id.progressPercentage);
         downloadSoundProgress = (ProgressBar)findViewById(R.id.progressBar2);
-
         controlLayout = (RelativeLayout)findViewById(R.id.relativeLayout9);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
+
         playButton = (ImageButton)findViewById(R.id.playSampleSound);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //progressBar.setVisibility(View.VISIBLE);
-                playButton.setVisibility(View.INVISIBLE);
-                stopButton.setVisibility(View.VISIBLE);
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        PlaySample();
-                    }
-                }, 100);
-            }
-        });
-
-        stopButton = (ImageButton)findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StopSample();
+                v.setSelected(!v.isSelected());
+                if(v.isSelected()) {
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            PlaySample();
+                        }
+                    }, 100);
+                } else {
+                    StopSample();
+                }
             }
         });
 
@@ -149,6 +144,8 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         applySoundPack.setOnClickListener(this);
         downloadSoundPack = (Button)findViewById(R.id.downloadSoundPack);
         buySoundPack = (Button)findViewById(R.id.buySoundPack);
+        StartPlay = (Button)findViewById(R.id.buttonPlaySoundPack);
+        StartPlay.setOnClickListener(this);
 
         downloadSoundPack.setOnClickListener(this);
         buySoundPack.setOnClickListener(this);
@@ -160,10 +157,11 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             }else {
                 applySoundPack.setVisibility(View.GONE);
                 downloadSoundPack.setVisibility(View.GONE);
-                controlLayout.setVisibility(View.GONE);
+                //controlLayout.setVisibility(View.GONE);
+                StartPlay.setVisibility(View.VISIBLE);
             }
         }else {
-            if(guitarEntity.success_purchased || (purchaseEntity.getPrice() == 0)) {
+            if(purchaseEntity.has_purchased || (purchaseEntity.getPrice() == 0)) {
                 if(!guitarEntity.isSoundPackAvailable()) {
                     applySoundPack.setVisibility(View.INVISIBLE);
                     downloadSoundPack.setVisibility(View.VISIBLE);
@@ -188,6 +186,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
     @Override
     public void onStart() {
+        Log.i("info","onStart");
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -208,6 +207,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
     @Override
     protected void onPause() {
+        Log.i("info","onPause");
         super.onPause();
         if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
@@ -215,7 +215,11 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         }
 
         UnbindFromDownloadService();
-        unregisterReceiver(broadcastReceiver);
+        if(broadcastReceiver != null) {
+            Log.i("info"," Unregistered receiver");
+            unregisterReceiver(broadcastReceiver);
+            broadcastReceiver = null;
+        }
     }
 
     @Override
@@ -230,10 +234,15 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                 break;
             }
             case R.id.buttonApplyPack: {
-                controlLayout.setVisibility(View.GONE);
+                //controlLayout.setVisibility(View.GONE);
+                applySoundPack.setVisibility(View.INVISIBLE);
+                StartPlay.setVisibility(View.VISIBLE);
                 DBGuitarTable.SetActiveGuitar(this, (long) guitarEntity.id);
                 QSoundPool.getInstance().releaseSoundPool();
                 QSoundPool.getInstance().loadSound();
+                break;
+            }case R.id.buttonPlaySoundPack: {
+                startActivity(new Intent(this, GuitarSimulatorActivity.class));
                 break;
             }
             default:break;
@@ -244,6 +253,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     // Download sound package files
     /**********************************************************************************************/
     private void StartDownloadPackage() {
+        Log.i("info","StartDownloadPackage");
         downloadSoundPack.setVisibility(View.INVISIBLE);
         applySoundPack.setVisibility(View.INVISIBLE);
         buySoundPack.setVisibility(View.INVISIBLE);
@@ -327,6 +337,12 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         }
     }
 
+
+
+
+
+
+
     /**********************************************************************************************/
     // Media player, play sample sound
     /**********************************************************************************************/
@@ -369,9 +385,6 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             mediaPlayer.release();
         }
         mediaPlayer = null;
-        //progressBar.setVisibility(View.INVISIBLE);
-        stopButton.setVisibility(View.INVISIBLE);
-        playButton.setVisibility(View.VISIBLE);
     }
 
 }

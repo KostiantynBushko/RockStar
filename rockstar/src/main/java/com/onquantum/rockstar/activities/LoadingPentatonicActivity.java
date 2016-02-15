@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -38,7 +37,7 @@ public class LoadingPentatonicActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         context = this;
-        setContentView(R.layout.loading_pentatonic);
+        setContentView(R.layout.load_tabulature);
         listView = (ListView)findViewById(R.id.pentatonicList);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
@@ -65,16 +64,16 @@ public class LoadingPentatonicActivity extends Activity {
                 item.put(FILE_NAME,file);
                 listObjects.add(item);
             }
-            SimpleAdapter adapter = new SimpleAdapter(this,listObjects, R.layout.item_pentatonic,
+            SimpleAdapter adapter = new SimpleAdapter(this,listObjects, R.layout.item_tabs,
                     new String[]{FILE_NAME},
-                    new int[]{R.id.textView1}
+                    new int[]{R.id.tabName}
             );
             listView.setAdapter(adapter);
             listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String name = ((TextView)view.findViewById(R.id.textView1)).getText().toString();
+                    String name = ((TextView)view.findViewById(R.id.tabName)).getText().toString();
                     Intent intent = new Intent();
                     intent.putExtra("fileName",name);
                     setResult(RESULT_OK, intent);

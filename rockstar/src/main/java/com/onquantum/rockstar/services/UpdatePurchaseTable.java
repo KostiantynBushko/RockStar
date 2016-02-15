@@ -31,6 +31,7 @@ import java.util.LinkedList;
  * Created by Admin on 7/29/15.
  */
 public class UpdatePurchaseTable extends Service {
+    public static String BROADCAST_COMPLETE_UPDATE_PURCHASE = "com.onquantum.rockstar.services.update_purchase";
     private boolean isRunning = false;
     @Nullable
     @Override
@@ -40,18 +41,19 @@ public class UpdatePurchaseTable extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("info","UpdatePurchaseTable : onCreate");
+        //Log.i("info","UpdatePurchaseTable : onCreate");
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info", "UpdatePurchaseTable : onDestroy");
+        super.onDestroy();
+        ///Log.i("info", "UpdatePurchaseTable : onDestroy");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
-        Log.i("info","UpdatePurchaseTable : onStartCommand : flag = " + flag + " startId = " + startId);
+        ///Log.i("info","UpdatePurchaseTable : onStartCommand : flag = " + flag + " startId = " + startId);
         if(!isRunning)
             new UpdateTask().start();
         return START_NOT_STICKY;
@@ -60,7 +62,7 @@ public class UpdatePurchaseTable extends Service {
     private class UpdateTask extends Thread {
         @Override
         public void run() {
-            Log.i("info","UpdatePurchaseTable UpdateTask : run");
+            ///Log.i("info","UpdatePurchaseTable UpdateTask : run");
             isRunning = true;
             long countRows = DBPurchaseTable.GetCountOfRows(getApplicationContext(), DBPurchaseTable.DB_PURCHASE_TB);
             countRows++;
@@ -92,7 +94,7 @@ public class UpdatePurchaseTable extends Service {
                 StringBuilder stringBuilder = new StringBuilder();
                 while ((line = bufferedReader.readLine()) != null) {
                     stringBuilder.append(line);
-                    Log.i("info", " UpdatePurchaseTable response: " + line);
+                    ///Log.i("info", " UpdatePurchaseTable response: " + line);
                 }
 
                 LinkedList<PurchaseEntity>purchaseEntities = new LinkedList<PurchaseEntity>();
@@ -106,6 +108,8 @@ public class UpdatePurchaseTable extends Service {
                 if(purchaseEntities.size() > 0) {
                     DBPurchaseTable.AddPurchaseEntities(getApplicationContext(), purchaseEntities);
                 }
+                Intent intent = new Intent(BROADCAST_COMPLETE_UPDATE_PURCHASE);
+                sendBroadcast(intent);
                 stopSelf();
 
             } catch (MalformedURLException e) {

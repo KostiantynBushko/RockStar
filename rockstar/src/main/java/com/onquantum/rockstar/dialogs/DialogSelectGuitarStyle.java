@@ -59,7 +59,7 @@ public class DialogSelectGuitarStyle extends DialogFragment {
         item2.put("style",Settings.STYLE_DISTORTION);
         listObjects.add(item2);
 
-        SimpleAdapter adapter = new SimpleAdapter(getActivity(),listObjects, R.layout.item_pentatonic,
+        SimpleAdapter adapter = new SimpleAdapter(getActivity(),listObjects, R.layout.item_tabs,
                 new String[]{"style"},
                 new int[]{R.id.textView1}
         );

@@ -10,11 +10,15 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 
 import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
+import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.sequencer.QSoundPool;
+import com.onquantum.rockstar.tabulature.SimpleTab;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -163,9 +167,33 @@ public class GuitarSlideView extends GuitarAbstractView {
      * Load pentatonic from file
      **********************************************************************************************/
     @Override
-    public void LoadPentatonicFile(String fileName) {
+    public void LoadTabsFile(String fileName) {
+        int BPM = new Settings(context).getBPM();
+        File file = new File(FileSystem.GetTabsFilesPath() + "/" + fileName + Constants.TAB_FILE_EXTENSION);
+        if(!file.exists())
+            return;
+        List<SimpleTab>simpleTabList = new ArrayList<SimpleTab>();
+        simpleTabList = SimpleTab.LoadTabsFromXmlFile(file.toString());
+        if(simpleTabList == null || simpleTabList.size() == 0)
+            return;
+
         List<Pentatonic> pentatonics = new ArrayList<>();
-        BufferedReader reader = null;
+        for(int i = 0; i < simpleTabList.size(); i++) {
+            Pentatonic pentatonic = new Pentatonic();
+            SimpleTab simpleTab = simpleTabList.get(i);
+            pentatonic.bar = simpleTab.getGuitarBar();
+            pentatonic.line = simpleTab.getGuitarString();
+            pentatonic.delay = simpleTab.getDurationMS(BPM);
+            pentatonic.playTime = simpleTab.getStartQuartetMS(BPM);
+            pentatonic.position.set(pentatonic.bar, pentatonic.line);
+            pentatonics.add(pentatonic);
+        }
+        if(guitarRenderer.LoadPentatonic(pentatonics)) {
+            if (context instanceof GuitarInterface) {
+                ((GuitarInterface)context).onPentatonicSuccessLoaded(fileName);
+            }
+        }
+        /*BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(context.getAssets().open("pentatonic/" + fileName)));
             String str = reader.readLine();
@@ -189,7 +217,7 @@ public class GuitarSlideView extends GuitarAbstractView {
             }
         }catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override

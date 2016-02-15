@@ -65,7 +65,7 @@
             android:layout_height="35dp"
             android:id="@+id/button2"
             android:background="@android:color/transparent"
-            android:src="@drawable/pentatonic_button_bar"
+            android:src="@drawable/button_key_white"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/button0"
             android:layout_centerInParent="true"
@@ -89,13 +89,16 @@
             android:layout_toStartOf="@+id/button2">
 
             <ImageView
-                android:layout_width="20dp"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView"
-                android:src="@drawable/key"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_key_black"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="2dp"/>
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:layout_margin="2dp"/>
 
             <ImageButton
                 android:layout_width="40dp"

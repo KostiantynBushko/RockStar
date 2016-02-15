@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class SimpleTab {
     public void setGuitarBar(int guitarBar) { this.guitarBar = guitarBar; }
     public void setStartQuartet(long startQuartet) { this.startQuartet = startQuartet; }
     public void setDuration(long duration) { this.Duration = duration; }
+
     @Override
     public String toString() {
         return "SimpleTab : guitarString : " + guitarString + ", guitarBar : " + guitarBar + ", startQuartet : " + startQuartet + ", Duration : " + Duration;
@@ -60,7 +62,7 @@ public class SimpleTab {
 
 
     // Helper methods
-    public static boolean SaveTabsToXmlFile(String filePath, List<SimpleTab>tabsList) {
+    public static boolean SaveTabsToXmlFile(String filePath, List<SimpleTab>tabsList, String author) {
         boolean result = false;
         File file = new File(filePath);
         FileOutputStream fileOutputStream = null;
@@ -72,6 +74,11 @@ public class SimpleTab {
             xmlSerializer.startDocument(null,Boolean.valueOf(true));
             xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             xmlSerializer.startTag(null,"pentatonic");
+            xmlSerializer.startTag(null,"author");
+            if(author == null)
+                author = "no name";
+            xmlSerializer.text(author);
+            xmlSerializer.endTag(null,"author");
             for (int i = 0; i < tabsList.size(); i++) {
                 SimpleTab simpleTab = tabsList.get(i);
 
@@ -119,8 +126,6 @@ public class SimpleTab {
     }
 
     public static List<SimpleTab> LoadTabsFromXmlFile(String path) {
-        List<SimpleTab>simpleTabsList = new ArrayList<>();
-
         File file = new File(path);
         if(file.exists() == false)
             return null;
@@ -132,6 +137,11 @@ public class SimpleTab {
             return null;
         }
 
+        return LoadTabFromStream(inputStream);
+    }
+
+    public static List<SimpleTab> LoadTabFromStream(InputStream inputStream) {
+        List<SimpleTab>simpleTabsList = new ArrayList<>();
         XmlPullParser xmlPullParser = Xml.newPullParser();
         try {
             xmlPullParser.setInput(inputStream, "UTF-8");
@@ -174,6 +184,8 @@ public class SimpleTab {
                     }
                     Log.i("info",simpleTab.toString());
                     simpleTabsList.add(simpleTab);
+                } else {
+                    XmlHelper.skip(xmlPullParser);
                 }
             }
         } catch (XmlPullParserException e) {
@@ -188,5 +200,50 @@ public class SimpleTab {
             }
         }
         return simpleTabsList;
+    }
+
+    public static String GetTabAuthor(String path) {
+        File file = new File(path);
+        if(file.exists() == false)
+            return null;
+        FileInputStream inputStream;
+        try {
+            inputStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        String author = "no name";
+        XmlPullParser xmlPullParser = Xml.newPullParser();
+        try {
+            xmlPullParser.setInput(inputStream, "UTF-8");
+            xmlPullParser.nextTag();
+            xmlPullParser.require(XmlPullParser.START_TAG, null, "pentatonic");
+            while (xmlPullParser.next() != XmlPullParser.END_TAG) {
+                if(xmlPullParser.getEventType() != XmlPullParser.START_TAG)
+                    continue;
+                String name = xmlPullParser.getName();
+                if(name.equals("author")) {
+                    if(xmlPullParser.next() == XmlPullParser.TEXT) {
+                        author = xmlPullParser.getText();
+                        xmlPullParser.nextTag();
+                        break;
+                    }
+                } else {
+                    XmlHelper.skip(xmlPullParser);
+                }
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return author;
     }
 }

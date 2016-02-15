@@ -20,11 +20,13 @@ public class PurchaseEntity {
     public String description = null;
     public String price = "0.0";
     public String currency_code = null;
+    public boolean has_purchased = false;
 
 
     @Override
     public String toString() {
-        return "id : " + id + ", bundle : " + bundle + ", product_name : " + product_name + ", description : " + description + ", price = " + price + ", currency_code = " + currency_code;
+        return "id : " + id + ", bundle : " + bundle + ", product_name : " + product_name + ", description : " + description + ", price = " + price
+                + ", currency_code = " + currency_code + ", has_purchased : " + has_purchased;
     }
 
     public static PurchaseEntity CreatePurchaseEntity(JSONObject jsonObject) {
@@ -35,6 +37,7 @@ public class PurchaseEntity {
             purchaseEntity.product_name = jsonObject.getString(DBGuitarTable.DESCRIPTION);
             purchaseEntity.price = jsonObject.getString(DBPurchaseTable.PRICE);
             purchaseEntity.currency_code = jsonObject.getString(DBPurchaseTable.CURRENCY_CODE);
+            purchaseEntity.has_purchased = false;
         }catch (JSONException e) {
             e.printStackTrace();
             return null;

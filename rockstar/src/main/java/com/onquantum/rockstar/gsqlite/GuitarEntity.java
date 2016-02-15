@@ -20,7 +20,7 @@ public class GuitarEntity {
     public int purchase_id = 0;
     public String sample_sound = null;
     public String description = null;
-    public boolean success_purchased = false;
+    //public boolean success_purchased = false;
     public boolean is_active = false;
 
     @Override
@@ -43,7 +43,7 @@ public class GuitarEntity {
             guitarEntity.purchase_id = jsonObject.getInt(DBGuitarTable.PURCHASE_ID);
             guitarEntity.icon = jsonObject.getString(DBGuitarTable.ICON);
             guitarEntity.sample_sound = jsonObject.getString(DBGuitarTable.SAMPLE_SOUND);
-            guitarEntity.success_purchased = false;
+            //guitarEntity.success_purchased = false;
             guitarEntity.description = jsonObject.getString(DBGuitarTable.DESCRIPTION);
             guitarEntity.is_active = false;
         } catch (JSONException e) {

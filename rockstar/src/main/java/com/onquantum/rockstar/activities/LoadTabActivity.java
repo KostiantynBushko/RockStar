@@ -2,10 +2,17 @@ package com.onquantum.rockstar.activities;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.file_system.FileSystem;
+import com.onquantum.rockstar.list_adapter.TabItemAdapter;
+import com.onquantum.rockstar.tabulature.SimpleTab;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -34,10 +41,14 @@ public class LoadTabActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.loading_pentatonic);
+        setContentView(R.layout.load_tabulature);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
+        ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeface);
 
         listView = (ListView)findViewById(R.id.pentatonicList);
-        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -48,6 +59,7 @@ public class LoadTabActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        listItems = new ArrayList<>();
         File file = new File(FileSystem.GetTabsFilesPath());
         if(!file.exists())
             return;
@@ -55,22 +67,68 @@ public class LoadTabActivity extends Activity {
         for (int i = 0; i < list.length; i++) {
             Log.i("info",list[i]);
             HashMap<String,Object>item = new HashMap<>();
-            item.put("file_name",list[i]);
+            item.put(TabItemAdapter.NAME,list[i]);
+            item.put(TabItemAdapter.SHORT_NAME,list[i].subSequence(0,list[i].lastIndexOf(".")));
+            item.put(TabItemAdapter.AUTHOR, SimpleTab.GetTabAuthor(FileSystem.GetTabsFilesPath() + "/" + list[i]));
             listItems.add(item);
         }
 
-        SimpleAdapter simpleAdapter = new SimpleAdapter(
-                this,listItems,
-                R.layout.item_pentatonic,
-                new String[]{"file_name"},
-                new int[]{R.id.textView1}
-        );
+        TabItemAdapter simpleAdapter = new TabItemAdapter(this, R.layout.item_tabs, listItems, new TabItemAdapter.TabItemAdapterInterface() {
+            @Override
+            public void OnClickMoreButton(int position) {
+                Log.i("info","MORE BUTTON POSITION = " + position);
+            }
+            @Override
+            public void OnClickDeleteButton(final int position) {
+                Log.i("info","MORE BUTTON DELETE = " + position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoadTabActivity.this);
+                builder.setIcon(R.drawable.ic_delete_white_48dp);
+                builder.setTitle("Delete tab");
+                builder.setMessage("Do you want to delete this tab");
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FileSystem.DeleteTabFile(listItems.get(position).get(TabItemAdapter.NAME).toString());
+                        listItems.remove(position);
+                        listView.invalidateViews();
+                    }
+                });
+                builder.create().show();
+            }
+
+            @Override
+            public void OnClickEditButton(int position) {
+                String name = (String)listItems.get(position).get(TabItemAdapter.SHORT_NAME);
+                Intent intent = new Intent();
+                intent.putExtra("fileName",name);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+
+            @Override
+            public void OnClickShareButton(int position) {
+                File file = FileSystem.CacheFile(new File(FileSystem.GetTabsFilesPath()+ "/" + listItems.get(position).get(TabItemAdapter.NAME)));
+                Uri uri = Uri.fromFile(file);
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM,uri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("text/*");
+                startActivity(Intent.createChooser(intent,"Share Tabs"));
+            }
+        });
         listView.setAdapter(simpleAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = ((TextView)view.findViewById(R.id.textView1)).getText().toString();
+                String name = ((TextView)view.findViewById(R.id.tabName)).getText().toString();
                 Intent intent = new Intent();
                 intent.putExtra("fileName",name);
                 setResult(RESULT_OK, intent);

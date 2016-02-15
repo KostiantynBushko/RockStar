@@ -1,20 +1,13 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.FragmentManager;
-import android.content.DialogInterface;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.media.Image;
-import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,8 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.RockStarApplication;
 import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.dialogs.SaveFileDialog;
 import com.onquantum.rockstar.dialogs.SetBpmDialog;
 import com.onquantum.rockstar.file_system.FileSystem;
@@ -36,7 +29,14 @@ import com.onquantum.rockstar.sequencer.QTabsPlayer;
 import com.onquantum.rockstar.svprimitive.DrawEngineInterface;
 import com.onquantum.rockstar.tabulature.SimpleTab;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -63,12 +63,15 @@ public class PentatonicEditorActivity extends Activity{
 
     private int BPM = 240;
 
+    //private List<SimpleTab>TabBuffer = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i("info","Editor onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.pentatonic_editor);
+        setContentView(R.layout.tabulature_editor);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(typeface);
@@ -179,7 +182,6 @@ public class PentatonicEditorActivity extends Activity{
                 return true;
             }
         });
-
         ((ImageButton)findViewById(R.id.fastRewind)).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -197,7 +199,6 @@ public class PentatonicEditorActivity extends Activity{
             }
         });
 
-
         // Edit button
         ((ImageButton)findViewById(R.id.buttonUndo)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,6 +210,7 @@ public class PentatonicEditorActivity extends Activity{
             @Override
             public void onClick(View v) {
                 pentatonicEditorSurfaceView.ClearAll();
+                tabsFileName = null;
             }
         });
 
@@ -252,27 +254,37 @@ public class PentatonicEditorActivity extends Activity{
     public void onStart() {
         super.onStart();
 
-        Log.i("info","Editor on start");
+        Log.i("info","Editor onStart");
         notePanelSurfaceView = (NotePanelSurfaceView)findViewById(R.id.noteSurfaceView);
         pentatonicEditorSurfaceView = (PentatonicEditorSurfaceView)findViewById(R.id.chordBookSurfaceView);
-        // Load tabs from cache
-        pentatonicEditorSurfaceView.SetOnDrawEngineInterface(new DrawEngineInterface() {
-            @Override
-            public void SurfaceSuccessCreated() {
-                Log.i("info"," ---- SURFACE SUCCESS CREATED ----");
-                String path = FileSystem.GetCachePath() + "/cache_tabs";
-                List<SimpleTab>simpleTabList = SimpleTab.LoadTabsFromXmlFile(path);
-                if(simpleTabList != null && simpleTabList.size() > 0)
-                    pentatonicEditorSurfaceView.LoadTabs(simpleTabList);
-            }
-        });
 
+        if(pentatonicEditorSurfaceView.isSuccessLoaded()) {
+            Log.i("info"," Tab editor Surface IS LOADED");
+            List<SimpleTab>simpleTabList = null;
+            String path = FileSystem.GetCachePath() + "/cache_tabs";
+            simpleTabList = SimpleTab.LoadTabsFromXmlFile(path);
+            if(simpleTabList != null && simpleTabList.size() > 0) {
+                pentatonicEditorSurfaceView.LoadTabs(simpleTabList);
+            }
+        } else {
+            pentatonicEditorSurfaceView.SetOnDrawEngineInterface(new DrawEngineInterface() {
+                @Override
+                public void SurfaceSuccessCreated() {
+                    Log.i("info"," Tab editor Surface CREATED");
+                    List<SimpleTab>simpleTabList = null;
+                    String path = FileSystem.GetCachePath() + "/cache_tabs";
+                    simpleTabList = SimpleTab.LoadTabsFromXmlFile(path);
+                    if(simpleTabList != null && simpleTabList.size() > 0) {
+                        pentatonicEditorSurfaceView.LoadTabs(simpleTabList);
+                    }
+                }
+            });
+        }
 
         barSelectView = (BarSelectView)findViewById(R.id.barSelect);
         barSelectView.SetOnBarSelectListener(new BarSelectView.OnBarSelectListener() {
             @Override
             public void onBarSelect(int barSelected) {
-                Log.i("info"," BAR SELECTTED : " + barSelected);
                 pentatonicEditorSurfaceView.SetSelectedBar(barSelected);
                 String[] notes = new String[6];
                 for (int i = 0; i < 6; i++) {
@@ -282,7 +294,6 @@ public class PentatonicEditorActivity extends Activity{
                 notePanelSurfaceView.DrawNote(notes);
             }
         });
-
 
         if(!showOnStart) {
             showOnStart = true;
@@ -301,13 +312,12 @@ public class PentatonicEditorActivity extends Activity{
         Log.i("info"," PAUSE");
         super.onPause();
         if(setBpmDialog != null) {
-            Log.i("info"," DISMISS DIALOG");
             setBpmDialog.dismiss();
         }
         // Cache current work
         if(pentatonicEditorSurfaceView.GetSimpleTabList().size() > 0) {
             String path = FileSystem.GetCachePath() + "/cache_tabs";
-            SimpleTab.SaveTabsToXmlFile(path, pentatonicEditorSurfaceView.GetSimpleTabList());
+            SimpleTab.SaveTabsToXmlFile(path, pentatonicEditorSurfaceView.GetSimpleTabList(),"onquantum");
         }
     }
     private void disableNoteButton() {
@@ -348,8 +358,8 @@ public class PentatonicEditorActivity extends Activity{
                     tabsFileName = fileName;
                     String path = FileSystem.GetTabsFilesPath();
                     if(path != null) {
-                        path = path + "/" + fileName;
-                        if(!SimpleTab.SaveTabsToXmlFile(path,pentatonicEditorSurfaceView.GetSimpleTabList())) {
+                        path = path + "/" + fileName + Constants.TAB_FILE_EXTENSION;
+                        if(!SimpleTab.SaveTabsToXmlFile(path,pentatonicEditorSurfaceView.GetSimpleTabList(), "onquantum@gmail.com")) {
                             Toast.makeText(PentatonicEditorActivity.this, "File system error",Toast.LENGTH_SHORT);
                         }
                     } else {
@@ -369,14 +379,12 @@ public class PentatonicEditorActivity extends Activity{
         setBpmDialog.SetBpmListener(new SetBpmDialog.SetBpmInterface() {
             @Override
             public void OnSetBpm(int bpm) {
-                Log.i("info"," SELECT BPM = " + bpm);
                 pentatonicEditorSurfaceView.SetBPM(bpm);
                 bpmDialogIsShow = false;
                 setBpmDialog = null;
             }
             @Override
             public void OnCancelDialog() {
-                Log.i("info"," ------ CANCEL DIALOG");
                 bpmDialogIsShow = false;
                 setBpmDialog = null;
             }
@@ -390,7 +398,8 @@ public class PentatonicEditorActivity extends Activity{
             if(resultCode == RESULT_OK) {
                 tabsFileName = intent.getStringExtra("fileName");
                 if(tabsFileName != null && !tabsFileName.isEmpty()) {
-                    pentatonicEditorSurfaceView.LoadTabs(SimpleTab.LoadTabsFromXmlFile(FileSystem.GetTabsFilesPath() + "/" + tabsFileName));
+                    FileSystem.ClearCacheFile();
+                    pentatonicEditorSurfaceView.LoadTabs(SimpleTab.LoadTabsFromXmlFile(FileSystem.GetTabsFilesPath() + "/" + tabsFileName + Constants.TAB_FILE_EXTENSION));
                 }
             }
         }

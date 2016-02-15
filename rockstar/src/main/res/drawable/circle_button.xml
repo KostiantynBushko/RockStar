@@ -3,19 +3,15 @@
     <item android:state_pressed="true">
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
-            <solid android:color="#ff5eaeff"/>
-            <size
-                android:width="100dp"
-                android:height="100dp"/>
+            <solid android:color="#3f5e5e5e"/>
+            <stroke android:width="3dp" android:color="#efa6a4a5"/>
         </shape>
     </item>
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
-            <solid android:color="#ffa6a4a5"/>
-            <size
-                android:width="100dp"
-                android:height="100dp"/>
+            <solid android:color="#0f5e5e5e"/>
+            <stroke android:width="2dp" android:color="#efffffff"/>
         </shape>
     </item>
 </selector>

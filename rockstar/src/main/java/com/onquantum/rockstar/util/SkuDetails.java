@@ -55,4 +55,8 @@ public class SkuDetails {
     public String toString() {
         return "SkuDetails:" + mJson;
     }
+
+    public String getJsonObject() {
+        return mJson;
+    }
 }

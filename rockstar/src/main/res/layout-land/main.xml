@@ -6,40 +6,21 @@
     tools:ignore="MergeRootFrame"
     android:background="@drawable/background_landscape">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play"
-        android:id="@+id/play"
-        android:background="@drawable/button_action"
-        android:textColor="@color/dark_gray"
-        android:alpha="0.7"
-        android:textStyle="normal|bold"
-        android:textSize="18sp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_toRightOf="@+id/textView9"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Use headphones for the best experiences . . ."
         android:id="@+id/textView0"
-        android:layout_alignParentTop="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="30dp"
         android:textColor="@color/gray"
-        android:textSize="16sp"
         android:gravity="right"
-        android:layout_alignRight="@+id/textView9"
-        android:layout_alignEnd="@+id/textView9"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:textSize="15sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView10"
+        android:layout_toEndOf="@+id/textView10"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"/>
 
 
     <RelativeLayout
@@ -47,12 +28,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/relativeLayout5"
         android:gravity="center"
-        android:layout_alignParentTop="true"
+        android:layout_marginRight="20dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView9"
-        android:layout_toEndOf="@+id/textView9"
-        android:layout_marginTop="30dp">
+        android:visibility="invisible">
 
         <Button
             android:layout_width="50dp"
@@ -105,63 +85,48 @@
 
     </RelativeLayout>
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sound bank"
-        android:id="@+id/button4"
-        android:background="@drawable/button_action"
-        android:textColor="@color/dark_gray"
-        android:alpha="0.7"
-        android:textStyle="normal|bold"
-        android:textSize="18sp"
-        android:layout_above="@+id/play"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView9"
-        android:layout_toEndOf="@+id/textView9"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        android:id="@+id/linearLayout3"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Editor"
-        android:id="@+id/button5"
-        android:textColor="@color/dark_gray"
-        android:alpha="0.7"
-        android:textStyle="normal|bold"
-        android:textSize="18sp"
-        android:background="@drawable/button_action"
-        android:layout_above="@+id/button4"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView9"
-        android:layout_toEndOf="@+id/textView9"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"/>
+        <ImageButton
+            android:layout_width="@dimen/menu_button"
+            android:layout_height="@dimen/menu_button"
+            android:id="@+id/button5"
+            android:scaleType="center"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/circle_button"
+            android:src="@drawable/button_key_white"/>
+
+        <ImageButton
+            android:layout_width="@dimen/menu_button"
+            android:layout_height="@dimen/menu_button"
+            android:scaleType="center"
+            android:id="@+id/button4"
+            android:src="@drawable/button_music_lib_white"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/circle_button"/>
+
+        <ImageButton
+            android:layout_width="@dimen/menu_button"
+            android:layout_height="@dimen/menu_button"
+            android:text="P"
+            android:scaleType="center"
+            android:src="@drawable/button_pay_arrow_white"
+            android:id="@+id/play"
+            android:background="@drawable/circle_button"/>
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="|"
-        android:id="@+id/textView9"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textView10"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="invisible"/>
-
-
-    <!--<com.twitter.sdk.android.tweetui.TweetView
-        xmlns:twittersdk="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/photo_default_tweet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        twittersdk:tw__tweet_id="20"
-        android:layout_below="@+id/textView14"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="31dp" />-->
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

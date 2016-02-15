@@ -34,7 +34,7 @@
             android:gravity="center_vertical"
             android:textSize="16dp"
             android:textColor="@color/gray"
-            android:text="@string/pentatonic_editor"
+            android:text="@string/tab_editor"
             android:layout_toRightOf="@+id/backButton"
             android:layout_toEndOf="@+id/backButton"/>
 
@@ -141,7 +141,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
-                android:src="@drawable/button_play_circle"/>
+                android:src="@drawable/button_play_circle_white"/>
 
             <ImageButton
                 android:layout_width="@dimen/control_button"
@@ -193,7 +193,7 @@
                 android:id="@+id/buttonNoteWhole"
                 android:layout_width="@dimen/control_button"
                 android:layout_height="@dimen/control_button"
-                android:src="@drawable/note_whole"
+                android:src="@drawable/ic_note_whole_black"
                 android:background="@drawable/button_note"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"/>

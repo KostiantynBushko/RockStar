@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.onquantum.rockstar.HttpClient.HttpClient;
 import com.onquantum.rockstar.QURL.QURL;
 import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.gsqlite.DBGuitarTable;
@@ -15,6 +17,7 @@ import com.onquantum.rockstar.gsqlite.GuitarEntity;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +25,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -100,20 +105,22 @@ public class DownloadSoundPackage extends Service {
     private class DownloadFile implements Runnable {
         private int startId;
         private Intent intent;
+        HttpClient httpClient;
 
         public DownloadFile(Intent intent, int startId) {
             this.startId = startId;
             this.intent = intent;
             packagesInProgress.put(intent.getStringExtra("sound_pack"), 0L);
+            httpClient = new HttpClient();
         }
         
         @Override
         public void run() {
-            String guitarPackageName = intent.getStringExtra("sound_pack");
-            String fileName = intent.getStringExtra("file_name");
-            File file = new File(FileSystem.GetSoundFilesPath(guitarPackageName) + "/", fileName);
+            final String guitarPackageName = intent.getStringExtra("sound_pack");
+            final String fileName = intent.getStringExtra("file_name");
+            final File file = new File(FileSystem.GetSoundFilesPath(guitarPackageName) + "/", fileName);
 
-            if(file.exists()) {
+            if(file.exists() && file.length() > 0) {
                 Log.i("info", " - DownloadSoundFile EXIST : packageName = " + guitarPackageName + " fileName = " + fileName + " startId = " + startId);
                 stopSelf(startId);
                 return;
@@ -124,6 +131,7 @@ public class DownloadSoundPackage extends Service {
                 stopSelf(startId);
                 return;
             }
+
             HttpURLConnection httpURLConnection = null;
             try {
 
@@ -174,9 +182,12 @@ public class DownloadSoundPackage extends Service {
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (SocketTimeoutException e) {
+                Log.i("info","SOCET TIME OUT ");
                 e.printStackTrace();
-            }finally {
+            }catch (IOException e) {
+                e.printStackTrace();
+            } finally {
                 httpURLConnection.disconnect();
                 stopSelf(startId);
             }

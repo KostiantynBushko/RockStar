@@ -117,7 +117,7 @@ public class GuitarString {
                 float volume = 0.8f;
                 while (volume > 0.01f){
                     soundPool.setVolume(_id, volume, volume);
-                    SystemClock.sleep(10);
+                    SystemClock.sleep(20);
                     volume-=0.01f;
                 }
                 soundPool.stop(_id);

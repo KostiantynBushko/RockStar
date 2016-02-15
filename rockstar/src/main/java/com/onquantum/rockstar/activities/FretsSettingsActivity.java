@@ -5,8 +5,10 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
@@ -67,6 +69,12 @@ public class FretsSettingsActivity extends Activity {
             @Override
             public void onSwitchChange(boolean isOn) {
                 new Settings(context).setShowNotes(isOn);
+            }
+        });
+        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

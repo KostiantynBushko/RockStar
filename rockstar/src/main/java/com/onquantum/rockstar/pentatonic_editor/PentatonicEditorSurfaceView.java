@@ -1,8 +1,6 @@
 package com.onquantum.rockstar.pentatonic_editor;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -23,7 +21,6 @@ import com.onquantum.rockstar.svprimitive.SShape;
 import com.onquantum.rockstar.svprimitive.SText;
 import com.onquantum.rockstar.tabulature.SimpleTab;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -107,10 +104,10 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         // Draw vertical line quartet note
         paintDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintDivider.setColor(Color.LTGRAY);
-        paintDivider.setAlpha(128);
+        paintDivider.setAlpha(180);
         paintQuartetDivider = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintQuartetDivider.setColor(Color.GRAY);
-        paintQuartetDivider.setAlpha(250);
+        paintQuartetDivider.setAlpha(255);
         paintQuartetDivider.setStrokeWidth(8);
 
         int count = 0;
@@ -210,20 +207,17 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         timeLineLayer.addShape(progress);
     }
 
-    public void movePentatonic(int move) {
+    public boolean movePentatonic(int move) {
         int length = quartetsCount * quartetDivider;
         int outOfSlide = length + width;
-        Log.i("info"," - Out of Slide = " + outOfSlide + "  slide = " + slide + " width = " + width);
         if((move > 0 && slide == 0) || move < 0 && ((Math.abs(slide) + width) == outOfSlide)) {
-            Log.i("info"," BREAKE 1");
-            return;
+            return false;
         }
 
         if(move  > 0 && move > Math.abs(slide)) {
             move = Math.abs(slide);
         } else if(move < 0 && (Math.abs(slide) + width + Math.abs(move)) >= length) {
-            Log.i("info"," BREAKE 2");
-            return;
+            return false;
         }
 
         slide += move;
@@ -252,11 +246,11 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         synchronized (playProgressLayer) {
             Iterator<SShape>iterator = playProgressLayer.getShapeList().iterator();
             while (iterator.hasNext()) {
-                Log.i("info"," PLAY PROGRESS LAYER ");
                 SShape shape = iterator.next();
                 shape.move(move, 0);
             }
         }
+        return true;
     }
 
     boolean isTouchMove = false;
@@ -276,7 +270,21 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                     touchY -= 40;
                     int x = (int)((touchX + Math.abs(slide)) / quartetDivider);
                     int y = (int)(touchY / ((height - 80) / 6));
-                    AddTab(x,y,selectedBar,quartetNote);
+                    if(y > 6)
+                        break;
+                    long startTime = System.currentTimeMillis();
+                    boolean tabExist = false;
+                    for (Tab tab : tabs) {
+                        if(tab.simpleTab.getGuitarString() == y && tab.simpleTab.getStartQuartet() == x) {
+                            SystemClock.sleep(1000);
+                            long endTime = System.currentTimeMillis() - startTime;
+                            Log.i("info","Exist : time = " + endTime);
+                            tabExist = true;
+                            break;
+                        }
+                    }
+                    if(!tabExist)
+                        AddTab(x,y,selectedBar,quartetNote);
                 }
                 isTouchMove = false;
                 break;
@@ -285,7 +293,6 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                 int direction = (int)(motionEvent.getX() - touchX);
                 if(Math.abs(direction) > slideStep) {
                     direction = slideStep * (direction / slideStep);
-                    Log.i("info"," DIRECTION : " + direction);
                     isTouchMove = true;
                     int move = direction;
                     movePentatonic(move);
@@ -305,7 +312,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         p1.setColor(Color.RED);
         p1.setAlpha(110);
         SRoundRect roundRect = new SRoundRect((quartetDivider * (x)) + (slide % quartetDivider), (height / 7) * (guitarString + 1) - 25,quartetDivider * 4 / quartetNote,50, p1);
-        roundRect.setVisibleArea(new RectF(-quartetDivider, getHeight(), getWidth() + quartetDivider, 0));
+        roundRect.setVisibleArea(new RectF(-(quartetDivider * 4), getHeight(), getWidth() + quartetDivider, 0));
         roundRect.setKinematic(true);
         touchLayer.addShape(roundRect);
         // Draw text
@@ -390,7 +397,6 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
             public void run() {
                 timeElapsed += pixPerDel;
                 progress.setWidth(timeElapsed);
-                //Log.i("info","progress width = " + progress.getWidth() + "  timeElapsed = " + timeElapsed);
                 if((progress.getWidth() - Math.abs(slide)) >= width / 2 && shift >= slideStep) {
                     movePentatonic(-slideStep);
                     shift = 0;
@@ -410,6 +416,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         progress.setWidth(0);
     }
 
+    // Fast forward and rewind
     private boolean isFastForward = false;
     private boolean isFastRewind = false;
     public void FastForward(boolean fastForward) {
@@ -421,9 +428,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (isFastForward) {
-                    Log.i("info"," FAST FORWARD");
-                    movePentatonic(-slideStep);
+                while (isFastForward && movePentatonic(-slideStep)) {
                     SystemClock.sleep(10);
                 }
             }
@@ -436,11 +441,10 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         }
         isFastRewind = fastRewind;
         new Thread(new Runnable() {
+            long length = quartetsCount * quartetDivider;
             @Override
             public void run() {
-                while (isFastRewind) {
-                    Log.i("info"," FAST REWIND");
-                    movePentatonic(slideStep);
+                while (isFastRewind && movePentatonic(slideStep)) {
                     SystemClock.sleep(10);
                 }
             }
@@ -472,7 +476,6 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
     }
 
     public void SetBPM(int bpm) {
-        //movePentatonic(Math.abs(slide));
         this.BPM = bpm;
         quartetTimeMS = (long)(60f / BPM * 1000L);
         DrawTimeLine();

@@ -26,7 +26,7 @@ public class DBGuitarTable extends DBAbstractTable{
     public static String ICON = "_icon";
     public static String SAMPLE_SOUND = "_sample_sound";
     public static String DESCRIPTION = "_description";
-    public static String SUCCESS_PURCHASED = "_success_purchased";
+    //public static String SUCCESS_PURCHASED = "_success_purchased";
     public static String IS_ACTIVE = "is_available";
 
     @Override
@@ -38,15 +38,15 @@ public class DBGuitarTable extends DBAbstractTable{
                         + PURCHASE_ID + " integer,"
                         + ICON + " text,"
                         + SAMPLE_SOUND + " text,"
-                        + SUCCESS_PURCHASED + " integer,"
+                        //+ SUCCESS_PURCHASED + " integer,"
                         + DESCRIPTION + " text,"
                         + IS_ACTIVE + " integer" + ");"
         );
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME,"Clean");
         contentValues.put(ARTICLE, "clean");
-        contentValues.put(PURCHASE_ID,0);
-        contentValues.put(SUCCESS_PURCHASED,1);
+        contentValues.put(PURCHASE_ID,1);
+        //contentValues.put(SUCCESS_PURCHASED,1);
         contentValues.put(ICON,"clean.png");
         contentValues.put(SAMPLE_SOUND, "clean.mp3");
         contentValues.put(DESCRIPTION,"Clean electric guitar");
@@ -54,7 +54,7 @@ public class DBGuitarTable extends DBAbstractTable{
 
 
         long id = db.insert(DB_GUITAR_TABLE,null,contentValues);
-        Log.i("info","INSERT " + DB_GUITAR_TABLE + " id: " + id);
+        //Log.i("info","INSERT " + DB_GUITAR_TABLE + " id: " + id);
     }
 
     @Override
@@ -75,9 +75,9 @@ public class DBGuitarTable extends DBAbstractTable{
             guitarEntity.purchase_id = cursor.getInt(3);
             guitarEntity.icon = cursor.getString(4);
             guitarEntity.sample_sound = cursor.getString(5);
-            guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
-            guitarEntity.description = cursor.getString(7);
-            guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
+            //guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+            guitarEntity.description = cursor.getString(6);
+            guitarEntity.is_active = (cursor.getInt(7) == 1) ? true : false;
             guitars.add(guitarEntity);
             cursor.moveToNext();
         }
@@ -101,9 +101,9 @@ public class DBGuitarTable extends DBAbstractTable{
         guitarEntity.purchase_id = cursor.getInt(3);
         guitarEntity.icon = cursor.getString(4);
         guitarEntity.sample_sound = cursor.getString(5);
-        guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
-        guitarEntity.description = cursor.getString(7);
-        guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
+        //guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+        guitarEntity.description = cursor.getString(6);
+        guitarEntity.is_active = (cursor.getInt(7) == 1) ? true : false;
         cursor.close();
         db.close();
         return guitarEntity;
@@ -132,9 +132,9 @@ public class DBGuitarTable extends DBAbstractTable{
         guitarEntity.purchase_id = cursor.getInt(3);
         guitarEntity.icon = cursor.getString(4);
         guitarEntity.sample_sound = cursor.getString(5);
-        guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
-        guitarEntity.description = cursor.getString(7);
-        guitarEntity.is_active = (cursor.getInt(8) == 1) ? true : false;
+        //guitarEntity.success_purchased = (cursor.getInt(6) == 1) ? true : false;
+        guitarEntity.description = cursor.getString(6);
+        guitarEntity.is_active = (cursor.getInt(7) == 1) ? true : false;
 
         return guitarEntity;
     }
@@ -148,11 +148,11 @@ public class DBGuitarTable extends DBAbstractTable{
             contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
             contentValues.put(ICON, guitarEntity.icon);
             contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
-            contentValues.put(SUCCESS_PURCHASED, (guitarEntity.success_purchased == true) ? 1 : 0);
+            //contentValues.put(SUCCESS_PURCHASED, (guitarEntity.success_purchased == true) ? 1 : 0);
             contentValues.put(DESCRIPTION,guitarEntity.description);
             contentValues.put(IS_ACTIVE, (guitarEntity.is_active == true) ? 1 : 0);
             long ret = db.insert(DB_GUITAR_TABLE, null, contentValues);
-            Log.i("info"," GUITAR TABLE INSERT : " + ret + " " + guitarEntity.toString());
+            //Log.i("info"," GUITAR TABLE INSERT : " + ret + " " + guitarEntity.toString());
         }
         db.close();
     }
@@ -166,7 +166,7 @@ public class DBGuitarTable extends DBAbstractTable{
 
     public static String GetCurrentActivePackageName(Context context) {
         SQLiteDatabase db = new DBHelper(context).getReadableDatabase();
-        String query = "SELECT " + ARTICLE + " FROM " + DB_GUITAR_TABLE + " WHERE " + IS_ACTIVE + "=?";
+        String query = "SELECT " + NAME + " FROM " + DB_GUITAR_TABLE + " WHERE " + IS_ACTIVE + "=?";
         Cursor cursor = db.rawQuery(query, new String[]{"1"});
         cursor.moveToFirst();
         return cursor.getString(0);

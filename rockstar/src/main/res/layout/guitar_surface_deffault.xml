@@ -46,7 +46,6 @@
             android:layout_marginRight="8dp"
             android:background="@android:color/transparent"
             android:src="@drawable/settings_button_bar"
-            android:layout_alignTop="@id/button1"
             android:layout_alignParentRight="true"
             android:scaleType="fitCenter"/>
 
@@ -66,7 +65,7 @@
             android:layout_height="35dp"
             android:id="@+id/button2"
             android:background="@android:color/transparent"
-            android:src="@drawable/pentatonic_button_bar"
+            android:src="@drawable/button_key_white"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/button0"
             android:layout_centerInParent="true"
@@ -90,13 +89,16 @@
             android:layout_toStartOf="@+id/button2">
 
             <ImageView
-                android:layout_width="20dp"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView"
-                android:src="@drawable/key"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_key_black"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="2dp"/>
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:layout_margin="2dp"/>
 
             <ImageButton
                 android:layout_width="40dp"
@@ -128,7 +130,7 @@
 
     <com.onquantum.rockstar.common.FretsSlider
         android:id="@+id/fretsSlide"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_below="@+id/relativeLayout"
         android:visibility="gone"/>
@@ -178,6 +180,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/progressText"
             android:layout_marginTop="10dp"
+            android:layout_centerInParent="true"
             android:text="first time loading..."/>
         <TextView
             android:id="@+id/soundPackageName"

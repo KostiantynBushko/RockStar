@@ -28,8 +28,8 @@ public class RockStarApplication extends Application {
         FileSystem.GetRootPath();
         FileSystem.GetIconPath();
 
-        startService(new Intent(context, UpdateGuitarsService.class));
         startService(new Intent(context, UpdatePurchaseTable.class));
+        startService(new Intent(context, UpdateGuitarsService.class));
 
         QSoundPool.getInstance().setContext(getApplicationContext());
         QSoundPool.getInstance().loadSound();

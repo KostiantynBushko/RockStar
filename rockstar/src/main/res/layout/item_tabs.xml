@@ -6,21 +6,27 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/relativeLayout6"
+        android:descendantFocusability="blocksDescendants">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
             android:id="@+id/linearLayout2">
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:id="@+id/imageView3"
+                android:id="@+id/tabImage"
                 android:layout_gravity="center"
-                android:src="@drawable/key"
+                android:src="@drawable/ic_key_black"
                 android:scaleType="fitCenter"/>
 
         </LinearLayout>
@@ -47,7 +53,62 @@
             android:layout_toRightOf="@+id/linearLayout2"
             android:layout_toEndOf="@+id/linearLayout2" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/moreButton"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="4dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_more_vert_black"/>
+
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/contextMenuLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/relativeLayout6"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:visibility="visible"
+        android:background="@drawable/top_line_gray"
+        android:layout_marginRight="3dp"
+        android:layout_marginLeft="3dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/deleteTabButton"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_delete_black"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/editTabButton"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_edit_black"
+            android:scaleType="fitCenter"
+            android:layout_marginLeft="5dp"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/shareButton"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_share_black"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
 
 
 </RelativeLayout>

@@ -73,13 +73,13 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         if (intent == null)
             return;
         String fileName = intent.getStringExtra("fileName");
-        guitarSurfaceView.LoadPentatonicFile(fileName);
+        guitarSurfaceView.LoadTabsFile(fileName);
         isPentatonicLoad = true;
     }
 
     @Override
     public void onPentatonicSelect(String fileName) {
-        guitarSurfaceView.LoadPentatonicFile(fileName);
+        guitarSurfaceView.LoadTabsFile(fileName);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         ((ImageButton)this.findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, LoadingPentatonicActivity.class);
+                Intent intent = new Intent(context, LoadTabActivity.class);
                 startActivityForResult(intent, 1);
             }
         });

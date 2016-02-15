@@ -23,6 +23,9 @@ public class SRect extends SShape {
 
     @Override
     public void draw(Canvas canvas) {
+        /*if (x < visibleArea.left || x > visibleArea.right) {
+            return;
+        }*/
         canvas.drawRect(x,y, x + width, y + height, paint);
     }
 
@@ -32,7 +35,6 @@ public class SRect extends SShape {
             return;
         this.x += x;
         this.y += y;
-        Log.i("info"," SRect move " + x);
     }
 
     @Override

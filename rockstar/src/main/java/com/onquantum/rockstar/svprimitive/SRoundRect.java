@@ -23,6 +23,9 @@ public class SRoundRect extends SShape {
 
     @Override
     public void draw(Canvas canvas) {
+        if (x < visibleArea.left || x > visibleArea.right) {
+            return;
+        }
         canvas.drawRoundRect(new RectF(x, y, x + width, y + height), height, height, paint);
     }
 
@@ -56,6 +59,5 @@ public class SRoundRect extends SShape {
 
     @Override
     public void setAlpha(int alpha) {
-
     }
 }

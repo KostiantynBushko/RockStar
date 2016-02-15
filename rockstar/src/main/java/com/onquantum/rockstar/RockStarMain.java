@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.facebook.Session;
@@ -26,23 +28,31 @@ import com.onquantum.rockstar.activities.SoundPacksListActivity;
 import com.onquantum.rockstar.activities.PentatonicEditorActivity;
 import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.file_system.FileSystem;
-import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.activities.GuitarSimulatorActivity;
+import com.onquantum.rockstar.gsqlite.DBPurchaseTable;
+import com.onquantum.rockstar.gsqlite.PurchaseEntity;
 import com.onquantum.rockstar.services.RegistrationIntentService;
+import com.onquantum.rockstar.services.UpdatePurchaseTable;
 import com.onquantum.rockstar.util.IabHelper;
 import com.onquantum.rockstar.util.IabResult;
+import com.onquantum.rockstar.util.Inventory;
+import com.onquantum.rockstar.util.Purchase;
+import com.onquantum.rockstar.util.SkuDetails;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.android.vending.billing.IInAppBillingService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RockStarMain extends Activity {
 
@@ -65,8 +75,14 @@ public class RockStarMain extends Activity {
     private Context context;
     private Button selectStyle;
 
+
     // Billing
-    private IabHelper mHelper;
+    private IabHelper iabHelper;
+    private IabHelper.QueryInventoryFinishedListener queryInventoryFinishedListener;
+    private List<String> additionalSkuList;
+
+    BroadcastReceiver broadcastReceiver;
+    private boolean receiverIsRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +124,7 @@ public class RockStarMain extends Activity {
             }
         }).addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
-        Button playButton = (Button)findViewById(R.id.play);
+        ImageButton playButton = (ImageButton)findViewById(R.id.play);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,7 +134,7 @@ public class RockStarMain extends Activity {
             }
         });
 
-        Button faceBookButton = (Button)findViewById(R.id.faceBookButton);
+        final Button faceBookButton = (Button)findViewById(R.id.faceBookButton);
         faceBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,21 +198,18 @@ public class RockStarMain extends Activity {
             }
         });
 
-        ((Button)findViewById(R.id.button4)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.button4)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(context, SoundPacksListActivity.class));
-                //startService(new Intent(context, UpdateGuitarsService.class));
             }
         });
 
 
-        ((Button)findViewById(R.id.button5)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.button5)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file = new File(FileSystem.GetCachePath() + "/cache_tabs");
-                if(file.exists())
-                    file.delete();
+                FileSystem.ClearCacheFile();
                 startActivity(new Intent(RockStarMain.this, PentatonicEditorActivity.class));
             }
         });
@@ -214,19 +227,71 @@ public class RockStarMain extends Activity {
         Intent intent = new Intent(this, RegistrationIntentService.class);
         startService(intent);
 
+        /*******************************************************************************************/
         // Billing
-        mHelper = new IabHelper(this, Constants.LICENSE_KEY);
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    // Oh noes, there was a problem.
-                    Log.d("info", "RockStarMain :  Problem setting up In-app Billing: " + result);
-                    return;
-                }
-                // Hooray, IAB is fully set up!
+        /*******************************************************************************************/
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                /*if(intent.getAction().equals(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE)) {
+                    Log.i("info"," ******************** COMPLETETE UPDATE PURCASE TABLE ************************");
 
+                    additionalSkuList = new ArrayList<>();
+                    iabHelper = new IabHelper(RockStarMain.this, Constants.LICENSE_KEY);
+                    iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                        public void onIabSetupFinished(IabResult result) {
+                            if (!result.isSuccess()) {
+                                Log.d("info", "RockStarMain :  Problem setting up In-app Billing: " + result);
+                                return;
+                            }
+                            Log.d("info", "RockStarMain :  Success setting up In-app Billing: " + result);
+                            List<PurchaseEntity>purchaseEntityList = DBPurchaseTable.GetAllPurchaseEntity(RockStarMain.this);
+                            for (PurchaseEntity purchaseEntity : purchaseEntityList) {
+                                additionalSkuList.add(purchaseEntity.bundle);
+                            }
+                            iabHelper.queryInventoryAsync(true, additionalSkuList, queryInventoryFinishedListener);
+                        }
+                    });
+
+                    queryInventoryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
+                        @Override
+                        public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+                            if (result.isFailure()) {
+                                return;
+                            }
+                            Log.i("info","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                            for (String productBundle : additionalSkuList) {
+                                SkuDetails skuDetails = inv.getSkuDetails(productBundle);
+                                if(skuDetails != null) {
+                                    Log.i("info"," SKU DETAIL : is_purchased " + inv.hasPurchase(productBundle) + " : " + skuDetails.toString());
+                                    PurchaseEntity purchaseEntity = DBPurchaseTable.GetPurchaseEntityByBundle(RockStarMain.this, productBundle);
+                                    if(purchaseEntity != null) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(skuDetails.getJsonObject());
+                                            purchaseEntity.has_purchased = inv.hasPurchase(productBundle);
+                                            purchaseEntity.currency_code = jsonObject.getString("price_currency_code");
+                                            float price = Float.parseFloat(jsonObject.getString("price_amount_micros")) / 1000000;
+                                            purchaseEntity.price = Float.toString(price);
+                                            DBPurchaseTable.AddPurchaseEntity(RockStarMain.this, purchaseEntity);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                } else {
+                                    Log.i("info"," SKU DETAIL : NULL");
+                                }
+                            }
+                            Log.i("info","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                        }
+                    };
+                }*/
+                unregisterReceiver(broadcastReceiver);
+                receiverIsRegistered = false;
             }
-        });
+        };
+        IntentFilter intentFilter = new IntentFilter(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE);
+        registerReceiver(broadcastReceiver, intentFilter);
+        /*******************************************************************************************/
     }
 
     @Override
@@ -244,8 +309,7 @@ public class RockStarMain extends Activity {
                 Log.i("info", " RockStarMain Success! Facebook");
             }
         });
-
-
+        
         if (requestCode == RC_SIGN_IN) {
             if (resultCode != RESULT_OK) {
                 mSignInClicked = false;
@@ -278,22 +342,6 @@ public class RockStarMain extends Activity {
         uiHelper.onResume();
     }
 
-
-    private void resolveSignInError() {
-        if (mConnectionResult.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);
-            } catch (IntentSender.SendIntentException e) {
-                // The intent was canceled before it was sent.  Return to the default
-                // state and attempt to connect to get an updated ConnectionResult.
-                mIntentInProgress = false;
-                googleApiClient.connect();
-            }
-        }
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -314,7 +362,26 @@ public class RockStarMain extends Activity {
             googleApiClient.disconnect();
         }
 
-        if (mHelper != null) mHelper.dispose();
-        mHelper = null;
+        if (iabHelper != null) iabHelper.dispose();
+        iabHelper = null;
+
+        if(receiverIsRegistered && broadcastReceiver != null)
+            unregisterReceiver(broadcastReceiver);
+    }
+
+
+    private void resolveSignInError() {
+        if (mConnectionResult.hasResolution()) {
+            try {
+                mIntentInProgress = true;
+                startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
+                        RC_SIGN_IN, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException e) {
+                // The intent was canceled before it was sent.  Return to the default
+                // state and attempt to connect to get an updated ConnectionResult.
+                mIntentInProgress = false;
+                googleApiClient.connect();
+            }
+        }
     }
 }

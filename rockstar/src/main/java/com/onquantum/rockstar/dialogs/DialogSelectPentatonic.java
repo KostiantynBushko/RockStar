@@ -68,7 +68,7 @@ public class DialogSelectPentatonic extends DialogFragment{
                 item.put(FILE_NAME,file);
                 listObjects.add(item);
             }
-            SimpleAdapter adapter = new SimpleAdapter(getActivity(),listObjects, R.layout.item_pentatonic,
+            SimpleAdapter adapter = new SimpleAdapter(getActivity(),listObjects, R.layout.item_tabs,
                     new String[]{FILE_NAME},
                     new int[]{R.id.textView1}
             );
