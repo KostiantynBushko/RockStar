@@ -74,7 +74,7 @@ public class FretsSlider extends View {
         if (!isVisible)
             return false;
         int actionMask = event.getActionMasked();
-        float x = event.getX();
+        //float x = event.getX();
 
         switch (actionMask) {
             case MotionEvent.ACTION_DOWN:
@@ -83,26 +83,25 @@ public class FretsSlider extends View {
             case MotionEvent.ACTION_UP:
                 touchesX = 0;
                 break;
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE: {
+                float x = event.getX();
                 float delta = touchesX - x;
-                if (Math.abs(delta) >= (fretWidth * 5)){
+                if (Math.abs(delta) >= (fretWidth * 50)) {
                     int s = delta > 0 ? 1 : -1;
                     if (((slide + s) >= 0) && ((slide + sliderWidth + s)) < 25) {
                         slide += s;
                         if (sliderChangeListener != null) {
                             sliderChangeListener.onSlideButtonListener(s);
-                            //Log.i("info"," slide = " + Integer.toString(slide) + " s = " + Integer.toString(s));
+                            //Log.i("info", " slide = " + Integer.toString(slide) + " s = " + Integer.toString(s));
                         }
                         touchesX = x;
                         invalidate();
-                        //Log.i("info","S " + s);
                     }
-                    //Log.i("info","Slide " + slide);
-                }else {
+                } else {
                     touchesX += delta;
                 }
-
                 break;
+            }
             default:break;
         }
         return true;
