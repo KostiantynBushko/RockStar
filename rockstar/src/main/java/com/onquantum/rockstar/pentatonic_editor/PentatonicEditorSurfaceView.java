@@ -276,7 +276,6 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                     boolean tabExist = false;
                     for (Tab tab : tabs) {
                         if(tab.simpleTab.getGuitarString() == y && tab.simpleTab.getStartQuartet() == x) {
-                            SystemClock.sleep(1000);
                             long endTime = System.currentTimeMillis() - startTime;
                             Log.i("info","Exist : time = " + endTime);
                             tabExist = true;
@@ -361,6 +360,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
     float pixPerDel = 2f;
 
     public void Play() {
+        movePentatonic(-slide);
         shift = 0;
         isPlay = true;
         switch (BPM) {
