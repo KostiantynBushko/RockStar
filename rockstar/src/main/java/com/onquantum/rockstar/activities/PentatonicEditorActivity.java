@@ -1,16 +1,21 @@
 package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +70,8 @@ public class PentatonicEditorActivity extends Activity{
 
     //private List<SimpleTab>TabBuffer = null;
 
+    private ProgressDialog loadSoundPackProgress = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("info","Editor onCreate");
@@ -72,6 +79,10 @@ public class PentatonicEditorActivity extends Activity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.tabulature_editor);
+
+        /*Button b = (Button)this.findViewById(R.id.buttonPanel1);
+        b.setTranslationX(100);
+        b.setTranslationY(100);*/
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(typeface);
@@ -124,6 +135,40 @@ public class PentatonicEditorActivity extends Activity{
         (playTabsButton = (ImageButton)findViewById(R.id.playTabs)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!QSoundPool.getInstance().isSuccessLoaded()) {
+                    loadSoundPackProgress = null;
+                    loadSoundPackProgress = new ProgressDialog(PentatonicEditorActivity.this);
+                    loadSoundPackProgress.setMessage("First time loading... 0%");
+                    loadSoundPackProgress.show();
+                    QSoundPool.getInstance().setOnSoundPoolSuccessLoaded(new QSoundPool.OnSoundPoolSuccessLoaded() {
+                        @Override
+                        public void soundPoolSuccessLoaded() {
+                            if(loadSoundPackProgress != null) {
+                                loadSoundPackProgress.dismiss();
+                                loadSoundPackProgress = null;
+                                QSoundPool.getInstance().setOnSoundPoolSuccessLoaded(null);
+                                QSoundPool.getInstance().setOnProgressUpdate(null);
+                            }
+                        }
+                    });
+                    QSoundPool.getInstance().setOnProgressUpdate(new QSoundPool.OnProgressUpdate() {
+                        @Override
+                        public void progressUpdate(int progress) {
+                            if(loadSoundPackProgress != null) {
+                                loadSoundPackProgress.setMessage("First time loading... " + progress + "%");
+                            }
+                        }
+                    });
+                    loadSoundPackProgress.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            QSoundPool.getInstance().setOnSoundPoolSuccessLoaded(null);
+                            QSoundPool.getInstance().setOnProgressUpdate(null);
+                        }
+                    });
+                    return;
+                }
+
                 v.setSelected(!v.isSelected());
                 if(v.isSelected()) {
                     if(player != null) {

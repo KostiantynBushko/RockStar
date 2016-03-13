@@ -53,6 +53,10 @@ public class QSoundPool {
     }
     private OnSoundPoolSuccessLoaded onSoundPoolSuccessLoaded;
     public void setOnSoundPoolSuccessLoaded(OnSoundPoolSuccessLoaded onSoundPoolSuccessLoaded) {
+        if(onSoundPoolSuccessLoaded == null) {
+            this.onSoundPoolSuccessLoaded = null;
+            return;
+        }
         if (successLoaded) {
             onSoundPoolSuccessLoaded.soundPoolSuccessLoaded();
         } else {

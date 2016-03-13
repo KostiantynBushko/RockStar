@@ -300,7 +300,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Log.i("info"," +++++ SoundPackActivity : Disconnect from download service");
+                //Log.i("info"," +++++ SoundPackActivity : Disconnect from download service");
                 UnbindFromDownloadService();
                 isBanded = false;
             }
@@ -315,7 +315,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         if(isBanded /*&& isDownloadServiceRunning(DownloadSoundPackage.class)*/) {
             if(serviceConnection == null)
                 return;
-            Log.i("info","*************** unbind servise **********************");
+            //Log.i("info","*************** unbind servise **********************");
             unbindService(serviceConnection);
         }
         if(downloadSoundPackage != null)
@@ -336,12 +336,6 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             });
         }
     }
-
-
-
-
-
-
 
     /**********************************************************************************************/
     // Media player, play sample sound
