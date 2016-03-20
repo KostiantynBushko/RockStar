@@ -2,6 +2,7 @@ package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -28,6 +29,7 @@ import com.onquantum.rockstar.dialogs.SetBpmDialog;
 import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.pentatonic_editor.BarSelectView;
 import com.onquantum.rockstar.pentatonic_editor.NotePanelSurfaceView;
+import com.onquantum.rockstar.pentatonic_editor.PentatonicEditorInterface;
 import com.onquantum.rockstar.pentatonic_editor.PentatonicEditorSurfaceView;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.sequencer.QTabsPlayer;
@@ -71,6 +73,7 @@ public class PentatonicEditorActivity extends Activity{
     //private List<SimpleTab>TabBuffer = null;
 
     private ProgressDialog loadSoundPackProgress = null;
+    private ProgressDialog changeBPMProgress = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,10 +82,6 @@ public class PentatonicEditorActivity extends Activity{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.tabulature_editor);
-
-        /*Button b = (Button)this.findViewById(R.id.buttonPanel1);
-        b.setTranslationX(100);
-        b.setTranslationY(100);*/
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(typeface);
@@ -254,8 +253,24 @@ public class PentatonicEditorActivity extends Activity{
         ((ImageButton)findViewById(R.id.clearAll)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pentatonicEditorSurfaceView.ClearAll();
-                tabsFileName = null;
+                AlertDialog.Builder builder = new AlertDialog.Builder(PentatonicEditorActivity.this);
+                builder.setTitle("Clear");
+                builder.setMessage("Do you want to clear all tabs");
+                builder.setIcon(R.drawable.ic_content_cut_white_48dp);
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        pentatonicEditorSurfaceView.ClearAll();
+                        tabsFileName = null;
+                    }
+                });
+                builder.create().show();
             }
         });
 
@@ -326,6 +341,22 @@ public class PentatonicEditorActivity extends Activity{
             });
         }
 
+        pentatonicEditorSurfaceView.SetPentatonicEditorInterface(new PentatonicEditorInterface() {
+            @Override
+            public void OnPentatonicEditorClickListener(int string, int quartet) {}
+            @Override
+            public void OnBPMChange() {
+                if (changeBPMProgress != null) {
+                    changeBPMProgress.dismiss();
+                    changeBPMProgress = null;
+                }
+            }
+            @Override
+            public void OnSelectTab(PentatonicEditorSurfaceView.Tab tab) {
+
+            }
+        });
+
         barSelectView = (BarSelectView)findViewById(R.id.barSelect);
         barSelectView.SetOnBarSelectListener(new BarSelectView.OnBarSelectListener() {
             @Override
@@ -349,7 +380,6 @@ public class PentatonicEditorActivity extends Activity{
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -424,6 +454,13 @@ public class PentatonicEditorActivity extends Activity{
         setBpmDialog.SetBpmListener(new SetBpmDialog.SetBpmInterface() {
             @Override
             public void OnSetBpm(int bpm) {
+                if(changeBPMProgress != null) {
+                    changeBPMProgress.dismiss();
+                }
+                changeBPMProgress = new ProgressDialog(PentatonicEditorActivity.this);
+                changeBPMProgress.setMessage("Set bets per minute " + bpm);
+                changeBPMProgress.show();
+
                 pentatonicEditorSurfaceView.SetBPM(bpm);
                 bpmDialogIsShow = false;
                 setBpmDialog = null;

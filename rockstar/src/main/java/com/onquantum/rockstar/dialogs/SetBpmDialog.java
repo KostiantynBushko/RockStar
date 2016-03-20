@@ -91,9 +91,12 @@ public class SetBpmDialog extends DialogFragment {
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                new Settings(getActivity()).setBPM(BPM);
-                if(setBpmInterface != null)
-                    setBpmInterface.OnSetBpm(BPM);
+                int currentBPM = new Settings(getActivity()).getBPM();
+                if(currentBPM != BPM) {
+                    new Settings(getActivity()).setBPM(BPM);
+                    if(setBpmInterface != null)
+                        setBpmInterface.OnSetBpm(BPM);
+                }
                 dialog.cancel();
             }
         });

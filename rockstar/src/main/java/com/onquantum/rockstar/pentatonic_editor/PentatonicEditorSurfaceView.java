@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by Admin on 8/10/15.
@@ -63,6 +64,11 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
 
     private int BPM = 240;
     private long quartetTimeMS = 0;
+
+    private PentatonicEditorInterface pentatonicEditorInterface = null;
+    public void SetPentatonicEditorInterface(PentatonicEditorInterface pentatonicEditorInterface) {
+        this.pentatonicEditorInterface = pentatonicEditorInterface;
+    }
 
     public PentatonicEditorSurfaceView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -278,6 +284,9 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                         if(tab.simpleTab.getGuitarString() == y && tab.simpleTab.getStartQuartet() == x) {
                             long endTime = System.currentTimeMillis() - startTime;
                             Log.i("info","Exist : time = " + endTime);
+                            if (pentatonicEditorInterface != null) {
+                                pentatonicEditorInterface.OnSelectTab(tab);
+                            }
                             tabExist = true;
                             break;
                         }
@@ -478,11 +487,19 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
     public void SetBPM(int bpm) {
         this.BPM = bpm;
         quartetTimeMS = (long)(60f / BPM * 1000L);
-        DrawTimeLine();
-        DrawProgress();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DrawTimeLine();
+                DrawProgress();
+                if(pentatonicEditorInterface != null) {
+                    pentatonicEditorInterface.OnBPMChange();
+                }
+            }
+        }).start();
     }
 
-    private class Tab  {
+    public class Tab  {
         public SShape shape;
         public SShape text;
         public SimpleTab simpleTab;
