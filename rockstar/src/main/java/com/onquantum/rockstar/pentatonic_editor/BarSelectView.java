@@ -41,6 +41,8 @@ public class BarSelectView extends DrawEngine {
         this.onBarSelectListener = onBarSelectListener;
     }
 
+    Paint selectCirclePaint = null;
+    SCircle barCursor = null;
 
     public BarSelectView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -56,6 +58,11 @@ public class BarSelectView extends DrawEngine {
         fretsMark.set(18);
         fretsMark.set(20);
         fretsMark.set(23);
+
+        selectCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        selectCirclePaint.setColor(Color.YELLOW);
+        selectCirclePaint.setAlpha(230);
+
     }
 
     public void OnSurfaceChanged(int width, int height) {
@@ -101,7 +108,15 @@ public class BarSelectView extends DrawEngine {
             barStartPosition += barWidth;
             barNumberLayer.addShape(number);
         }
+
+
+        barCursor = new SCircle(barWidth * (lastSelectedBar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, selectCirclePaint);
+        barCursor.setVisibleArea(new RectF(-100,height, width,100));
+        barCursor.setKinematic(true);
+
         SetCurrentBar(0);
+        cursorLayer.addShape(barCursor);
+
         addLayer(layer);
         addLayer(cursorLayer);
         addLayer(barNumberLayer);
@@ -127,14 +142,17 @@ public class BarSelectView extends DrawEngine {
                 //barCursor.Remove(0);
                 if(lastSelectedBar == bar)
                     return true;
-                RemoveCursor();
+                /*RemoveCursor();
                 Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 paint.setColor(Color.YELLOW);
                 paint.setAlpha(230);
                 SCircle barCursor = new SCircle(barWidth * (bar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, paint);
                 barCursor.setVisibleArea(new RectF(-100,height, width,100));
                 barCursor.setKinematic(true);
-                cursorLayer.addShape(barCursor);
+                cursorLayer.addShape(barCursor);*/
+                //barCursor.move((int)(barWidth * (bar + 1) -  barWidth * 0.42f), (int)(height / 2 + height * 0.15f));
+                barCursor.SetPosition((barWidth * (bar + 1) -  barWidth * 0.42f), (height / 2 + height * 0.15f));
+
                 SText preview = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
                 preview.setColor(Color.WHITE);
                 lastSelectedBar = bar;
@@ -156,26 +174,33 @@ public class BarSelectView extends DrawEngine {
         bar-=1;
         if(lastSelectedBar == bar)
             return;
-        RemoveCursor();
+        /*RemoveCursor();
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.YELLOW);
-        paint.setAlpha(230);
-        SCircle barCursor = new SCircle(barWidth * (bar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, paint);
-        barCursor.setVisibleArea(new RectF(-100,height, width,100));
-        barCursor.setKinematic(true);
-        cursorLayer.addShape(barCursor);
+        paint.setAlpha(230);*/
+
+        /*if(barCursor == null) {
+            barCursor = new SCircle(barWidth * (bar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, selectCirclePaint);
+            barCursor.setVisibleArea(new RectF(-100,height, width,100));
+            barCursor.setKinematic(true);
+        }*/
+        //barCursor.move((int)(barWidth * (bar + 1) -  barWidth * 0.42f), (int)(height / 2 + height * 0.15f));
+        barCursor.SetPosition((barWidth * (bar + 1) -  barWidth * 0.42f), (height / 2 + height * 0.15f));
+
+        //cursorLayer.addShape(barCursor);
         SText preview = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
         preview.setColor(Color.WHITE);
         lastSelectedBar = bar;
         SText currentSelected = barNumberLayer.getElementByIndex(lastSelectedBar, SText.class);
         currentSelected.setColor(Color.YELLOW);
     }
-    private void RemoveCursor() {
+
+    /*private void RemoveCursor() {
         synchronized (cursorLayer) {
             Iterator<SShape>iterator = cursorLayer.getShapeList().iterator();
             while (iterator.hasNext()) {
                 iterator.next().Remove(0);
             }
         }
-    }
+    }*/
 }

@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -170,6 +171,7 @@ public class DownloadSoundPackage extends Service {
                 if(guitarEntity.isSoundPackAvailable(progress)) {
                     Intent intent = new Intent(BROADCAST_COMPLETE_DOWNLOAD_SOUND_PACKAGE_ACTION);
                     intent.putExtra(DBGuitarTable.ARTICLE, guitarPackageName);
+                    intent.putExtra(DBGuitarTable.ID, guitarEntity.id);
                     sendBroadcast(intent);
                     packagesInProgress.remove(guitarPackageName);
                 } else {
@@ -185,9 +187,15 @@ public class DownloadSoundPackage extends Service {
             } catch (SocketTimeoutException e) {
                 Log.i("info","SOCET TIME OUT ");
                 e.printStackTrace();
-            }catch (IOException e) {
+            } catch (UnknownHostException e){
+                e.printStackTrace();
+
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                if (file.length() == 0) {
+                    file.delete();
+                }
                 httpURLConnection.disconnect();
                 stopSelf(startId);
             }

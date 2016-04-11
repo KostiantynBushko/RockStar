@@ -64,9 +64,6 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".activities.MenuActivity"
-            android:screenOrientation="portrait">
-        </activity>
 
         <activity
             android:name=".activities.FretsSettingsActivity"
@@ -130,6 +127,9 @@
             android:name=".activities.LoadTabActivity"
             android:screenOrientation="reverseLandscape">
         </activity>
+
+        <activity android:name=".activities.LoadingActivity"
+            android:screenOrientation="reverseLandscape"/>
 
         <service
             android:name=".services.UpdateGuitarsService"

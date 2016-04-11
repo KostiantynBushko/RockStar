@@ -47,7 +47,6 @@ public class TabItemAdapter extends ArrayAdapter<HashMap<String,Object>> {
         layout = resource;
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder mainViewHolder = null;

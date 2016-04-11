@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_background">
+    android:background="@color/default_background"
+    android:id="@+id/rootLayout">
 
     <RelativeLayout
         android:orientation="horizontal"
@@ -85,6 +86,24 @@
                 android:layout_marginRight="8dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/button_metronom"/>
+
+            <LinearLayout
+                android:id="@+id/tabEditorControlPanel"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/setupMetronom"
+                android:layout_toStartOf="@+id/setupMetronom"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="1dp"
+                android:layout_alignParentBottom="true">
+
+            </LinearLayout>
+
         </RelativeLayout>
 
     </RelativeLayout>

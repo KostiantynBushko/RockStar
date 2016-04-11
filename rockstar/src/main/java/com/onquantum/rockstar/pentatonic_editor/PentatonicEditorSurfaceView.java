@@ -23,7 +23,9 @@ import com.onquantum.rockstar.tabulature.SimpleTab;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.RunnableFuture;
@@ -58,7 +60,8 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
 
     private boolean isPlay = false;
 
-    private List<Tab>tabs = new ArrayList<Tab>();
+    //private List<Tab>tabs = new ArrayList<Tab>();
+    private Set<Tab> tabs = new LinkedHashSet<>();
 
     private SRect progress;
 
@@ -283,7 +286,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                     for (Tab tab : tabs) {
                         if(tab.simpleTab.getGuitarString() == y && tab.simpleTab.getStartQuartet() == x) {
                             long endTime = System.currentTimeMillis() - startTime;
-                            Log.i("info","Exist : time = " + endTime);
+                            //Log.i("info","Exist : time = " + endTime);
                             if (pentatonicEditorInterface != null) {
                                 pentatonicEditorInterface.OnSelectTab(tab);
                             }
@@ -311,6 +314,9 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
             }
             default:break;
         }
+        if (pentatonicEditorInterface != null) {
+            pentatonicEditorInterface.OnPentatonicEditorClickListener(motionEvent);
+        }
         return true;
     }
 
@@ -336,7 +342,11 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         tab.shape = roundRect;
         tab.text = bar;
         tab.simpleTab = new SimpleTab(guitarString, guitarBar, quartet, quartetNote);
+        tab.index = tabs.size();
         tabs.add(tab);
+        if (pentatonicEditorInterface != null) {
+            pentatonicEditorInterface.OnAddTab(tab);
+        }
     }
 
     public void LoadTabs(List<SimpleTab>simpleTabList) {
@@ -356,8 +366,12 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
 
     public List<SimpleTab> GetSimpleTabList() {
         List<SimpleTab>simpleTabs = new ArrayList<>();
-        for (int i = 0; i < tabs.size(); i++)
-            simpleTabs.add(tabs.get(i).simpleTab);
+        /*for (int i = 0; i < tabs.size(); i++)
+            simpleTabs.add(tabs.get(i).simpleTab);*/
+        Iterator<Tab>iterator = this.tabs.iterator();
+        while (iterator.hasNext()) {
+            simpleTabs.add(iterator.next().simpleTab);
+        }
         return simpleTabs;
     }
 
@@ -465,9 +479,13 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         if(isPlay)
             return;
         if(tabs != null && tabs.size() > 0) {
-            tabs.get(tabs.size() - 1).shape.Remove(0);
+            /*tabs.get(tabs.size() - 1).shape.Remove(0);
             tabs.get(tabs.size() - 1).text.Remove(0);
-            tabs.remove(tabs.size() - 1);
+            tabs.remove(tabs.size() - 1);*/
+            Tab tab = (Tab)tabs.toArray()[tabs.size() - 1];
+            tabs.remove(tab);
+            tab.shape.Remove(0);
+            tab.text.Remove(0);
         }
     }
     public void ClearAll() {
@@ -482,6 +500,12 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                 iterator.remove();
             }
         }
+    }
+
+    public void RemoveTab(Tab tab) {
+        tabs.remove(tab);
+        tab.shape.Remove(0);
+        tab.text.Remove(0);
     }
 
     public void SetBPM(int bpm) {
@@ -499,7 +523,8 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
         }).start();
     }
 
-    public class Tab  {
+    public class Tab {
+        public int index = -1;
         public SShape shape;
         public SShape text;
         public SimpleTab simpleTab;

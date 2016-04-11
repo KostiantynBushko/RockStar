@@ -2,9 +2,11 @@ package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 
 import com.onquantum.rockstar.QURL.QURL;
 import com.onquantum.rockstar.R;
+import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.gsqlite.DBGuitarTable;
 import com.onquantum.rockstar.gsqlite.DBPurchaseTable;
@@ -36,6 +39,9 @@ import com.onquantum.rockstar.gsqlite.GuitarEntity;
 import com.onquantum.rockstar.gsqlite.PurchaseEntity;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.services.DownloadSoundPackage;
+import com.onquantum.rockstar.util.IabHelper;
+import com.onquantum.rockstar.util.IabResult;
+import com.onquantum.rockstar.util.Purchase;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +55,8 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
     private GuitarEntity guitarEntity;
     private PurchaseEntity purchaseEntity;
+
+
     private MediaPlayer mediaPlayer;
     private String urlSampleSound = QURL.GET_SAMPLE_SOUND;
 
@@ -71,6 +79,11 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
 
     private DownloadSoundPackage downloadSoundPackage;
 
+    private int position = -1;
+
+    private IabHelper iabHelper;
+    private boolean iabSuccess = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +93,10 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.sound_pack_layout);
 
-        guitarEntity = DBGuitarTable.GetGuitarEntityByID(this, getIntent().getIntExtra(DBGuitarTable.ID, 1));
+        guitarEntity = DBGuitarTable.GetGuitarEntityByID(this, getIntent().getLongExtra(DBGuitarTable.ID, 1));
         purchaseEntity = DBPurchaseTable.GetPurchaseEntityByID(this, guitarEntity.purchase_id);
+        position = getIntent().getIntExtra("position",-1);
+
         urlSampleSound += guitarEntity.sample_sound;
 
 
@@ -102,15 +117,14 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             BindToDownloadService();
         }
 
-        File iconFile = new File(FileSystem.GetIconPath(), guitarEntity.icon);
+        /*File iconFile = new File(FileSystem.GetIconPath(), guitarEntity.icon);
         Bitmap bitmap = null;
         if(iconFile.exists()) {
             bitmap = BitmapFactory.decodeFile(iconFile.getAbsolutePath());
         } else {
-            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_guitar_white);
         }
-
-        ((ImageView) findViewById(R.id.imageView2)).setImageBitmap(bitmap);
+        ((ImageView) findViewById(R.id.imageView2)).setImageBitmap(bitmap);*/
 
         TextView description = (TextView)findViewById(R.id.textView16);
         description.setText(guitarEntity.description);
@@ -179,7 +193,23 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra(DBGuitarTable.IS_ACTIVE, guitarEntity.is_active);
+                intent.putExtra(DBGuitarTable.ID, guitarEntity.id);
+                intent.putExtra("position",position);
+                setResult(RESULT_OK, intent);
                 finish();
+            }
+        });
+
+        iabHelper = new IabHelper(this, Constants.LICENSE_KEY);
+        iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            @Override
+            public void onIabSetupFinished(IabResult result) {
+                iabSuccess = result.isSuccess();
+                if (!result.isSuccess()) {
+                    Log.i("info","Problem setting up In-app Billing: " + result);
+                }
             }
         });
     }
@@ -223,9 +253,66 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (iabHelper != null)
+            iabHelper.dispose();
+        iabHelper = null;
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buySoundPack :{
+                try {
+                    iabHelper.launchPurchaseFlow(SoundPackActivity.this, purchaseEntity.bundle, purchaseEntity.id, new IabHelper.OnIabPurchaseFinishedListener() {
+                        @Override
+                        public void onIabPurchaseFinished(IabResult result, Purchase info) {
+                            if (result.isFailure()) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(SoundPackActivity.this);
+                                builder.setTitle("Error");
+                                builder.setIcon(R.drawable.ic_warning_white_48dp);
+                                builder.setMessage("Purchase problem, try again");
+                                builder.create().show();
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                            } else if (info.getSku().equals(purchaseEntity.bundle)) {
+                                purchaseEntity.has_purchased = true;
+                                DBPurchaseTable.AddPurchaseEntity(SoundPackActivity.this, purchaseEntity);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(!guitarEntity.isSoundPackAvailable()) {
+                                            applySoundPack.setVisibility(View.INVISIBLE);
+                                            downloadSoundPack.setVisibility(View.VISIBLE);
+                                        }else {
+                                            applySoundPack.setVisibility(View.VISIBLE);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } catch (IllegalStateException e) {
+                    Log.i("info","----------------------------------------------------------------");
+                    e.printStackTrace();
+                    Log.i("info","----------------------------------------------------------------");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SoundPackActivity.this);
+                    builder.setTitle("Error");
+                    builder.setIcon(R.drawable.ic_warning_white_48dp);
+                    builder.setMessage(e.getMessage());
+                    builder.create().show();
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
                 break;
             }
             case R.id.downloadSoundPack: {
@@ -238,6 +325,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                 applySoundPack.setVisibility(View.INVISIBLE);
                 StartPlay.setVisibility(View.VISIBLE);
                 DBGuitarTable.SetActiveGuitar(this, (long) guitarEntity.id);
+                guitarEntity.is_active = true;
                 QSoundPool.getInstance().releaseSoundPool();
                 QSoundPool.getInstance().loadSound();
                 break;
@@ -283,7 +371,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder binder) {
-                Log.i("info"," +++++ SoundPackActivity : Connect to download service");
+                //Log.i("info"," +++++ SoundPackActivity : Connect to download service");
                 isBanded = true;
                 downloadSoundPackage = ((DownloadSoundPackage.DownloadPackBinder)binder).getServiceInstance();
                 if(!downloadSoundPackage.isSoundPackInProgress(guitarEntity.article)) {
@@ -315,7 +403,6 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         if(isBanded /*&& isDownloadServiceRunning(DownloadSoundPackage.class)*/) {
             if(serviceConnection == null)
                 return;
-            //Log.i("info","*************** unbind servise **********************");
             unbindService(serviceConnection);
         }
         if(downloadSoundPackage != null)

@@ -24,6 +24,7 @@ public class NotePanelSurfaceView extends DrawEngine {
 
     SLayer layer = null;
     //SLayer touchLayer = null;
+    private SText[] notesText = new SText[6];
 
     public NotePanelSurfaceView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -36,7 +37,21 @@ public class NotePanelSurfaceView extends DrawEngine {
         //touchLayer = new SLayer();
         addLayer(layer);
         final String[] notes = {"B3","F#3", "D3", "A2", "E2","B1"};
+        float step = height / 7;
+
+        notesText = new SText[6];
+        for(int i = 0; i < 6; i++) {
+            SText text = new SText((float)(width / 2), step, width * 0.4f);
+            text.setVisibleArea(new RectF(-getWidth(), getHeight(), getWidth() * 2, 0));
+            text.setText(notes[i]);
+            layer.addShape(text);
+            step += height / 7;
+            notesText[i] = text;
+        }
+
+
         DrawNote(notes);
+
         /*float step = height / 7;
         for(int i = 0; i < 6; i++) {
             SText text = new SText((float)(width / 2), step, width * 0.4f);
@@ -50,7 +65,11 @@ public class NotePanelSurfaceView extends DrawEngine {
     }
 
     public void DrawNote(String[] notes) {
-        synchronized (layer) {
+        for (int i = 0; i < 6; i++) {
+            if (notesText[i] != null)
+                notesText[i].setText(notes[i]);
+        }
+        /*synchronized (layer) {
             Iterator<SShape>iterator = layer.getShapeList().iterator();
             while (iterator.hasNext()) {
                 iterator.next().Remove(0);
@@ -63,6 +82,6 @@ public class NotePanelSurfaceView extends DrawEngine {
             text.setText(notes[i]);
             layer.addShape(text);
             step += height / 7;
-        }
+        }*/
     }
 }

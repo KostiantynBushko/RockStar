@@ -28,6 +28,7 @@ public class DBGuitarTable extends DBAbstractTable{
     public static String DESCRIPTION = "_description";
     //public static String SUCCESS_PURCHASED = "_success_purchased";
     public static String IS_ACTIVE = "is_available";
+    public static String SOUND_PACK_AVAILABLE = "sound_pack_available";
 
     @Override
     public void Create(SQLiteDatabase db) {

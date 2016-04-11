@@ -3,29 +3,29 @@
     <item android:state_pressed="true">
         <shape>
             <solid android:color="#ffb8c7ff"/>
-            <padding android:left="20dip"
-                android:right="20dip"
-                android:top="7dip"
-                android:bottom="7dip"/>
+            <padding android:left="1dip"
+                android:right="1dip"
+                android:top="1dip"
+                android:bottom="1dip"/>
             <corners
-                android:bottomRightRadius="5dp"
-                android:bottomLeftRadius="5dp"
-                android:topLeftRadius="5dp"
-                android:topRightRadius="5dp"/>
+                android:bottomRightRadius="3dp"
+                android:bottomLeftRadius="3dp"
+                android:topLeftRadius="3dp"
+                android:topRightRadius="3dp"/>
         </shape>
     </item>
     <item>
         <shape>
             <solid android:color="#ffdddbdc"/>
-            <padding android:left="20dip"
-                android:right="20dip"
-                android:top="7dip"
-                android:bottom="7dip"/>
+            <padding android:left="1dip"
+                android:right="1dip"
+                android:top="1dip"
+                android:bottom="1dip"/>
             <corners
-                android:bottomRightRadius="5dp"
-                android:bottomLeftRadius="5dp"
-                android:topLeftRadius="5dp"
-                android:topRightRadius="5dp"/>
+                android:bottomRightRadius="3dp"
+                android:bottomLeftRadius="3dp"
+                android:topLeftRadius="3dp"
+                android:topRightRadius="3dp"/>
         </shape>
     </item>
 </selector>

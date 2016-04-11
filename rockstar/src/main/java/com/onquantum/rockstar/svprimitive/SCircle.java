@@ -82,6 +82,11 @@ public class SCircle extends SShape {
         paint.setAlpha(alpha);
     }
 
+    public void SetPosition(float x, float y) {
+        this.centerX = x;
+        this.centerY = y;
+    }
+
     public void drawNumber(int number, Paint paint) {
         this.textPaint = paint;
         this.textPaint.setTextSize(radius);

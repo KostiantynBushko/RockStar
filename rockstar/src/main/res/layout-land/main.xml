@@ -72,17 +72,6 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="5dp"/>
 
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/buttonInfo"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/googlePlus"
-            android:layout_toEndOf="@+id/googlePlus"
-            android:background="@drawable/button_info"
-            android:alpha="0.5"
-            android:layout_marginRight="10dp"/>
-
     </RelativeLayout>
 
     <LinearLayout
@@ -128,5 +117,36 @@
         android:id="@+id/textView10"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:visibility="invisible">
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButton4"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_setting_white"/>
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButton5"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_info_white"
+            android:layout_marginLeft="5dp"/>
+    </LinearLayout>
 
 </RelativeLayout>

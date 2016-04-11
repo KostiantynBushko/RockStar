@@ -24,6 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.onquantum.rockstar.activities.AboutActivity;
+import com.onquantum.rockstar.activities.LoadingActivity;
 import com.onquantum.rockstar.activities.SoundPacksListActivity;
 import com.onquantum.rockstar.activities.PentatonicEditorActivity;
 import com.onquantum.rockstar.common.Constants;
@@ -190,13 +191,6 @@ public class RockStarMain extends Activity {
             }
         });
 
-        ((Button)findViewById(R.id.buttonInfo)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AboutActivity.class);
-                startActivity(intent);
-            }
-        });
 
         (findViewById(R.id.button4)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +204,9 @@ public class RockStarMain extends Activity {
             @Override
             public void onClick(View v) {
                 FileSystem.ClearCacheFile();
+                //Intent intent = new Intent(RockStarMain.this, LoadingActivity.class);
+                //intent.putExtra("activity",PentatonicEditorActivity.class.getName());
+                //startActivity(intent);
                 startActivity(new Intent(RockStarMain.this, PentatonicEditorActivity.class));
             }
         });

@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/dark_gray">
+    android:layout_height="100dp"
+    android:background="@color/dark_gray"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@color/black"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/dark_gray"
+        android:src="@drawable/ic_guitar_white"
         android:id="@+id/soundPackIcon"
-        android:scaleType="fitXY"/>
+        android:scaleType="centerInside"
+        android:visibility="invisible"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sound pack name"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:id="@+id/soundPackageName"
         android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/soundPackIcon"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/imageButton" />
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageButton"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:src="@drawable/button_sound_pack_on_off"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/soundPackIcon"
-        android:layout_toEndOf="@+id/soundPackIcon"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp"
+        android:visibility="invisible"/>
 </RelativeLayout>

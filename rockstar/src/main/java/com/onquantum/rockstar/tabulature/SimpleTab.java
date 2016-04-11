@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by Admin on 12/25/15.
  */
-public class SimpleTab {
+public class SimpleTab implements Cloneable {
     private int guitarString = 1;
     private int guitarBar = 1;
     private long startQuartet = 0;
@@ -245,5 +245,9 @@ public class SimpleTab {
             }
         }
         return author;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

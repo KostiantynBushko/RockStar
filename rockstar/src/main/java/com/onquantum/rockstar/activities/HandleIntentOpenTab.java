@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Admin on 1/7/16.
  */
 public class HandleIntentOpenTab extends Activity {
-
+    private String fileName = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +28,27 @@ public class HandleIntentOpenTab extends Activity {
             String path = FileSystem.GetCachePath() + "/cache_tabs";
             SimpleTab.SaveTabsToXmlFile(path, tabs,"onquantum");
         }
-        startActivity(new Intent(this, PentatonicEditorActivity.class));
+        Intent intent = new Intent(this, PentatonicEditorActivity.class);
+        intent.putExtra("fileName", fileName.subSequence(0, fileName.lastIndexOf(".")));
+        startActivity(intent);
         finish();
     }
 
     private List<SimpleTab> OpenTabsFromIntent(Intent intent) {
         Uri uri = intent.getData();
+
+        List<SimpleTab>simpleTab = null;
         if(uri != null) {
             String scheme = uri.getScheme();
-            if(ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            if(ContentResolver.SCHEME_CONTENT.equals(scheme) || ContentResolver.SCHEME_FILE.equals(scheme)) {
+                if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+                    fileName = uri.getLastPathSegment();
+                }
                 ContentResolver contentResolver = this.getContentResolver();
                 InputStream inputStream = null;
                 try {
                     inputStream = contentResolver.openInputStream(uri);
-                    return SimpleTab.LoadTabFromStream(inputStream);
+                    simpleTab = SimpleTab.LoadTabFromStream(inputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -57,6 +64,6 @@ public class HandleIntentOpenTab extends Activity {
                 }
             }
         }
-        return null;
+        return simpleTab;
     }
 }

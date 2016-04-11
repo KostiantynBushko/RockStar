@@ -20,6 +20,8 @@ import java.util.List;
 public class RockStarApplication extends Application {
 
     private static Context context = null;
+    private static boolean bpmPresent = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,6 +35,13 @@ public class RockStarApplication extends Application {
 
         QSoundPool.getInstance().setContext(getApplicationContext());
         QSoundPool.getInstance().loadSound();
+    }
+
+    public static void SetBPMPresent() {
+        bpmPresent = true;
+    }
+    public static boolean IsBPMPresent() {
+        return bpmPresent;
     }
 
     public static Context getContext() {
