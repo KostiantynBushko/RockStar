@@ -3,6 +3,7 @@ package com.onquantum.rockstar;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import com.onquantum.rockstar.file_system.FileSystem;
@@ -46,5 +47,10 @@ public class RockStarApplication extends Application {
 
     public static Context getContext() {
         return context;
+    }
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
     }
 }

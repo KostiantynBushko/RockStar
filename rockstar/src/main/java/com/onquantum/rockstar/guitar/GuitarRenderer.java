@@ -114,7 +114,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int var, int width, int height) {
-        Log.i("info"," GuitarRenderer surfaceChanged with = " + width + " height = " + height + "  loaded = " + loaded);
+        //Log.i("info"," GuitarRenderer surfaceChanged with = " + width + " height = " + height + "  loaded = " + loaded);
         if (loaded)
             return;
 
@@ -317,17 +317,13 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             }
         }
     }
-    /**********************************************************************************************/
-    public void AddDrawableObject(SShape drawObject) {
-        this.drawObjects.add(drawObject);
-        sortLayer();
-    }
 
-    public boolean RemoveDrawableObjectByTag(String tag) {
+    public boolean RemoveLayer(int layer) {
         ListIterator<SShape> iterator = this.drawObjects.listIterator();
         while (iterator.hasNext()) {
-            if(iterator.next().getTag().equals(tag)) {
-                iterator.remove();
+            SShape object = iterator.next();
+            if(object.getLayer() == layer) {
+                object.remove = true;
             }
         }
         return false;
@@ -436,11 +432,12 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     public void onTouchDown(final int x, final int y) {
         if (y >= 6)
             return;
+
         // Pentatonic touch handler
-        if(isPentatonicLoaded && !playWillStart) {
+        if(isPentatonicLoaded /*&& !playWillStart*/) {
             try{
-                int slide = x == 0 ? 0 : Slide;
-                if(x == currentPentatonic.bar + slide  && y == currentPentatonic.line) {
+                //int slide = x == 0 ? 0 : Slide;
+                if(x == currentPentatonic.bar  && y == currentPentatonic.line) {
                     currentPentatonic = null;
                 }
             }catch (NullPointerException e){}
@@ -452,7 +449,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             int sh = (int)guitarString.get(y).getHeight();
             SCircle circle;
             if(x == 0) {
-                //circle = new SCircle(width - (fretWidth * fretCount) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
                 circle =  new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
             } else {
                 circle = new SCircle(width - (fretWidth * (x - Slide)) + (fretWidth / 2),  _y + sh / 2, height / 18, touchPaint);
@@ -461,9 +457,9 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
             circle.Remove(250);
             drawObjects.add(circle);
         }
-
         ((SGuitarString)guitarString.get(y)).setAnimate();
     }
+
     public void onTouchUp(int x, int y) {}
     public void onTouchMove(int x, int y) {}
 
@@ -473,6 +469,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
     public boolean LoadPentatonic(List<Pentatonic>pentatonics) {
         ClosePlayPentatonic();
         while (!pentatonicIsStoped);
+        showNotes(new Settings(context).getShowNotes());
         pentatonicIsStoped = false;
         stopPlay = false;
         pentatonicList = pentatonics;
@@ -483,7 +480,7 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         return true;
     }
     public void ClosePlayPentatonic() {
-        Log.i("info", "GuitarRenderer : ClosePlayPentatonic");
+        //Log.i("info", "GuitarRenderer : ClosePlayPentatonic");
         stopPlay = true;
         removePentatonicMask();
         //stopPlay = true;
@@ -513,11 +510,13 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.i("info","RENDERER Play Pentatonic");
                 while (!stopPlay) {
                     if (isPentatonicLoaded && currentPentatonic == null) {
                         playWillStart = true;
-                        Log.i("info"," pentatonicList size = " + pentatonicList.size() + " currentPentatonicStep = " + currentPentatonicStep);
+                        //Log.i("info"," pentatonicList size = " + pentatonicList.size() + " currentPentatonicStep = " + currentPentatonicStep);
+
+                        currentPentatonicStep++;
+
                         if(currentPentatonicStep == pentatonicList.size()) {
                             currentPentatonicStep = 0;
                         }
@@ -528,17 +527,16 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                         current = currentPentatonic.mask;
                         current.setColor(Color.RED);
 
-                        currentPentatonicStep++;
+                        //currentPentatonicStep++;
                         try {
                             TimeUnit.MILLISECONDS.sleep(currentPentatonic.delay);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        currentPentatonic = null;
+                        //currentPentatonic = null;
                     }
                 }
                 pentatonicIsStoped = true;
-                Log.i("info"," RENDERER : STOP PLAY PENTATONIC ");
             }
         }).start();
     }
@@ -558,6 +556,8 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 if (item != null)
                     pList.add(item);
             }
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            textPaint.setColor(Color.BLUE);
             for (Pentatonic p : pList) {
                 Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 maskPaint.setColor(Color.YELLOW);
@@ -571,11 +571,14 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 if(p.bar == 0) {
                     circle = new SCircle(fretsVisibleArea.left - (int)(fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
                     circle.setVisibleArea(new RectF(0.0f,height,fretsVisibleArea.left,0.0f));
+                    circle.setKinematic(false);
                 } else {
                     circle = new SCircle(width - (fretWidth * x) + (fretWidth / 2),  _y + sh / 2, height / 18,maskPaint);
                     circle.setVisibleArea(fretsVisibleArea);
+                    circle.setKinematic(true);
                 }
-                circle.setKinematic(false);
+                String note = QSoundPool.getInstance().GetNoteForGuitarString(x,y);
+                circle.drawText(note, textPaint);
                 circle.setLayer(Layer.PENTATONIC_LAYER);
 
 
@@ -636,7 +639,6 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
 
     private void showFretsNumber(boolean visible) {
         if(visible) {
-            Log.i("info"," GuitarRenderer Show fret number");
             float step = fretWidth;
             Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -647,10 +649,10 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                 if(!fretsMark.get(i)){
                     float radius = 0;
                     if(fretWidth > (height / 6)) {
-                        Log.i("info"," height / 18 " + (height / 18));
+                        //Log.i("info"," height / 18 " + (height / 18));
                         radius = height / 18;
                     } else {
-                        Log.i("info"," fretWidth / 3 " + (fretWidth / 3));
+                        //Log.i("info"," fretWidth / 3 " + (fretWidth / 3));
                         radius = fretWidth / 3;
                     }
                     circle = new SCircle(this.width - step + fretWidth / 2, this.height / 2, radius, circlePaint);
@@ -696,6 +698,8 @@ public class GuitarRenderer implements SurfaceHolder.Callback {
                     drawObjects.add(circle);
                 }
             }
+        } else {
+            RemoveLayer(Layer.NOTES_LAYER);
         }
     }
 

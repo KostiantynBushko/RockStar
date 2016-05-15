@@ -55,8 +55,7 @@ public class GuitarString {
         int playId2 = 0;
         int playId3 = 0;
         playID[x] = soundPool.play(playId1,1,1,1,0,1);
-        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y) + " octave = "
-                + QSoundPool.getInstance().GetOctaveForGuitarString(x, y));
+        //Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y) + " octave = " + QSoundPool.getInstance().GetOctaveForGuitarString(x, y));
 
         if ((x + 1) < (fretsCount + Slide)){
             playId2 = (y + 1) + (6 * (x+1));
@@ -84,15 +83,14 @@ public class GuitarString {
         int playId1 = (y + 1) + (6 * x);
 
         playID[x] = soundPool.play(playId1,1,1,1,0,1);
-        Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y) + " octave = "
-                + QSoundPool.getInstance().GetOctaveForGuitarString(x, y));
+        //Log.i("info","Guitar String: X = " + x + " Y = " + y + " playID = " + playId1 + " NOTE = " + QSoundPool.getInstance().GetNoteForGuitarString(x, y) + " octave = " + QSoundPool.getInstance().GetOctaveForGuitarString(x, y));
     }
 
     public void move(int x, int y) {
         long currentTime = System.currentTimeMillis();
         long duration = (currentTime - startPlay) / 1000L;
         if (duration >= 4) {
-            Log.i("info"," duration = " + duration);
+            //Log.i("info"," duration = " + duration);
             stop();
         } else {
             try{

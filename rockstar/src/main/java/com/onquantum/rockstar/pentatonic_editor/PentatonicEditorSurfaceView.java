@@ -68,6 +68,8 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
     private int BPM = 240;
     private long quartetTimeMS = 0;
 
+    public boolean needSave = false;
+
     private PentatonicEditorInterface pentatonicEditorInterface = null;
     public void SetPentatonicEditorInterface(PentatonicEditorInterface pentatonicEditorInterface) {
         this.pentatonicEditorInterface = pentatonicEditorInterface;
@@ -294,8 +296,10 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
                             break;
                         }
                     }
-                    if(!tabExist)
-                        AddTab(x,y,selectedBar,quartetNote);
+                    if(!tabExist) {
+                        this.needSave = true;
+                        AddTab(x, y, selectedBar, quartetNote);
+                    }
                 }
                 isTouchMove = false;
                 break;
@@ -357,6 +361,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
             SimpleTab simpleTab = simpleTabList.get(i);
             AddTab((int)simpleTab.getStartQuartet(), simpleTab.getGuitarString(), simpleTab.getGuitarBar(),(int)simpleTab.getDuration());
         }
+        this.needSave = false;
     }
 
     public void SetQuartetNote(int quartetNote) {
@@ -486,6 +491,7 @@ public class PentatonicEditorSurfaceView extends DrawEngine {
             tabs.remove(tab);
             tab.shape.Remove(0);
             tab.text.Remove(0);
+            this.needSave = true;
         }
     }
     public void ClearAll() {

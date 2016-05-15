@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,7 +70,7 @@ public class PentatonicEditorActivity extends Activity{
 
     private RelativeLayout rootLayout = null;
     private SpeechBubble speechBubble = null;
-    private LinearLayout controllPanel = null;
+    private RelativeLayout controllPanel = null;
 
     //private List<SimpleTab>TabBuffer = null;
     GuitarEntity guitarEntity = null;
@@ -84,9 +85,16 @@ public class PentatonicEditorActivity extends Activity{
     }
     public OpenTabsInterface openTabsInterface = null;
 
+
+    private long START_TIME = 0;
+    private long END_TIME = 0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         //Log.i("info","Editor onCreate");
+
+        this.START_TIME = System.currentTimeMillis();
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -103,7 +111,7 @@ public class PentatonicEditorActivity extends Activity{
 
         // Obtain root layout
         rootLayout = (RelativeLayout)this.findViewById(R.id.rootLayout);
-        controllPanel = (LinearLayout)this.findViewById(R.id.tabEditorControlPanel);
+        controllPanel = (RelativeLayout)this.findViewById(R.id.tabEditorControlPanel);
 
         // Note button
         (buttonNoteWhole = (ImageButton)findViewById(R.id.buttonNoteWhole)).setOnClickListener(new View.OnClickListener() {
@@ -157,50 +165,7 @@ public class PentatonicEditorActivity extends Activity{
         (playTabsButton = (ImageButton)findViewById(R.id.playTabs)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RemoveContextMenu();
-                if (!CheckSoundPool()) {
-                    return;
-                }
-                v.setSelected(!v.isSelected());
-                if(v.isSelected()) {
-                    if(player != null) {
-                        player.Stop();
-                        player = null;
-                    }
-                    if(pentatonicEditorSurfaceView.GetSimpleTabList().size() == 0) {
-                        v.setSelected(!v.isSelected());
-                        return;
-                    }
-                    player = new QTabsPlayer(getApplicationContext(), pentatonicEditorSurfaceView.GetSimpleTabList());
-                    player.SetOnPlayInterface(new QTabsPlayer.TabPlayInterface() {
-                        @Override
-                        public void Stop() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    playTabsButton.setSelected(false);
-                                    pentatonicEditorSurfaceView.Stop();
-                                }
-                            });
-                        }
-                        @Override
-                        public void Start() {
-                            pentatonicEditorSurfaceView.Play();
-                        }
-
-                        @Override
-                        public void CurrentPlayTab(SimpleTab simpleTab) {
-                            pentatonicEditorSurfaceView.SetSelectedBar(simpleTab.getGuitarBar());
-                            barSelectView.SetCurrentBar(simpleTab.getGuitarBar());
-                        }
-                    });
-                    player.Play();
-                } else {
-                    if(player != null)
-                        player.Stop();
-                    player = null;
-                    pentatonicEditorSurfaceView.Stop();
-                }
+                PlayButtonAction(v);
             }
         });
         ((ImageButton)findViewById(R.id.fastForward)).setOnTouchListener(new View.OnTouchListener() {
@@ -284,7 +249,7 @@ public class PentatonicEditorActivity extends Activity{
             public void onClick(View v) {
                 RemoveContextMenu();
                 openTabsInterface = null;
-                if(tabsFileName != null) {
+                if(tabsFileName != null && pentatonicEditorSurfaceView.needSave) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PentatonicEditorActivity.this);
                     builder.setTitle("Alert");
                     builder.setMessage("Save current change to '" + tabsFileName + "'");
@@ -352,12 +317,10 @@ public class PentatonicEditorActivity extends Activity{
             }
         }
 
-        //Log.i("info","Editor onStart");
         notePanelSurfaceView = (NotePanelSurfaceView)findViewById(R.id.noteSurfaceView);
         pentatonicEditorSurfaceView = (PentatonicEditorSurfaceView)findViewById(R.id.chordBookSurfaceView);
 
         if(pentatonicEditorSurfaceView.isSuccessLoaded()) {
-            //Log.i("info"," Tab editor Surface IS LOADED");
             List<SimpleTab>simpleTabList = null;
             String path = FileSystem.GetCachePath() + "/cache_tabs";
             simpleTabList = SimpleTab.LoadTabsFromXmlFile(path);
@@ -441,6 +404,7 @@ public class PentatonicEditorActivity extends Activity{
                             finalSelectedTab.setStartQuartet(0);
                             simpleTab.add(finalSelectedTab);
                             playSimpleTab = new QTabsPlayer(getApplicationContext(), simpleTab);
+
                             playSimpleTab.SetOnPlayInterface(new QTabsPlayer.TabPlayInterface() {
                                 @Override
                                 public void Stop() {
@@ -511,11 +475,15 @@ public class PentatonicEditorActivity extends Activity{
     @Override
     public void onResume() {
         super.onResume();
+        this.END_TIME = System.currentTimeMillis() - this.START_TIME;
+        Log.i("info"," ---- PentatinicEditorActivity.onResume : time elapsed = " + Long.toString(this.END_TIME));
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        StopPlayer();
+
         if(setBpmDialog != null) {
             setBpmDialog.dismiss();
         }
@@ -527,6 +495,59 @@ public class PentatonicEditorActivity extends Activity{
             String path = FileSystem.GetCachePath() + "/cache_tabs";
             SimpleTab.SaveTabsToXmlFile(path, pentatonicEditorSurfaceView.GetSimpleTabList(),"onquantum");
         }
+    }
+
+    private void PlayButtonAction(View v) {
+        RemoveContextMenu();
+        if (!CheckSoundPool()) {
+            return;
+        }
+        v.setSelected(!v.isSelected());
+        if(v.isSelected()) {
+            if(player != null) {
+                player.Stop();
+                player = null;
+            }
+            if(pentatonicEditorSurfaceView.GetSimpleTabList().size() == 0) {
+                v.setSelected(!v.isSelected());
+                return;
+            }
+            player = new QTabsPlayer(getApplicationContext(), pentatonicEditorSurfaceView.GetSimpleTabList());
+            player.SetOnPlayInterface(new QTabsPlayer.TabPlayInterface() {
+                @Override
+                public void Stop() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playTabsButton.setSelected(false);
+                            pentatonicEditorSurfaceView.Stop();
+                        }
+                    });
+                }
+                @Override
+                public void Start() {
+                    pentatonicEditorSurfaceView.Play();
+                }
+
+                @Override
+                public void CurrentPlayTab(SimpleTab simpleTab) {
+                    pentatonicEditorSurfaceView.SetSelectedBar(simpleTab.getGuitarBar());
+                    barSelectView.SetCurrentBar(simpleTab.getGuitarBar());
+                }
+            });
+            player.Play();
+        } else {
+            StopPlayer();
+        }
+    }
+
+    private void StopPlayer() {
+        if(player != null) {
+            player.Stop();
+            playTabsButton.setSelected(false);
+        }
+        player = null;
+        pentatonicEditorSurfaceView.Stop();
     }
 
     private void disableNoteButton() {
@@ -597,6 +618,7 @@ public class PentatonicEditorActivity extends Activity{
                     changeBPMProgress.dismiss();
                 }
                 changeBPMProgress = new ProgressDialog(PentatonicEditorActivity.this);
+                changeBPMProgress.setCanceledOnTouchOutside(false);
                 changeBPMProgress.setMessage("Set " + bpm + " bets per minute");
                 changeBPMProgress.show();
 
@@ -679,7 +701,7 @@ public class PentatonicEditorActivity extends Activity{
     private void fillSoundPackInfoPanel(String soundPackName, String bpm) {
         if (controllPanel != null) {
             controllPanel.removeAllViews();
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             View v = PentatonicEditorActivity.this.getLayoutInflater().inflate(R.layout.soun_pack_tempo_info_panel, null);
             if (v == null)
                 return;

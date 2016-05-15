@@ -47,20 +47,20 @@ public class UpdateGuitarsIconService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("info","UpdateGuitarsIconService : onCreate");
+        //Log.i("info","UpdateGuitarsIconService : onCreate");
         executorService = Executors.newFixedThreadPool(1);
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info","UpdateGuitarsIconService : onDestroy");
+        //Log.i("info","UpdateGuitarsIconService : onDestroy");
         super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
-        Log.i("info", "UpdateGuitarsIconService : onStartCommand flag = " + flag + " startId = " + startId);
+        //Log.i("info", "UpdateGuitarsIconService : onStartCommand flag = " + flag + " startId = " + startId);
         String fileName = intent.getStringExtra(DBGuitarTable.ICON);
         if(!downloadFileInProgress.contains(fileName)) {
             downloadFileInProgress.add(fileName);

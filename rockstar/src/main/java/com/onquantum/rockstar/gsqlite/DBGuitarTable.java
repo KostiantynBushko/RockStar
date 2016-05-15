@@ -143,17 +143,27 @@ public class DBGuitarTable extends DBAbstractTable{
     public static void AddGuitarEntities(Context context, List<GuitarEntity> guitarEntities) {
         SQLiteDatabase db = new DBHelper(context).getWritableDatabase();
         for (GuitarEntity guitarEntity : guitarEntities) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NAME, guitarEntity.name);
-            contentValues.put(ARTICLE, guitarEntity.article);
-            contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
-            contentValues.put(ICON, guitarEntity.icon);
-            contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
-            //contentValues.put(SUCCESS_PURCHASED, (guitarEntity.success_purchased == true) ? 1 : 0);
-            contentValues.put(DESCRIPTION,guitarEntity.description);
-            contentValues.put(IS_ACTIVE, (guitarEntity.is_active == true) ? 1 : 0);
-            long ret = db.insert(DB_GUITAR_TABLE, null, contentValues);
-            //Log.i("info"," GUITAR TABLE INSERT : " + ret + " " + guitarEntity.toString());
+            if (!GuitarPackageAlreadyExists(context,guitarEntity.article)) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(NAME, guitarEntity.name);
+                contentValues.put(ARTICLE, guitarEntity.article);
+                contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
+                contentValues.put(ICON, guitarEntity.icon);
+                contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
+                contentValues.put(DESCRIPTION,guitarEntity.description);
+                contentValues.put(IS_ACTIVE, (guitarEntity.is_active == true) ? 1 : 0);
+                long ret = db.insert(DB_GUITAR_TABLE, null, contentValues);
+            } else {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(NAME, guitarEntity.name);
+                contentValues.put(ARTICLE, guitarEntity.article);
+                contentValues.put(PURCHASE_ID, guitarEntity.purchase_id);
+                contentValues.put(ICON, guitarEntity.icon);
+                contentValues.put(SAMPLE_SOUND,guitarEntity.sample_sound);
+                contentValues.put(DESCRIPTION,guitarEntity.description);
+                //contentValues.put(IS_ACTIVE, (guitarEntity.is_active == true) ? 1 : 0);
+                long ret = db.update(DB_GUITAR_TABLE,contentValues,ARTICLE + "=?",new String[]{guitarEntity.article});
+            }
         }
         db.close();
     }

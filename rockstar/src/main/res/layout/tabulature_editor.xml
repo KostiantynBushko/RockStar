@@ -87,22 +87,19 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/button_metronom"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/tabEditorControlPanel"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_toLeftOf="@+id/setupMetronom"
                 android:layout_toStartOf="@+id/setupMetronom"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="3dp"
-                android:layout_marginBottom="1dp"
-                android:layout_alignParentBottom="true">
-
-            </LinearLayout>
+                android:layout_centerInParent="true">
+            </RelativeLayout>
 
         </RelativeLayout>
 

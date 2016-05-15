@@ -16,6 +16,7 @@ import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -28,11 +29,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.onquantum.rockstar.HttpClient.HttpClient;
 import com.onquantum.rockstar.QURL.QURL;
 import com.onquantum.rockstar.R;
+import com.onquantum.rockstar.RockStarApplication;
 import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.file_system.FileSystem;
+import com.onquantum.rockstar.fragments.LoadLocalTabFragment;
 import com.onquantum.rockstar.gsqlite.DBGuitarTable;
 import com.onquantum.rockstar.gsqlite.DBPurchaseTable;
 import com.onquantum.rockstar.gsqlite.GuitarEntity;
@@ -41,12 +46,33 @@ import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.services.DownloadSoundPackage;
 import com.onquantum.rockstar.util.IabHelper;
 import com.onquantum.rockstar.util.IabResult;
+import com.onquantum.rockstar.util.Inventory;
 import com.onquantum.rockstar.util.Purchase;
+import com.onquantum.rockstar.util.SkuDetails;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by Admin on 7/23/15.
@@ -140,14 +166,88 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!((RockStarApplication)getApplication()).isNetworkConnected()) {
+                    Toast.makeText(SoundPackActivity.this, getResources().getString(R.string.no_internet_connection),Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 v.setSelected(!v.isSelected());
                 if(v.isSelected()) {
-                    new Timer().schedule(new TimerTask() {
+                    v.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    /*new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
                             PlaySample();
                         }
-                    }, 100);
+                    }, 100);*/
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            URL url = null;
+                            HttpURLConnection httpURLConnection = null;
+                            try {
+                                url = new URL(QURL.GET_SOUND_PACK_SAMPLE_URL);
+                                httpURLConnection = (HttpURLConnection)url.openConnection();
+                                httpURLConnection.setReadTimeout(10000);
+                                httpURLConnection.setConnectTimeout(15000);
+                                httpURLConnection.setRequestMethod("POST");
+                                httpURLConnection.setDoInput(true);
+                                httpURLConnection.setDoOutput(true);
+
+                                // POST parameter
+                                OutputStream outputStream = httpURLConnection.getOutputStream();
+                                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+                                Uri.Builder builder = new Uri.Builder();
+                                builder.appendQueryParameter("sound_pack", guitarEntity.article);
+                                String queryParams = builder.build().getEncodedQuery();
+
+                                bufferedWriter.write(queryParams);
+                                bufferedWriter.flush();
+                                bufferedWriter.close();
+                                outputStream.close();
+
+                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+                                String line;
+                                final StringBuilder stringBuilder = new StringBuilder();
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    stringBuilder.append(line);
+                                }
+                                if (!stringBuilder.toString().isEmpty()) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            urlSampleSound = stringBuilder.toString();
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            playButton.setVisibility(View.VISIBLE);
+                                            playButton.setSelected(true);
+                                            PlaySample();
+                                        }
+                                    });
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                            playButton.setVisibility(View.VISIBLE);
+                                            playButton.setSelected(false);
+                                        }
+                                    });
+                                }
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            } catch (ProtocolException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if(httpURLConnection != null) {
+                                    httpURLConnection.disconnect();
+                                }
+                            }
+                        }
+                    }).start();
                 } else {
                     StopSample();
                 }
@@ -208,7 +308,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             public void onIabSetupFinished(IabResult result) {
                 iabSuccess = result.isSuccess();
                 if (!result.isSuccess()) {
-                    Log.i("info","Problem setting up In-app Billing: " + result);
+                    //Log.i("info","Problem setting up In-app Billing: " + result);
                 }
             }
         });
@@ -222,7 +322,7 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             public void onReceive(Context context, Intent intent) {
                 if(guitarEntity.article.equals(intent.getStringExtra(DBGuitarTable.ARTICLE))) {
                     UnbindFromDownloadService();
-                    Log.i("info","SoundPackActivity : BROADCAST MESSAGE : complete download sound package - " + guitarEntity.article);
+                    //Log.i("info","SoundPackActivity : BROADCAST MESSAGE : complete download sound package - " + guitarEntity.article);
                     downloadSoundPack.setVisibility(View.INVISIBLE);
                     buySoundPack.setVisibility(View.INVISIBLE);
                     progressLayout.setVisibility(View.INVISIBLE);
@@ -265,32 +365,62 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.buySoundPack :{
                 try {
-                    iabHelper.launchPurchaseFlow(SoundPackActivity.this, purchaseEntity.bundle, purchaseEntity.id, new IabHelper.OnIabPurchaseFinishedListener() {
+                    if (iabHelper != null)
+                        iabHelper.flagEndAsync();
+
+                    //final String  SKU = "android.test.purchased";
+                    final List<String>additionalSkuList = new ArrayList<>();
+                    additionalSkuList.add(purchaseEntity.bundle);
+
+                    iabHelper.launchPurchaseFlow(SoundPackActivity.this, purchaseEntity.bundle/*SKU*/, 1001, new IabHelper.OnIabPurchaseFinishedListener() {
                         @Override
                         public void onIabPurchaseFinished(IabResult result, Purchase info) {
                             if (result.isFailure()) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(SoundPackActivity.this);
                                 builder.setTitle("Error");
                                 builder.setIcon(R.drawable.ic_warning_white_48dp);
-                                builder.setMessage("Purchase problem, try again");
-                                builder.create().show();
+                                builder.setMessage(result.getMessage());
                                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                     }
                                 });
-                            } else if (info.getSku().equals(purchaseEntity.bundle)) {
+                                builder.create().show();
+                                return;
+
+                            } /*else if (info.getSku().equals(purchaseEntity.bundle)) {
                                 purchaseEntity.has_purchased = true;
                                 DBPurchaseTable.AddPurchaseEntity(SoundPackActivity.this, purchaseEntity);
-                                runOnUiThread(new Runnable() {
+                                buySoundPack.setVisibility(View.GONE);
+                                if(!guitarEntity.isSoundPackAvailable()) {
+                                    applySoundPack.setVisibility(View.INVISIBLE);
+                                    downloadSoundPack.setVisibility(View.VISIBLE);
+                                }else {
+                                    applySoundPack.setVisibility(View.VISIBLE);
+                                }
+                            }*/ else {
+                                iabHelper.queryInventoryAsync(true, additionalSkuList, new IabHelper.QueryInventoryFinishedListener() {
                                     @Override
-                                    public void run() {
-                                        if(!guitarEntity.isSoundPackAvailable()) {
-                                            applySoundPack.setVisibility(View.INVISIBLE);
-                                            downloadSoundPack.setVisibility(View.VISIBLE);
-                                        }else {
-                                            applySoundPack.setVisibility(View.VISIBLE);
+                                    public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+                                        if (result.isFailure()) {
+                                            return;
+                                        }
+                                        for (String productBundle : additionalSkuList) {
+                                            SkuDetails skuDetails = inv.getSkuDetails(productBundle);
+                                            if(skuDetails != null) {
+                                                purchaseEntity.has_purchased = true;
+                                                DBPurchaseTable.AddPurchaseEntity(SoundPackActivity.this, purchaseEntity);
+                                                buySoundPack.setVisibility(View.GONE);
+                                                if(!guitarEntity.isSoundPackAvailable()) {
+                                                    applySoundPack.setVisibility(View.INVISIBLE);
+                                                    downloadSoundPack.setVisibility(View.VISIBLE);
+                                                }else {
+                                                    applySoundPack.setVisibility(View.VISIBLE);
+                                                }
+                                            } else {
+                                                Log.i("info"," SKU DETAIL : NULL");
+                                            }
                                         }
                                     }
                                 });
@@ -298,25 +428,23 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
                         }
                     });
                 } catch (IllegalStateException e) {
-                    Log.i("info","----------------------------------------------------------------");
                     e.printStackTrace();
-                    Log.i("info","----------------------------------------------------------------");
                     AlertDialog.Builder builder = new AlertDialog.Builder(SoundPackActivity.this);
                     builder.setTitle("Error");
                     builder.setIcon(R.drawable.ic_warning_white_48dp);
                     builder.setMessage(e.getMessage());
-                    builder.create().show();
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
+                    builder.create().show();
                 }
                 break;
             }
             case R.id.downloadSoundPack: {
-                Log.i("info"," SoundPackActivity : SATRT DOWNLOAD PACKAGE name = " + guitarEntity.article);
+                //Log.i("info"," SoundPackActivity : SATRT DOWNLOAD PACKAGE name = " + guitarEntity.article);
                 StartDownloadPackage();
                 break;
             }
@@ -337,11 +465,29 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Log.d("info", "onActivityResult(" + requestCode + "," + resultCode + ","+ data);
+
+        // Pass on the activity result to the helper for handling
+        if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        } else {
+            //Log.d("info", "onActivityResult handled by IABUtil.");
+        }
+    }
+
     /**********************************************************************************************/
     // Download sound package files
     /**********************************************************************************************/
     private void StartDownloadPackage() {
         Log.i("info","StartDownloadPackage");
+        if(!((RockStarApplication)getApplication()).isNetworkConnected()) {
+            Toast.makeText(SoundPackActivity.this, getResources().getString(R.string.no_internet_connection),Toast.LENGTH_SHORT).show();
+            return;
+        }
         downloadSoundPack.setVisibility(View.INVISIBLE);
         applySoundPack.setVisibility(View.INVISIBLE);
         buySoundPack.setVisibility(View.INVISIBLE);
@@ -446,8 +592,12 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
             public void onCompletion(MediaPlayer mp) {
                 Log.i("info", " MediaPlayer : completion listener");
                 //progressBar.setVisibility(View.INVISIBLE);
-                stopButton.setVisibility(View.INVISIBLE);
-                playButton.setVisibility(View.VISIBLE);
+                //stopButton.setVisibility(View.INVISIBLE);
+                /*mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+                playButton.setSelected(!playButton.isSelected());*/
+                StopSample();
             }
         });
         try {
@@ -460,6 +610,9 @@ public class SoundPackActivity extends Activity implements View.OnClickListener,
     }
 
     private void StopSample() {
+        //progressBar.setVisibility(View.INVISIBLE);
+        //playButton.setVisibility(View.VISIBLE);
+        playButton.setSelected(false);
         if(mediaPlayer != null) {
             if(mediaPlayer.isPlaying())
                 mediaPlayer.stop();

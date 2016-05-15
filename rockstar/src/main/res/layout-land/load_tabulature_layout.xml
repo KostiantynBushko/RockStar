@@ -54,53 +54,43 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout7"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/linearLayout">
 
-        <TabHost
+
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tabHost"
-            android:layout_weight="1">
+            android:text="Local"
+            android:scaleType="fitXY"
+            android:id="@+id/button"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_home"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remote"
+            android:id="@+id/button2"
+            android:scaleType="fitXY"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="1dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:src="@drawable/button_remote"/>
 
-                <TabWidget
-                    android:id="@android:id/tabs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></TabWidget>
-
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout4"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"></LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout5"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"></LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout6"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"></LinearLayout>
-                </FrameLayout>
-            </LinearLayout>
-        </TabHost>
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout"
+        android:id="@+id/fragment_container"
+        android:layout_below="@+id/relativeLayout7"></RelativeLayout>
 
 
 </RelativeLayout>

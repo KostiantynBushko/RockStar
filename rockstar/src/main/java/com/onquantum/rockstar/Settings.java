@@ -135,7 +135,7 @@ public class Settings {
             fretsNumberVisible.isFretsNumberVisible(visibility);
     }
     public boolean isFretsSliderVisible() {
-        return settings.getBoolean(SHOW_FRETS_SLIDER, false);
+        return settings.getBoolean(SHOW_FRETS_SLIDER, true);
     }
     public void setFretsSliderVisibility(boolean visibility) {
         SharedPreferences.Editor editor = settings.edit();

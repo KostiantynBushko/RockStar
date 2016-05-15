@@ -12,7 +12,7 @@
 
     <item>
         <shape>
-            <solid android:color="#00bb1e"/>
+            <solid android:color="@color/green_button"/>
             <padding
                 android:top="10dp"
                 android:bottom="10dp"/>

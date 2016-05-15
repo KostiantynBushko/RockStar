@@ -82,6 +82,10 @@ public class RockStarMain extends Activity {
     private IabHelper.QueryInventoryFinishedListener queryInventoryFinishedListener;
     private List<String> additionalSkuList;
 
+    // For test only
+    private boolean enableBilling = true;
+
+
     BroadcastReceiver broadcastReceiver;
     private boolean receiverIsRegistered = false;
 
@@ -102,7 +106,6 @@ public class RockStarMain extends Activity {
             @Override
             public void onConnected(Bundle bundle) {
                 mSignInClicked = false;
-                //Toast.makeText(context, "User is connected!", Toast.LENGTH_LONG).show();
             }
             @Override
             public void onConnectionSuspended(int i) {
@@ -204,9 +207,6 @@ public class RockStarMain extends Activity {
             @Override
             public void onClick(View v) {
                 FileSystem.ClearCacheFile();
-                //Intent intent = new Intent(RockStarMain.this, LoadingActivity.class);
-                //intent.putExtra("activity",PentatonicEditorActivity.class.getName());
-                //startActivity(intent);
                 startActivity(new Intent(RockStarMain.this, PentatonicEditorActivity.class));
             }
         });
@@ -214,10 +214,6 @@ public class RockStarMain extends Activity {
         Typeface titleFont = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView)this.findViewById(R.id.textView0)).setTypeface(titleFont);
 
-
-        Log.i("info"," ROCK STAR MAIN : onCreate");
-        //QSoundPool.getInstance().setContext(getApplicationContext());
-        //QSoundPool.getInstance().loadSound();
 
 
         // GCM
@@ -227,68 +223,67 @@ public class RockStarMain extends Activity {
         /*******************************************************************************************/
         // Billing
         /*******************************************************************************************/
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                /*if(intent.getAction().equals(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE)) {
-                    Log.i("info"," ******************** COMPLETETE UPDATE PURCASE TABLE ************************");
+        if (this.enableBilling) {
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if(intent.getAction().equals(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE)) {
+                        additionalSkuList = new ArrayList<>();
+                        iabHelper = new IabHelper(RockStarMain.this, Constants.LICENSE_KEY);
+                        iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                            public void onIabSetupFinished(IabResult result) {
+                                if (!result.isSuccess()) {
+                                    Log.d("info", "RockStarMain :  Problem setting up In-app Billing: " + result);
+                                    return;
+                                }
+                                Log.d("info", "RockStarMain :  Success setting up In-app Billing: " + result);
+                                List<PurchaseEntity>purchaseEntityList = DBPurchaseTable.GetAllPurchaseEntity(RockStarMain.this);
+                                for (PurchaseEntity purchaseEntity : purchaseEntityList) {
+                                    additionalSkuList.add(purchaseEntity.bundle);
+                                }
+                                iabHelper.queryInventoryAsync(true, additionalSkuList, queryInventoryFinishedListener);
+                            }
+                        });
 
-                    additionalSkuList = new ArrayList<>();
-                    iabHelper = new IabHelper(RockStarMain.this, Constants.LICENSE_KEY);
-                    iabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                        public void onIabSetupFinished(IabResult result) {
-                            if (!result.isSuccess()) {
-                                Log.d("info", "RockStarMain :  Problem setting up In-app Billing: " + result);
-                                return;
-                            }
-                            Log.d("info", "RockStarMain :  Success setting up In-app Billing: " + result);
-                            List<PurchaseEntity>purchaseEntityList = DBPurchaseTable.GetAllPurchaseEntity(RockStarMain.this);
-                            for (PurchaseEntity purchaseEntity : purchaseEntityList) {
-                                additionalSkuList.add(purchaseEntity.bundle);
-                            }
-                            iabHelper.queryInventoryAsync(true, additionalSkuList, queryInventoryFinishedListener);
-                        }
-                    });
-
-                    queryInventoryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
-                        @Override
-                        public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-                            if (result.isFailure()) {
-                                return;
-                            }
-                            Log.i("info","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                            for (String productBundle : additionalSkuList) {
-                                SkuDetails skuDetails = inv.getSkuDetails(productBundle);
-                                if(skuDetails != null) {
-                                    Log.i("info"," SKU DETAIL : is_purchased " + inv.hasPurchase(productBundle) + " : " + skuDetails.toString());
-                                    PurchaseEntity purchaseEntity = DBPurchaseTable.GetPurchaseEntityByBundle(RockStarMain.this, productBundle);
-                                    if(purchaseEntity != null) {
-                                        try {
-                                            JSONObject jsonObject = new JSONObject(skuDetails.getJsonObject());
-                                            purchaseEntity.has_purchased = inv.hasPurchase(productBundle);
-                                            purchaseEntity.currency_code = jsonObject.getString("price_currency_code");
-                                            float price = Float.parseFloat(jsonObject.getString("price_amount_micros")) / 1000000;
-                                            purchaseEntity.price = Float.toString(price);
-                                            DBPurchaseTable.AddPurchaseEntity(RockStarMain.this, purchaseEntity);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
+                        queryInventoryFinishedListener = new IabHelper.QueryInventoryFinishedListener() {
+                            @Override
+                            public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+                                if (result.isFailure()) {
+                                    return;
+                                }
+                                for (String productBundle : additionalSkuList) {
+                                    SkuDetails skuDetails = inv.getSkuDetails(productBundle);
+                                    if(skuDetails != null) {
+                                        Log.i("info"," SKU DETAIL : is_purchased " + inv.hasPurchase(productBundle) + " : " + skuDetails.toString());
+                                        PurchaseEntity purchaseEntity = DBPurchaseTable.GetPurchaseEntityByBundle(RockStarMain.this, productBundle);
+                                        if(purchaseEntity != null) {
+                                            try {
+                                                JSONObject jsonObject = new JSONObject(skuDetails.getJsonObject());
+                                                purchaseEntity.has_purchased = inv.hasPurchase(productBundle);
+                                                purchaseEntity.currency_code = jsonObject.getString("price_currency_code");
+                                                float price = Float.parseFloat(jsonObject.getString("price_amount_micros")) / 1000000;
+                                                purchaseEntity.price = Float.toString(price);
+                                                DBPurchaseTable.AddPurchaseEntity(RockStarMain.this, purchaseEntity);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
+                                    } else {
+                                        Log.i("info"," SKU DETAIL : NULL");
                                     }
-                                } else {
-                                    Log.i("info"," SKU DETAIL : NULL");
                                 }
                             }
-                            Log.i("info","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                        }
-                    };
-                }*/
-                unregisterReceiver(broadcastReceiver);
-                receiverIsRegistered = false;
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE);
-        registerReceiver(broadcastReceiver, intentFilter);
-        /*******************************************************************************************/
+                        };
+                    }
+                    unregisterReceiver(broadcastReceiver);
+                    broadcastReceiver = null;
+                    receiverIsRegistered = false;
+                }
+            };
+
+            IntentFilter intentFilter = new IntentFilter(UpdatePurchaseTable.BROADCAST_COMPLETE_UPDATE_PURCHASE);
+            registerReceiver(broadcastReceiver, intentFilter);
+        }
     }
 
     @Override
@@ -322,8 +317,6 @@ public class RockStarMain extends Activity {
     protected void onStart() {
         super.onStart();
         googleApiClient.connect();
-        //startService(new Intent(context, UpdateGuitarsService.class));
-        //startService(new Intent(context, UpdatePurchaseTable.class));
     }
 
     @Override
@@ -331,6 +324,10 @@ public class RockStarMain extends Activity {
         super.onStop();
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
+        }
+        if(broadcastReceiver != null) {
+            unregisterReceiver(this.broadcastReceiver);
+            this.broadcastReceiver = null;
         }
     }
     @Override

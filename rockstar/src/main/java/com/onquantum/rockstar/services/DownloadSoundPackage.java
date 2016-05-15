@@ -57,32 +57,32 @@ public class DownloadSoundPackage extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("info","DownloadSoundFile : onBind");
+        //Log.i("info","DownloadSoundFile : onBind");
         return downloadPackBinder;
     }
 
     @Override
     public void onRebind(Intent intent) {
-        Log.i("info","DownloadSoundFile : onRebind");
+        //Log.i("info","DownloadSoundFile : onRebind");
         super.onRebind(intent);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.i("info", "DownloadSoundFile : onUnbind");
+        //Log.i("info", "DownloadSoundFile : onUnbind");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onCreate() {
-        Log.i("info","DownloadSoundFile : onCreate");
+        //Log.i("info","DownloadSoundFile : onCreate");
         executorService = Executors.newFixedThreadPool(1);
         super.onCreate();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("info","DownloadSoundFile : onDestroy");
+        //Log.i("info","DownloadSoundFile : onDestroy");
         super.onDestroy();
     }
 
@@ -128,7 +128,7 @@ public class DownloadSoundPackage extends Service {
             }
 
             if(guitarPackageName == null || fileName == null) {
-                Log.i("info","DownloadSoundFile : fake call");
+                //Log.i("info","DownloadSoundFile : fake call");
                 stopSelf(startId);
                 return;
             }
@@ -165,7 +165,7 @@ public class DownloadSoundPackage extends Service {
                 fileOutputStream.close();
                 inputStream.close();
 
-                Log.i("info", "DownloadSoundFile : packageName = " + guitarPackageName + " fileName = " + fileName + " startId = " + startId);
+                //Log.i("info", "DownloadSoundFile : packageName = " + guitarPackageName + " fileName = " + fileName + " startId = " + startId);
                 GuitarEntity guitarEntity = DBGuitarTable.GetGuitarEntityByArticle(getApplicationContext(), guitarPackageName);
                 long[] progress = new long[1];
                 if(guitarEntity.isSoundPackAvailable(progress)) {
@@ -185,12 +185,12 @@ public class DownloadSoundPackage extends Service {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (SocketTimeoutException e) {
-                Log.i("info","SOCET TIME OUT ");
+                //Log.i("info","SOCET TIME OUT ");
                 e.printStackTrace();
             } catch (UnknownHostException e){
                 e.printStackTrace();
-
             } catch (IOException e) {
+                file.delete();
                 e.printStackTrace();
             } finally {
                 if (file.length() == 0) {

@@ -108,7 +108,6 @@ public class GuitarSlideView extends GuitarAbstractView {
 
         if(openString) {
             if(x > frets - 1){
-                //Log.i("info"," OPEN STRING TOUCH");
                 x = 0;
             } else {
                 x+= Slide;
@@ -116,8 +115,6 @@ public class GuitarSlideView extends GuitarAbstractView {
         } else {
             x+= Slide;
         }
-
-        //Log.i("info", "TOUCH : x = " + x + " y = " + y);
 
         switch(actionMask) {
             case MotionEvent.ACTION_POINTER_DOWN:{
@@ -193,41 +190,11 @@ public class GuitarSlideView extends GuitarAbstractView {
                 ((GuitarInterface)context).onPentatonicSuccessLoaded(fileName);
             }
         }
-        /*BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(context.getAssets().open("pentatonic/" + fileName)));
-            String str = reader.readLine();
-            while (str != null) {
-                Pentatonic pentatonic = new Pentatonic();
-                String[] parce = str.split("\\s+");
-                if (parce.length == 4){
-                    pentatonic.bar = Integer.parseInt(parce[0]);
-                    pentatonic.line = Integer.parseInt(parce[1]);
-                    pentatonic.delay = Long.parseLong(parce[2]);
-                    pentatonic.playTime = Long.parseLong(parce[3]);
-                    pentatonic.position.set(pentatonic.bar, pentatonic.line);
-                    pentatonics.add(pentatonic);
-                }
-                str = reader.readLine();
-            }
-            if(guitarRenderer.LoadPentatonic(pentatonics)) {
-                if (context instanceof GuitarInterface) {
-                    ((GuitarInterface)context).onPentatonicSuccessLoaded(fileName);
-                }
-            }
-        }catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
     @Override
     public void ClosePlayPentatonic() {
         guitarRenderer.ClosePlayPentatonic();
-    }
-
-    @Override
-    public void Stop() {
-        //soundPool.release();
     }
 
     @Override

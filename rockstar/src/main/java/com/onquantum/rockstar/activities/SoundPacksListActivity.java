@@ -116,6 +116,7 @@ public class SoundPacksListActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        listObjects = null;
         if(listObjects == null) {
             listObjects = new ArrayList<HashMap<String, Object>>();
             List<GuitarEntity>guitarEntities = DBGuitarTable.GetAllGuitarsEntity(context);
@@ -175,6 +176,7 @@ public class SoundPacksListActivity extends Activity {
                 }
             });
         }
+
         if (simpleAdapter != null)
             simpleAdapter.notifyDataSetChanged();
 

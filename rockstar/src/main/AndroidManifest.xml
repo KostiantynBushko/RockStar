@@ -71,11 +71,6 @@
         </activity>
 
         <activity
-            android:name=".activities.LoadingPentatonicActivity"
-            android:screenOrientation="reverseLandscape">
-        </activity>
-
-        <activity
             android:name=".activities.TweetActivity"
             android:screenOrientation="reverseLandscape">
         </activity>
@@ -151,6 +146,17 @@
 
         <service
             android:name=".services.DownloadSoundPackage"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <service
+            android:name=".services.GetTablaturesList"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <service android:name=".services.DownloadTabFile"
             android:enabled="true"
             android:exported="true">
         </service>

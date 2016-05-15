@@ -59,6 +59,7 @@ public class HttpClient {
                     httpURLConnection.setConnectTimeout(25000);
                     httpURLConnection.setReadTimeout(25000);
                     httpURLConnection.setDoInput(true);
+                    httpURLConnection.setDoOutput(true);
 
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -79,7 +80,6 @@ public class HttpClient {
                     e.printStackTrace();
                 } catch (SocketTimeoutException e){
                     e.printStackTrace();
-
                 }catch (IOException e) {
                     e.printStackTrace();
                 }finally {
@@ -105,8 +105,8 @@ public class HttpClient {
                     url = new URL(postUrl);
                     httpURLConnection = (HttpURLConnection)url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setConnectTimeout(25000);
-                    httpURLConnection.setReadTimeout(25000);
+                    httpURLConnection.setConnectTimeout(15000);
+                    httpURLConnection.setReadTimeout(15000);
                     httpURLConnection.setRequestProperty("Content-Type","application/json");
                     httpURLConnection.setDoInput(true);
 
@@ -114,7 +114,8 @@ public class HttpClient {
                     outputStream.write(rawData.getBytes());
                     outputStream.flush();
 
-                    handler.post(new ResponseSuccessCallback(httpClientResponse, httpURLConnection.getResponseCode(),httpURLConnection.getInputStream()));
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    handler.post(new ResponseSuccessCallback(httpClientResponse, httpURLConnection.getResponseCode(),inputStream));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }catch (SocketTimeoutException e){
@@ -161,8 +162,8 @@ public class HttpClient {
                     }
                     bufferedWriter.close();
                     outputStream.close();
-
-                    handler.post(new ResponseSuccessCallback(httpClientResponse, httpURLConnection.getResponseCode(),httpURLConnection.getInputStream()));
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    handler.post(new ResponseSuccessCallback(httpClientResponse, httpURLConnection.getResponseCode(),inputStream));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (SocketTimeoutException e){
@@ -193,7 +194,10 @@ public class HttpClient {
                     httpURLConnection.setRequestMethod("GET");
                     httpURLConnection.setConnectTimeout(25000);
                     httpURLConnection.setReadTimeout(25000);
+                    //httpURLConnection.setDoInput(true);
+                    //httpURLConnection.setDoOutput(true);
 
+                    InputStream inputStream = httpURLConnection.getInputStream();
                     handler.post(new ResponseSuccessCallback(httpClientResponse, httpURLConnection.getResponseCode(), httpURLConnection.getInputStream()));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();

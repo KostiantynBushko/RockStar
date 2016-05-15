@@ -65,10 +65,70 @@ public class BarSelectView extends DrawEngine {
 
     }
 
-    public void OnSurfaceChanged(int width, int height) {
+    public void OnSurfaceChanged(final int width, final int height) {
         barWidth = (float)width / 25;
 
-        float barStartPosition = 0;
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (BarSelectView.this) {
+                    float barStartPosition = 0;
+                    for (int i = 0; i < 25; i ++) {
+                        SBitmap bar;
+                        if(i < 24) {
+                            if (fretsMark.get(i)) {
+                                bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.b1);
+                            } else {
+                                bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.b0);
+                            }
+                        } else {
+                            bar = new SBitmap(barStartPosition, height * 0.3f, barWidth, height * 0.7f, context ,R.drawable.sound_capture);
+                            bar.rotate(180);
+                        }
+
+                        bar.setVisibleArea(new RectF(0, height, width, 0));
+                        layer.addShape(bar);
+                        barStartPosition += barWidth;
+                    }
+
+                    barStartPosition = 0;
+                    for (int i = 0; i < 25; i++) {
+                        SBitmap bar = new SBitmap(barStartPosition, height * 0.3f, barWidth / 7, height * 0.7f, context ,R.drawable.lad);
+                        bar.setVisibleArea(new RectF(0, height, width, 0));
+                        barStartPosition += barWidth;
+                        layer.addShape(bar);
+                    }
+
+                    barStartPosition = 0;
+                    for (int i = 0; i < 25; i++) {
+                        SText number = new SText(barStartPosition + barWidth / 2, height * 0.12f, height * 0.2f);
+                        if(i == 24) {
+                            number.setText("0");
+                        } else {
+                            number.setText(Integer.toString(i + 1));
+                        }
+                        number.setVisibleArea(new RectF(0, height, width, 0));
+                        number.setColor(Color.WHITE);
+                        barStartPosition += barWidth;
+                        barNumberLayer.addShape(number);
+                    }
+
+
+                    barCursor = new SCircle(barWidth * (lastSelectedBar + 1) -  barWidth * 0.42f, height / 2 + height * 0.15f, barWidth * 0.4f, selectCirclePaint);
+                    barCursor.setVisibleArea(new RectF(-100,height, width,100));
+                    barCursor.setKinematic(true);
+
+                    SetCurrentBar(0);
+                    cursorLayer.addShape(barCursor);
+
+                    addLayer(layer);
+                    addLayer(cursorLayer);
+                    addLayer(barNumberLayer);
+                }
+            }
+        }).start();*/
+
+       float barStartPosition = 0;
         for (int i = 0; i < 25; i ++) {
             SBitmap bar;
             if(i < 24) {

@@ -115,7 +115,7 @@ public class QSoundPool {
         //Log.i("info","QSoundPool START LOAD SOUND" + soundPool.toString());
         loadSequenceNotes();
         if(successLoaded || loadedInProgress) {
-            Log.i("info","  QSOUND POOL LOADED IN PROGRESS");
+            //Log.i("info","  QSOUND POOL LOADED IN PROGRESS");
             return;
         }
         prefix = guitarEntity.article; //new Settings(context).getCurrentGuitarPackage();
@@ -143,7 +143,7 @@ public class QSoundPool {
     }
 
     public SoundPool getSoundPool() {
-        Log.i("info","QSoundPool GET SOUND POOL " + soundPool.toString());
+        //Log.i("info","QSoundPool GET SOUND POOL " + soundPool.toString());
         return soundPool;
     }
     public int getSuccessLoad() {
@@ -186,7 +186,7 @@ public class QSoundPool {
                             if(loadedInProgress) {
                                 soundPool.load(context,id,1);
                             } else {
-                                Log.i("info","  ************** BRAKE LOADING ID = " + prefix);
+                                //Log.i("info","  ************** BRAKE LOADING ID = " + prefix);
                                 return;
                             }
                         }

@@ -60,7 +60,7 @@ public class UpdateGuitarsService extends Service {
         public void run() {
             updateTaskIsRunning = true;
             ///Log.i("info", " UpdateGuitarService UpdateTask : run");
-            long countRows = 1; //DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
+            long countRows = 0; //DBGuitarTable.GetCountOfRows(getApplicationContext(), DBGuitarTable.DB_GUITAR_TABLE);
             countRows++;
 
             OutputStream outputStream = null;
@@ -101,10 +101,11 @@ public class UpdateGuitarsService extends Service {
                 JSONArray guitarObjects = new JSONArray(stringBuilder.toString());
                 for (int i = 0; i < guitarObjects.length(); i++) {
                     GuitarEntity guitarEntity = GuitarEntity.CreateGuitarEntity((JSONObject) guitarObjects.get(i));
-                    if(DBGuitarTable.GuitarPackageAlreadyExists(getApplicationContext(), guitarEntity.article) == false) {
+                    /*if(DBGuitarTable.GuitarPackageAlreadyExists(getApplicationContext(), guitarEntity.article) == false) {
                         ///Log.i("info", "UpdateGuitarsService GUITAR ENTITY " + guitarEntity.toString());
                         guitarEntities.add(guitarEntity);
-                    }
+                    }*/
+                    guitarEntities.add(guitarEntity);
                 }
 
                 if(guitarEntities.size() > 0) {
@@ -112,21 +113,21 @@ public class UpdateGuitarsService extends Service {
                     DBGuitarTable.AddGuitarEntities(getApplicationContext(), guitarEntities);
 
                     // Download icon files for new
-                    if(countRows == 2) {
+                    /*if(countRows == 2) {
                         GuitarEntity firstGuitarEntityItem = DBGuitarTable.GetGuitarEntityByID(getApplicationContext(), 1);
                         if(firstGuitarEntityItem != null) {
                             guitarEntities.addFirst(firstGuitarEntityItem);
                         }
-                    }
+                    }*/
 
-                    for (GuitarEntity entity : guitarEntities) {
+                    /*for (GuitarEntity entity : guitarEntities) {
                         GuitarEntity guitarEntity = DBGuitarTable.GetGuitarEntityByArticle(getApplication(), entity.article);
                         String iconFileName = guitarEntity.icon;
                         Intent intent = new Intent(getApplicationContext(), UpdateGuitarsIconService.class);
                         intent.putExtra(DBGuitarTable.ICON,iconFileName);
                         intent.putExtra(DBGuitarTable.ID, guitarEntity.id);
                         startService(intent);
-                    }
+                    }*/
                 }
 
             } catch (MalformedURLException e) {

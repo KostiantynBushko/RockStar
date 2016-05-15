@@ -48,7 +48,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //Log.i("info","GUITAR SIMULATOR OnCREATE");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -60,18 +59,16 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         isFretSlider = settings.isFretsSliderVisible();
     }
 
-    @Override
-    public void onStart() {
-        //Log.i("info","GUITAR SIMULATOR ACTIVITY START");
-        super.onStart();
-    }
 
     private boolean isPentatonicLoad = false;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        //Log.i("info","GUITAR SIMULATOR ACTIVITY ON RESULT");
         if (intent == null)
             return;
+
+        // Disable show notes
+        new Settings(this).setShowNotes(false);
+
         String fileName = intent.getStringExtra("fileName");
         guitarSurfaceView.LoadTabsFile(fileName);
         isPentatonicLoad = true;
@@ -92,7 +89,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
 
     @Override
     public void onResume() {
-        //Log.i("info","GUITAR SIMULATOR ACTIVITY RESUME");
         if (isPentatonicLoad) {
             super.onResume();
             isPentatonicLoad = false;
@@ -198,18 +194,7 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
         guitarSurfaceView.SetFretsNumberVisible(settings.isFretsNumberVisible());
         super.onResume();
     }
-    
-    @Override
-    public void onPause() {
-        //Log.i("info","GUITAR SIMULATOR ACTIVITY PAUSE");
-        super.onPause();
-    }
 
-    @Override
-    public void onStop() {
-        //Log.i("info","GUITAR SIMULATOR ACTIVITY STOP");
-        super.onStop();
-    }
 
     @Override
     public void onDestroy() {

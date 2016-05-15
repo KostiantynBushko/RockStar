@@ -52,7 +52,7 @@ public class QTabsPlayer {
 
 
     private long calculateTime() {
-        Log.i("info"," CALCULATE TIME : tabs size = " + tabs.size());
+        //Log.i("info"," CALCULATE TIME : tabs size = " + tabs.size());
         if(tabs == null || tabs.size() == 0)
             return 0;
         long lastTime = 0;
@@ -66,7 +66,7 @@ public class QTabsPlayer {
             if(time > lastTime)
                 lastTime = time;
         }
-        Log.i("info","QTabPlayer : time = " + lastTime);
+        //Log.i("info","QTabPlayer : time = " + lastTime);
         return lastTime;
     }
 
@@ -126,7 +126,7 @@ public class QTabsPlayer {
     }*/
 
     public void Stop() {
-        Log.i("info"," Player STOP");
+        //Log.i("info"," Player STOP");
         isStop = true;
         timeLine = totalTime;
         if(timer != null) {
@@ -153,13 +153,13 @@ public class QTabsPlayer {
 
         @Override
         public void run() {
-            Log.i("info","START PLAY start : " + startTime + " end : " + timeDuration);
+            //Log.i("info","START PLAY start : " + startTime + " end : " + timeDuration);
             GuitarString guitarString = new GuitarString(0,0,0,context, QSoundPool.getInstance().getSoundPool());
             guitarString.playSimpleString(simpleTab.getGuitarBar(), simpleTab.getGuitarString());
             if(tabPlayInterface != null)
                 tabPlayInterface.CurrentPlayTab(this.simpleTab);
             SystemClock.sleep(timeDuration);
-            Log.i("info"," STOP PLAY STRING = " + simpleTab.getGuitarString());
+            //Log.i("info"," STOP PLAY STRING = " + simpleTab.getGuitarString());
             guitarString.stopSimpleString();
         }
     }
