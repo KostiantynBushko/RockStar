@@ -33,6 +33,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
@@ -40,9 +41,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
-    compile'com.google.android.gms:play-services-plus:8.4.0'
+    compile 'com.google.android.gms:play-services-plus:8.4.0'
     compile 'com.facebook.android:facebook-android-sdk:3.21.1'
     compile('com.twitter.sdk.android:twitter:1.1.1@aar') {
         transitive = true;
