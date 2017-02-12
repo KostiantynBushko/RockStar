@@ -30,7 +30,7 @@ import com.onquantum.rockstar.sequencer.QSoundPool;
 /**
  * Created by Admin on 8/16/14.
  */
-public class GuitarSimulatorActivity extends Activity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
+public class GuitarSimulatorActivity extends BaseActivity implements GuitarInterface, DialogSelectPentatonic.OnPentatonicSelectListener{
 
     private GuitarAbstractView guitarSurfaceView;
     private ProgressBar progressBar;
@@ -49,8 +49,6 @@ public class GuitarSimulatorActivity extends Activity implements GuitarInterface
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         context = this;
         settings = new Settings(context);

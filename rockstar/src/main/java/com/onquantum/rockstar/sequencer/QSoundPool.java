@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Debug;
 import android.util.Log;
 
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Bushko on 12/20/14.
+ * Created by Kostiantyn Bushko on 12/20/14.
  */
 public class QSoundPool {
     private static QSoundPool instance = new QSoundPool();
@@ -32,7 +33,7 @@ public class QSoundPool {
         return instance;
     }
 
-    private SoundPool soundPool;
+    private SoundPool mSoundPool;
     private boolean loadedInProgress = false;
     private boolean successLoaded = false;
 
@@ -51,6 +52,7 @@ public class QSoundPool {
     public interface OnSoundPoolSuccessLoaded {
         public void soundPoolSuccessLoaded();
     }
+
     private OnSoundPoolSuccessLoaded onSoundPoolSuccessLoaded;
     public void setOnSoundPoolSuccessLoaded(OnSoundPoolSuccessLoaded onSoundPoolSuccessLoaded) {
         if(onSoundPoolSuccessLoaded == null) {
@@ -82,8 +84,16 @@ public class QSoundPool {
     }
 
     private void Init() {
-        soundPool = new SoundPool(200, AudioManager.STREAM_MUSIC,0);
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+//        soundPool = new SoundPool(200, AudioManager.STREAM_MUSIC,0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mSoundPool = new SoundPool.Builder()
+                    .setMaxStreams(200)
+                    .build();
+        } else {
+            mSoundPool = new SoundPool(200, AudioManager.STREAM_MUSIC, 0);
+        }
+
+        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                 load += 1;
@@ -130,8 +140,8 @@ public class QSoundPool {
     }
 
     public void releaseSoundPool() {
-        soundPool.release();
-        soundPool = null;
+        mSoundPool.release();
+        mSoundPool = null;
         loadedInProgress = false;
         successLoaded = false;
         load = 0;
@@ -144,7 +154,7 @@ public class QSoundPool {
 
     public SoundPool getSoundPool() {
         //Log.i("info","QSoundPool GET SOUND POOL " + soundPool.toString());
-        return soundPool;
+        return mSoundPool;
     }
     public int getSuccessLoad() {
         return load;
@@ -184,7 +194,7 @@ public class QSoundPool {
                     try {
                         synchronized (QSoundPool.this) {
                             if(loadedInProgress) {
-                                soundPool.load(context,id,1);
+                                mSoundPool.load(context,id,1);
                             } else {
                                 //Log.i("info","  ************** BRAKE LOADING ID = " + prefix);
                                 return;
@@ -207,9 +217,8 @@ public class QSoundPool {
                     //Log.i("info"," FILE : " + filePath.getAbsolutePath());
                     try {
                         if(loadedInProgress) {
-                            soundPool.load(filePath.getAbsolutePath(),1);
+                            mSoundPool.load(filePath.getAbsolutePath(),1);
                         } else {
-                            //Log.i("info","  ************** BRAKE LOADING FILE = " + file);
                             return;
                         }
                     }catch (Resources.NotFoundException e){

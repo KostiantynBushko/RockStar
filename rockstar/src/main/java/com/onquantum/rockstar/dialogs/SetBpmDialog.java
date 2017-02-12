@@ -85,10 +85,10 @@ public class SetBpmDialog extends DialogFragment {
             }
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Tempo");
+        builder.setTitle(R.string.tempo);
         builder.setView(view);
         builder.setIcon(R.drawable.ic_metronom_white);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int currentBPM = new Settings(getActivity()).getBPM();
@@ -100,7 +100,7 @@ public class SetBpmDialog extends DialogFragment {
                 dialog.cancel();
             }
         });
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Created by Admin on 8/10/15.
  */
-public class PentatonicEditorActivity extends Activity{
+public class PentatonicEditorActivity extends BaseActivity {
 
     private static final int PICK_TABS_FILE_REQUEST = 1;
 
@@ -91,13 +91,10 @@ public class PentatonicEditorActivity extends Activity{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        //Log.i("info","Editor onCreate");
 
         this.START_TIME = System.currentTimeMillis();
 
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.tabulature_editor);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "font/BaroqueScript.ttf");
@@ -216,16 +213,16 @@ public class PentatonicEditorActivity extends Activity{
             public void onClick(View v) {
                 RemoveContextMenu();
                 AlertDialog.Builder builder = new AlertDialog.Builder(PentatonicEditorActivity.this);
-                builder.setTitle("Clear");
-                builder.setMessage("Do you want to clear all tabs");
+                builder.setTitle(getResources().getString(R.string.clear));
+                builder.setMessage(getResources().getString(R.string.do_you_want_to_clear_all_tabs));
                 builder.setIcon(R.drawable.ic_content_cut_white_48dp);
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         pentatonicEditorSurfaceView.ClearAll();
@@ -251,10 +248,10 @@ public class PentatonicEditorActivity extends Activity{
                 openTabsInterface = null;
                 if(tabsFileName != null && pentatonicEditorSurfaceView.needSave) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PentatonicEditorActivity.this);
-                    builder.setTitle("Alert");
-                    builder.setMessage("Save current change to '" + tabsFileName + "'");
+                    builder.setTitle(getResources().getString(R.string.alert));
+                    builder.setMessage(getResources().getString(R.string.save_current_change_to) + " '" + tabsFileName + "'");
                     builder.setIcon(R.drawable.ic_warning_white_48dp);
-                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -267,7 +264,7 @@ public class PentatonicEditorActivity extends Activity{
                             };
                         }
                     });
-                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -357,7 +354,7 @@ public class PentatonicEditorActivity extends Activity{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            fillSoundPackInfoPanel(guitarEntity.name, Integer.toString(BPM) + " bpm");
+                            fillSoundPackInfoPanel(guitarEntity.name, Integer.toString(BPM) + " " + getResources().getString(R.string.bpm));
                         }
                     });
                 }
@@ -476,7 +473,7 @@ public class PentatonicEditorActivity extends Activity{
     public void onResume() {
         super.onResume();
         this.END_TIME = System.currentTimeMillis() - this.START_TIME;
-        Log.i("info"," ---- PentatinicEditorActivity.onResume : time elapsed = " + Long.toString(this.END_TIME));
+        //Log.i("info"," ---- PentatinicEditorActivity.onResume : time elapsed = " + Long.toString(this.END_TIME));
     }
 
     @Override
@@ -577,24 +574,24 @@ public class PentatonicEditorActivity extends Activity{
         Bundle arguments = new Bundle();
         if(tabsFileName != null)
             arguments.putString("file_name",tabsFileName);
-        arguments.putString("title","Save tabs");
+        arguments.putString("title",getResources().getString(R.string.save_tabs));
         saveFileDialog.setArguments(arguments);
         saveFileDialog.SetOnSaveFileListener(new SaveFileDialog.OnSaveFileListener() {
             @Override
             public void OnSaveFile(String fileName) {
                 if(fileName == null || fileName.isEmpty()) {
-                    Toast.makeText(PentatonicEditorActivity.this,"Please provide file name",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PentatonicEditorActivity.this, getResources().getString(R.string.please_provide_file_name),Toast.LENGTH_SHORT).show();
                 } else {
                     // Save file
                     tabsFileName = fileName;
                     String path = FileSystem.GetTabsFilesPath();
                     if(path != null) {
                         path = path + "/" + fileName + Constants.TAB_FILE_EXTENSION;
-                        if(!SimpleTab.SaveTabsToXmlFile(path,pentatonicEditorSurfaceView.GetSimpleTabList(), "onquantum@gmail.com")) {
-                            Toast.makeText(PentatonicEditorActivity.this, "File system error",Toast.LENGTH_SHORT);
+                        if(!SimpleTab.SaveTabsToXmlFile(path,pentatonicEditorSurfaceView.GetSimpleTabList(), "author@gmail.com")) {
+                            Toast.makeText(PentatonicEditorActivity.this, getResources().getString(R.string.file_system_error),Toast.LENGTH_SHORT);
                         }
                     } else {
-                        Toast.makeText(PentatonicEditorActivity.this, "File system error",Toast.LENGTH_SHORT);
+                        Toast.makeText(PentatonicEditorActivity.this, getResources().getString(R.string.file_system_error),Toast.LENGTH_SHORT);
                     }
                     if (openTabsInterface != null) {
                         openTabsInterface.SuccessSaved();
@@ -619,7 +616,7 @@ public class PentatonicEditorActivity extends Activity{
                 }
                 changeBPMProgress = new ProgressDialog(PentatonicEditorActivity.this);
                 changeBPMProgress.setCanceledOnTouchOutside(false);
-                changeBPMProgress.setMessage("Set " + bpm + " bets per minute");
+                changeBPMProgress.setMessage( getResources().getString(R.string.set) + " " + bpm + " " + getResources().getString(R.string.bets_per_minute));
                 changeBPMProgress.show();
 
                 pentatonicEditorSurfaceView.SetBPM(bpm);
@@ -652,7 +649,7 @@ public class PentatonicEditorActivity extends Activity{
         if(!QSoundPool.getInstance().isSuccessLoaded()) {
             loadSoundPackProgress = null;
             loadSoundPackProgress = new ProgressDialog(PentatonicEditorActivity.this);
-            loadSoundPackProgress.setMessage("First time loading... 0%");
+            loadSoundPackProgress.setMessage( getResources().getString(R.string.first_time_loading) + "... 0%");
             loadSoundPackProgress.show();
             loadSoundPackProgress.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
@@ -681,7 +678,7 @@ public class PentatonicEditorActivity extends Activity{
                     public void run() {
                         controllPanel.removeAllViews();
                         if (guitarEntity != null) {
-                            fillSoundPackInfoPanel(guitarEntity.name, Integer.toString(BPM) + " bpm");
+                            fillSoundPackInfoPanel(guitarEntity.name, Integer.toString(BPM) + " " + getResources().getString(R.string.bpm));
                         }
                     }
                 });
@@ -691,7 +688,7 @@ public class PentatonicEditorActivity extends Activity{
             @Override
             public void progressUpdate(int progress) {
                 if(loadSoundPackProgress != null) {
-                    loadSoundPackProgress.setMessage("First time loading... " + progress + "%");
+                    loadSoundPackProgress.setMessage(getResources().getString(R.string.first_time_loading) + "... " + progress + "%");
                 }
             }
         });

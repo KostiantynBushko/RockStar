@@ -1,18 +1,19 @@
 package com.onquantum.rockstar.midi;
 
-public class QSysexMessage extends QMidiMessage{
-	/*
+public class QSysexMessage extends QMidiMessage {
+
+	/**
 	 * Status byte for System Exclusive message (0xF0, or 240).
 	 */
 	public static final int SYSTEM_EXCLUSIVE = 0xF0; // 240 
 	
-	/*
+	/**
 	 * Status byte for Special System Exclusive message (0xF7, or 247), which is used in MIDI files. 
 	 * It has the same value as END_OF_EXCLUSIVE, which is used in the real-time "MIDI wire" protocol.
 	 */
 	public static final int SPECIAL_SYSTEM_EXCLUSIVE = 0xF7; // 247
 	
-	/*
+	/**
 	 * Constructs a new SysexMessage. The contents of the new message are guaranteed to specify a valid MIDI message. 
 	 * Subsequently, you may set the contents of the message using one of the setMessage methods.
 	 */

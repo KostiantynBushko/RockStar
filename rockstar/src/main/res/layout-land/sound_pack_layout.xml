@@ -34,7 +34,7 @@
             android:gravity="center_vertical"
             android:textSize="16dp"
             android:textColor="@color/gray"
-            android:text="Sound pack"
+            android:text="@string/sound_pack"
             android:layout_toRightOf="@+id/backButton"
             android:layout_toEndOf="@+id/backButton"/>
 
@@ -106,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="listen sample"
+                    android:text="@string/listen_sample"
                     android:id="@+id/textView15"
                     android:layout_below="@+id/textView14"
                     android:layout_alignParentRight="true"

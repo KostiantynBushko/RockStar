@@ -92,7 +92,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="glissando"
+                        android:text="@string/glissando"
                         android:textStyle="italic|bold"
                         android:id="@+id/textView7"
                         android:gravity="right"
@@ -139,7 +139,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="channels"
+                        android:text="@string/channels"
                         android:textStyle="italic|bold"
                         android:alpha="0.6"
                         android:gravity="right"
@@ -181,7 +181,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="frets"
+                        android:text="@string/frets"
                         android:textStyle="italic|bold"
                         android:alpha="0.6"
                         android:gravity="right"
@@ -223,7 +223,7 @@
                         android:textStyle="italic|bold"
                         android:alpha="0.6"
                         android:gravity="right"
-                        android:text="open string" />
+                        android:text="@string/open_string" />
                 </LinearLayout>
                 <LinearLayout android:id="@+id/button_open_string"
                     android:layout_width="wrap_content"

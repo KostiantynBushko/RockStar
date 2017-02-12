@@ -28,10 +28,11 @@ public class SaveFileDialog extends DialogFragment {
     }
 
     private String fileName = null;
-    private String title = "Save file";
+    private String title = null;
     private EditText editText = null;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        this.title = getResources().getString(R.string.save_file);
         Bundle bundle = getArguments();
         if(bundle.containsKey("file_name")) {
             fileName = bundle.getString("file_name");
@@ -49,13 +50,13 @@ public class SaveFileDialog extends DialogFragment {
         builder.setIcon(R.drawable.ic_save_white_48dp);
         builder.setTitle(title);
         builder.setView(view);
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(editText != null && !editText.getText().toString().isEmpty())

@@ -1,6 +1,5 @@
 package com.onquantum.rockstar;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,8 +20,7 @@ import com.facebook.widget.FacebookDialog;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
-import com.onquantum.rockstar.activities.AboutActivity;
-import com.onquantum.rockstar.activities.LoadingActivity;
+import com.onquantum.rockstar.activities.BaseActivity;
 import com.onquantum.rockstar.activities.SoundPacksListActivity;
 import com.onquantum.rockstar.activities.PentatonicEditorActivity;
 import com.onquantum.rockstar.common.Constants;
@@ -37,7 +33,6 @@ import com.onquantum.rockstar.services.UpdatePurchaseTable;
 import com.onquantum.rockstar.util.IabHelper;
 import com.onquantum.rockstar.util.IabResult;
 import com.onquantum.rockstar.util.Inventory;
-import com.onquantum.rockstar.util.Purchase;
 import com.onquantum.rockstar.util.SkuDetails;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -55,7 +50,7 @@ import com.google.android.gms.common.ConnectionResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RockStarMain extends Activity {
+public class RockStarMain extends BaseActivity {
 
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "iuMWhsSjgfenU4oaarZClgdfg";
@@ -92,12 +87,8 @@ public class RockStarMain extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         context = this;
-
 
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);

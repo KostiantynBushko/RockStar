@@ -34,14 +34,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by Admin on 7/28/15.
+ * Created by Kostiantyn Bushko on 7/28/15.
  */
 public class DownloadSoundPackage extends Service {
 
     public interface OnProgressUpdate {
         public void updateProgress(String soundPackage, long progress);
     }
+
     public OnProgressUpdate onProgressUpdate;
+
     public void SetOnProgressUpdateListener(OnProgressUpdate progressUpdate) {
         this.onProgressUpdate = progressUpdate;
     }
@@ -57,34 +59,25 @@ public class DownloadSoundPackage extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        //Log.i("info","DownloadSoundFile : onBind");
         return downloadPackBinder;
     }
 
     @Override
     public void onRebind(Intent intent) {
-        //Log.i("info","DownloadSoundFile : onRebind");
         super.onRebind(intent);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        //Log.i("info", "DownloadSoundFile : onUnbind");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onCreate() {
-        //Log.i("info","DownloadSoundFile : onCreate");
         executorService = Executors.newFixedThreadPool(1);
         super.onCreate();
     }
 
-    @Override
-    public void onDestroy() {
-        //Log.i("info","DownloadSoundFile : onDestroy");
-        super.onDestroy();
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
@@ -128,7 +121,6 @@ public class DownloadSoundPackage extends Service {
             }
 
             if(guitarPackageName == null || fileName == null) {
-                //Log.i("info","DownloadSoundFile : fake call");
                 stopSelf(startId);
                 return;
             }
@@ -185,7 +177,6 @@ public class DownloadSoundPackage extends Service {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (SocketTimeoutException e) {
-                //Log.i("info","SOCET TIME OUT ");
                 e.printStackTrace();
             } catch (UnknownHostException e){
                 e.printStackTrace();
