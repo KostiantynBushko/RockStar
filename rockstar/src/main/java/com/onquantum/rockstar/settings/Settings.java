@@ -1,9 +1,9 @@
-package com.onquantum.rockstar;
+package com.onquantum.rockstar.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.onquantum.rockstar.common.FretsSlider;
+import com.onquantum.rockstar.R;
 
 /**
  * Created by saiber on 01.03.14.
@@ -28,7 +28,9 @@ public class Settings {
     private static final String SHOW_FRETS_SLIDER = "show_frets_slider";
     private static final String SHOW_TOUCHES = "show_touches";
     private static final String OPEN_STRING = "open_string";
-    private static final String SHOW_NOTS = "show_notes";
+    private static final String SHOW_NOTES = "show_notes";
+
+    private static final int BAR_COUNT = 24;
 
     private static final String BPM = "bpm";
 
@@ -38,27 +40,29 @@ public class Settings {
     private final SharedPreferences settings;
 
 
-    /**********************************************************************************************/
     // Interface section
     public interface FretsNumberVisible{
-        public void isFretsNumberVisible(boolean visibility);
+        void isFretsNumberVisible(boolean visibility);
     }
+
     private FretsNumberVisible fretsNumberVisible;
     public void setOnFretsNumberVisibleListener(FretsNumberVisible fretsNumberVisible){
         this.fretsNumberVisible = fretsNumberVisible;
     }
 
     public interface ShowTouchesListener{
-        public void showTouches(boolean visibility);
+        void showTouches(boolean visibility);
     }
+
     private ShowTouchesListener showTouchesListener;
     public void setShowTouchesListener(ShowTouchesListener showTouchesListener){
         this.showTouchesListener = showTouchesListener;
     }
 
     public interface FretsSliderListener {
-        public void showFretsSlider(boolean visibility);
+        void showFretsSlider(boolean visibility);
     }
+
     public FretsSliderListener fretsSliderListener;
     public void setOnFretsSliderListener(FretsSliderListener fretsSliderListener){
         this.fretsSliderListener = fretsSliderListener;
@@ -71,8 +75,7 @@ public class Settings {
     public static void SetOnGuitarPackageChange(GuitarPackageListener guitarPackageListener) {
         Settings.guitarPackageListener = guitarPackageListener;
     }
-    // End interface section
-    /**********************************************************************************************/
+
 
     public Settings(Context context) {
         settings = context.getSharedPreferences(context.getResources().getString(R.string.app_name),Context.MODE_PRIVATE);
@@ -180,11 +183,11 @@ public class Settings {
 
     //Show note and octave for string
     public boolean getShowNotes() {
-        return settings.getBoolean(SHOW_NOTS, false);
+        return settings.getBoolean(SHOW_NOTES, false);
     }
     public void setShowNotes(Boolean enabled) {
         SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean(SHOW_NOTS, enabled);
+        editor.putBoolean(SHOW_NOTES, enabled);
         editor.commit();
     }
 

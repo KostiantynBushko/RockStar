@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.SwitchButton;
 
 /**

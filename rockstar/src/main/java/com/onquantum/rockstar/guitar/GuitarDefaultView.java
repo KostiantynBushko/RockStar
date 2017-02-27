@@ -10,17 +10,14 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.common.Pentatonic;
 import com.onquantum.rockstar.file_system.FileSystem;
 import com.onquantum.rockstar.sequencer.QSoundPool;
 import com.onquantum.rockstar.tabulature.SimpleTab;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 

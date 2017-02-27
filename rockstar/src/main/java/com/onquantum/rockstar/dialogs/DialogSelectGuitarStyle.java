@@ -14,7 +14,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 
 import java.util.ArrayList;
 import java.util.HashMap;

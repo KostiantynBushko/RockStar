@@ -3,11 +3,8 @@ package com.onquantum.rockstar.common;
 import android.content.Context;
 import android.media.SoundPool;
 import android.os.SystemClock;
-import android.util.Log;
 
-import com.onquantum.rockstar.Settings;
-import com.onquantum.rockstar.midi.QSequence;
-import com.onquantum.rockstar.sequencer.QSoundPool;
+import com.onquantum.rockstar.settings.Settings;
 
 /**
  * Created by Admin on 8/5/14.

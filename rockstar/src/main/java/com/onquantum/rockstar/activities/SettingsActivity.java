@@ -2,19 +2,17 @@ package com.onquantum.rockstar.activities;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.CounterView;
 import com.onquantum.rockstar.common.SwitchButton;
 
@@ -40,7 +38,7 @@ public class SettingsActivity extends Activity {
         Typeface typeFace = Typeface.createFromAsset(getAssets(),"font/BaroqueScript.ttf");
         ((TextView) this.findViewById(R.id.textView0)).setTypeface(typeFace);
 
-        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

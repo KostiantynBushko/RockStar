@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Debug;
-import android.util.Log;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.file_system.FileSystem;
@@ -15,10 +12,9 @@ import com.onquantum.rockstar.gsqlite.DBGuitarTable;
 import com.onquantum.rockstar.gsqlite.GuitarEntity;
 import com.onquantum.rockstar.midi.*;
 
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,7 +46,7 @@ public class QSoundPool {
     private  QTrack[] tracks;
 
     public interface OnSoundPoolSuccessLoaded {
-        public void soundPoolSuccessLoaded();
+        void soundPoolSuccessLoaded();
     }
 
     private OnSoundPoolSuccessLoaded onSoundPoolSuccessLoaded;
@@ -67,7 +63,7 @@ public class QSoundPool {
     }
 
     public interface OnProgressUpdate {
-        public void progressUpdate(int progress);
+        void progressUpdate(int progressPercentage, int fileCount);
     }
     OnProgressUpdate onProgressUpdate;
     public void setOnProgressUpdate(OnProgressUpdate onProgressUpdate) {
@@ -99,7 +95,7 @@ public class QSoundPool {
                 load += 1;
                 loadProgress = (int)(load / onePercentage);
                 if (onProgressUpdate != null && loadProgress < 100)
-                    onProgressUpdate.progressUpdate(loadProgress);
+                    onProgressUpdate.progressUpdate(loadProgress, load);
                 if(sampleId >= (24 * 6)) {
                     //Log.i("info"," Sequencer soundPool : success loaded ");
                     successLoaded = true;
@@ -196,7 +192,6 @@ public class QSoundPool {
                             if(loadedInProgress) {
                                 mSoundPool.load(context,id,1);
                             } else {
-                                //Log.i("info","  ************** BRAKE LOADING ID = " + prefix);
                                 return;
                             }
                         }

@@ -2,9 +2,8 @@ package com.onquantum.rockstar.sequencer;
 
 import android.content.Context;
 import android.os.SystemClock;
-import android.util.Log;
 
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.GuitarString;
 import com.onquantum.rockstar.tabulature.SimpleTab;
 

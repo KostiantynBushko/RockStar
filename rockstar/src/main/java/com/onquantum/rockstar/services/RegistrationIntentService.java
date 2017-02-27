@@ -27,7 +27,7 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 
 import java.io.IOException;
 

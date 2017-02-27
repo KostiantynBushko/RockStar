@@ -1,23 +1,19 @@
 package com.onquantum.rockstar.activities;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.FretsSlider;
 import com.onquantum.rockstar.dialogs.DialogSelectPentatonic;
 import com.onquantum.rockstar.gsqlite.DBGuitarTable;
@@ -100,6 +96,7 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
             setContentView(R.layout.guitar_surface_deffault);
             guitarSurfaceView = (GuitarDefaultView)findViewById(R.id.guitarSurfaceView);
         }
+
         progressBar = (ProgressBar)findViewById(R.id.loading_spinner);
         progressText = (TextView)findViewById(R.id.progressText);
         packageName = (TextView)findViewById(R.id.soundPackageName);
@@ -107,23 +104,18 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
 
         QSoundPool.getInstance().setOnProgressUpdate(new QSoundPool.OnProgressUpdate() {
             @Override
-            public void progressUpdate(int progress) {
-                progressText.setText(new String(Integer.toString(progress) + "%"));
+            public void progressUpdate(int progressPercentage, int fileCount) {
+                progressText.setText(new String(Integer.toString(progressPercentage) + "%"));
             }
         });
+
         guitarSurfaceView.setOnSoundLoadedCompleteListener(new GuitarSlideView.OnSoundLoadedCompleteListener() {
             @Override
             public void onSoundLoadedComplete() {
-                ((TextView)findViewById(R.id.helpText)).setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-                progressText.setVisibility(View.GONE);
-                packageName.setVisibility(View.GONE);
-                if (new Settings(context).isFretsSliderVisible()) {
-                    fretsSlider.setVisible(true);
-                    fretsSlider.setVisibility(View.VISIBLE);
-                }
+                startPlay();
             }
         });
+
         fretsSlider = (FretsSlider)findViewById(R.id.fretsSlide);
         if(settings.isFretsSliderVisible()) {
             int fretSliderWidth = new Settings(context).getFretNumbers();
@@ -145,21 +137,23 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
 
         controlPanel = (RelativeLayout)findViewById(R.id.playPentatonicPanel);
 
-        ((ImageButton) this.findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, SettingsActivity.class);
                 startActivity(intent);
             }
         });
-        ((ImageButton)this.findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
+
+        (findViewById(R.id.button2)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, LoadTabActivity.class);
                 startActivityForResult(intent, 1);
             }
         });
-        ((ImageButton)this.findViewById(R.id.cancelButton)).setOnClickListener(new View.OnClickListener() {
+
+        (findViewById(R.id.cancelButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 controlPanel.setVisibility(View.GONE);
@@ -168,7 +162,8 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
                 guitarSurfaceView.ClosePlayPentatonic();
             }
         });
-        ((ImageButton)this.findViewById(R.id.button0)).setOnClickListener(new View.OnClickListener() {
+
+        (this.findViewById(R.id.button0)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, FretsSettingsActivity.class);
@@ -181,7 +176,8 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
         } else {
             fretsSlider.setVisibility(View.GONE);
         }
-        ((ImageButton)findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
+
+        (findViewById(R.id.backButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -196,7 +192,6 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
 
     @Override
     public void onDestroy() {
-        //stopWrapProgress = true;
         guitarSurfaceView.Stop();
         super.onDestroy();
     }
@@ -208,6 +203,17 @@ public class GuitarSimulatorActivity extends BaseActivity implements GuitarInter
             fm.popBackStack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void startPlay() {
+        (findViewById(R.id.helpText)).setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        progressText.setVisibility(View.GONE);
+        packageName.setVisibility(View.GONE);
+        if (new Settings(context).isFretsSliderVisible()) {
+            fretsSlider.setVisible(true);
+            fretsSlider.setVisibility(View.VISIBLE);
         }
     }
 }

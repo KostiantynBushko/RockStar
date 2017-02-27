@@ -10,9 +10,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
-
-import org.apache.http.impl.conn.tsccm.BasicPoolEntryRef;
+import com.onquantum.rockstar.settings.Settings;
 
 /**
  * Created by Admin on 12/29/15.

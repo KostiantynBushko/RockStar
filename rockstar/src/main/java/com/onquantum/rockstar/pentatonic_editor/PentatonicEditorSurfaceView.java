@@ -6,11 +6,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.onquantum.rockstar.R;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.svprimitive.DrawEngine;
 import com.onquantum.rockstar.svprimitive.SBitmap;
 import com.onquantum.rockstar.svprimitive.SLayer;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by Admin on 8/10/15.

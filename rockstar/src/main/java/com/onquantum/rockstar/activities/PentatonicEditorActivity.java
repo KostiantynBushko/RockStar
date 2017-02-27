@@ -1,6 +1,5 @@
 package com.onquantum.rockstar.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -8,22 +7,17 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.onquantum.rockstar.R;
 import com.onquantum.rockstar.RockStarApplication;
-import com.onquantum.rockstar.Settings;
+import com.onquantum.rockstar.settings.Settings;
 import com.onquantum.rockstar.common.Constants;
 import com.onquantum.rockstar.common.SpeechBubble;
 import com.onquantum.rockstar.dialogs.SaveFileDialog;
@@ -473,7 +467,7 @@ public class PentatonicEditorActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         this.END_TIME = System.currentTimeMillis() - this.START_TIME;
-        //Log.i("info"," ---- PentatinicEditorActivity.onResume : time elapsed = " + Long.toString(this.END_TIME));
+        //Log.i("info","onResume : time elapsed = " + Long.toString(this.END_TIME));
     }
 
     @Override
@@ -494,19 +488,24 @@ public class PentatonicEditorActivity extends BaseActivity {
         }
     }
 
-    private void PlayButtonAction(View v) {
+    /**
+     * Start to play/stop pentatonic.
+     *
+     * @param view a view which handle on click to start/stop play pentatonic.
+     */
+    private void PlayButtonAction(View view) {
         RemoveContextMenu();
         if (!CheckSoundPool()) {
             return;
         }
-        v.setSelected(!v.isSelected());
-        if(v.isSelected()) {
+        view.setSelected(!view.isSelected());
+        if(view.isSelected()) {
             if(player != null) {
                 player.Stop();
                 player = null;
             }
             if(pentatonicEditorSurfaceView.GetSimpleTabList().size() == 0) {
-                v.setSelected(!v.isSelected());
+                view.setSelected(!view.isSelected());
                 return;
             }
             player = new QTabsPlayer(getApplicationContext(), pentatonicEditorSurfaceView.GetSimpleTabList());
@@ -686,9 +685,9 @@ public class PentatonicEditorActivity extends BaseActivity {
         });
         QSoundPool.getInstance().setOnProgressUpdate(new QSoundPool.OnProgressUpdate() {
             @Override
-            public void progressUpdate(int progress) {
+            public void progressUpdate(int progressPercentage, int fileCount) {
                 if(loadSoundPackProgress != null) {
-                    loadSoundPackProgress.setMessage(getResources().getString(R.string.first_time_loading) + "... " + progress + "%");
+                    loadSoundPackProgress.setMessage(getResources().getString(R.string.first_time_loading) + "... " + progressPercentage + "%");
                 }
             }
         });
